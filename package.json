@@ -1,7 +1,7 @@
 {
   "name": "Charts.js",
   "version": "0.0.0",
-  "description": "Basic D3 Charting Library",
+  "description": "Basic D3 Charting Library for Kibana 4",
   "main": "index.js",
   "directories": {
     "example": "examples"
@@ -17,7 +17,10 @@
     "data",
     "visualization"
   ],
-  "author": "Shelby Sturgis",
+  "authors": [
+    "Shelby Sturgis",
+    "Juan Thomassie"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/stormpython/Charts.js/issues"

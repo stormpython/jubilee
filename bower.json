@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "homepage": "https://github.com/stormpython/Charts.js",
   "authors": [
-    "Shelby Sturgis <shelbyjsturgis@gmail.com>"
+    "Shelby Sturgis",
+    "Juan Thomassie"
   ],
-  "description": "Basic D3 Charting Library",
+  "description": "Basic D3 Charting Library for Kibana 4",
   "main": "core.js",
   "keywords": [
     "data",

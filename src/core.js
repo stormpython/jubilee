@@ -4,6 +4,10 @@
 
 var kbn = window.kbn || {};
 
+kbn.version = '0.0.0';
+
+window.kbn = kbn;
+
 kbn.namespace = function (ns_string) {
   "use strict";
 
