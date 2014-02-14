@@ -76,7 +76,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
 
-  grunt.registerTask('default', ['concat', 'copy']);
+  grunt.registerTask('default', ['concat', 'copy', 'watch']);
   grunt.registerTask('production', ['concat', 'uglify', 'copy', 'cssmin']);
   grunt.registerTask('release', ['production']);
   grunt.registerTask('lint', ['jshint']);
