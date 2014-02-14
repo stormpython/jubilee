@@ -54,11 +54,13 @@ kd3.area = function (args) {
     .domain(d3.extent(data, function(d) { return parseDate(d[xValue]); }))
     .range([0, width]);
 
+  // need to give option for the type of y axis to use or at least think about it
   y = d3.scale.linear()
     .domain(d3.extent(data, function(d) { return d[yValue]; }))
     .range([height, 0]);
 
   // Axes
+  // add options for adjusting ticks and formats and the orientation of the axes
   xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
@@ -86,11 +88,13 @@ kd3.area = function (args) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+  // give option for having x axis on top of svg or bottom, perhaps middle
   svg.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(0," + height + ")")
     .call(xAxis);
 
+  // give option for having y axis on left or right or middle
   svg.append("g")
     .attr("class", "y axis")
     .call(yAxis)
