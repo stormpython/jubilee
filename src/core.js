@@ -4,7 +4,7 @@
 
 var kd3 = window.kd3 || {};
 
-kd3.version = '0.0.0';
+kd3.version = '0.1.0';
 
 window.kd3 = kd3;
 

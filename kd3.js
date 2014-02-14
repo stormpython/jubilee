@@ -2,6 +2,37 @@
  * Created by shelbysturgis on 2/13/14.
  */
 
+var kd3 = window.kd3 || {};
+
+kd3.version = '0.1.0';
+
+window.kd3 = kd3;
+
+kd3.namespace = function (ns_string) {
+  "use strict";
+
+  var parts = ns_string.split('.'),
+      parent = kd3,
+      i;
+
+  // strip redundant leading global
+  if (parts[0] === "kd3") {
+    parts = parts.slice(1);
+  }
+
+  for (i = 0; i < parts.length; i += 1) {
+    // create a property if it doesn't exist
+    if (typeof parent[parts[i]] === "undefined") {
+      parent[parts[i]] = {};
+    }
+    parent = parent[parts[i]];
+  }
+
+  return parent;
+};/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+
 kd3.area = function (args) {
   "use strict";
 
@@ -23,13 +54,11 @@ kd3.area = function (args) {
     .domain(d3.extent(data, function(d) { return parseDate(d[xValue]); }))
     .range([0, width]);
 
-  // need to give option for the type of y axis to use or at least think about it
   y = d3.scale.linear()
     .domain(d3.extent(data, function(d) { return d[yValue]; }))
     .range([height, 0]);
 
   // Axes
-  // add options for adjusting ticks and formats and the orientation of the axes
   xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
@@ -57,13 +86,11 @@ kd3.area = function (args) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // give option for having x axis on top of svg or bottom, perhaps middle
   svg.append("g")
     .attr("class", "x axis")
     .attr("transform", "translate(0," + height + ")")
     .call(xAxis);
 
-  // give option for having y axis on left or right or middle
   svg.append("g")
     .attr("class", "y axis")
     .call(yAxis)
@@ -84,4 +111,83 @@ kd3.area = function (args) {
     .attr("d", function(d) { return area(d[yValue]); });
 
   return svg;
+};/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+
+kd3.dendrogram = function (args) {
+  "use strict";
+
+};/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+
+kd3.heatmap = function (args) {
+  "use strict";
+
+};/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+
+kd3.histogram = function (args) {
+  "use strict";
+
+};/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+
+kd3.horizon = function (args) {
+  "use strict";
+
+};/**
+ *
+ * Created by shelbysturgis on 2/13/14.
+ */
+
+kd3.lineChart = function (args) {
+  "use strict";
+
+};
+/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+
+kd3.map = function (args) {
+  "use strict";
+
+};/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+
+kd3.scatterplot = function (args) {
+  "use strict";
+
+};/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+
+kd3.spiderChart = function (args) {
+  "use strict";
+
+};/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+
+kd3.sunburst = function (args) {
+  "use strict";
+
+};/**
+ * Created by shelbysturgis on 2/13/14.
+ */
+/**
+ *
+ * Created by shelbysturgis on 2/13/14.
+ */
+
+kd3.treemap = function (args) {
+  "use strict";
+
 };

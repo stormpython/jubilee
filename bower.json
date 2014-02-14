@@ -1,7 +1,7 @@
 {
-  "name": "Charts.js",
+  "name": "kd3",
   "version": "0.0.0",
-  "homepage": "https://github.com/stormpython/Charts.js",
+  "homepage": "https://github.com/stormpython/kd3",
   "authors": [
     "Shelby Sturgis",
     "Juan Thomassie"
@@ -22,7 +22,6 @@
     "tests"
   ],
   "dependencies": {
-    "requirejs": "~2.1.10",
     "d3": "~3.4.1",
     "lodash": "~2.4.1",
     "d3-plugins": "*"
