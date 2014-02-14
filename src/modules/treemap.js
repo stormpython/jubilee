@@ -3,7 +3,7 @@
  * Created by shelbysturgis on 2/13/14.
  */
 
-kbn.treemap = function (args) {
+kd3.treemap = function (args) {
   "use strict";
 
 };

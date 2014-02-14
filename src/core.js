@@ -2,21 +2,21 @@
  * Created by shelbysturgis on 2/13/14.
  */
 
-var kbn = window.kbn || {};
+var kd3 = window.kd3 || {};
 
-kbn.version = '0.0.0';
+kd3.version = '0.0.0';
 
-window.kbn = kbn;
+window.kd3 = kd3;
 
-kbn.namespace = function (ns_string) {
+kd3.namespace = function (ns_string) {
   "use strict";
 
   var parts = ns_string.split('.'),
-      parent = kbn,
+      parent = kd3,
       i;
 
   // strip redundant leading global
-  if (parts[0] === "kbn") {
+  if (parts[0] === "kd3") {
     parts = parts.slice(1);
   }
 

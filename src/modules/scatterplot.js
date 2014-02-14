@@ -2,7 +2,7 @@
  * Created by shelbysturgis on 2/13/14.
  */
 
-kbn.scatterplot = function (args) {
+kd3.scatterplot = function (args) {
   "use strict";
 
 };
