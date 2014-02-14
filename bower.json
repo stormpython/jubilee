@@ -1,0 +1,28 @@
+{
+  "name": "Charts.js",
+  "version": "0.0.0",
+  "homepage": "https://github.com/stormpython/Charts.js",
+  "authors": [
+    "Shelby Sturgis <shelbyjsturgis@gmail.com>"
+  ],
+  "description": "Basic D3 Charting Library",
+  "main": "core.js",
+  "keywords": [
+    "data",
+    "visualization"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "requirejs": "~2.1.10",
+    "d3": "~3.4.1",
+    "lodash": "~2.4.1"
+  }
+}

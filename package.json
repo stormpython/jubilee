@@ -1,0 +1,32 @@
+{
+  "name": "Charts.js",
+  "version": "0.0.0",
+  "description": "Basic D3 Charting Library",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/stormpython/Charts.js.git"
+  },
+  "keywords": [
+    "data",
+    "visualization"
+  ],
+  "author": "Shelby Sturgis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stormpython/Charts.js/issues"
+  },
+  "homepage": "https://github.com/stormpython/Charts.js",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-contrib-nodeunit": "~0.3.0",
+    "grunt-contrib-uglify": "~0.3.2"
+  }
+}
