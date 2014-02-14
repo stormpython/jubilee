@@ -1,6 +1,6 @@
 {
   "name": "kd3",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Basic D3 Charting Library for Kibana 4",
   "main": "index.js",
   "directories": {

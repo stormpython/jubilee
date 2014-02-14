@@ -7,15 +7,13 @@ kd3.area = function (args) {
 
   // Margins, Width, and Height
   var margin = args.margin,
-    width = args.width,
-    height = args.height,
-    el = args.element,
-    data = args.data,
-    xValue = args.x,
-    yValue = args.y,
-    // Parses date for time series.
-    parseDate,
-    x, y, xAxis, yAxis, area, svg, groups;
+      width = args.width,
+      height = args.height,
+      el = args.element,
+      data = args.data,
+      xValue = args.x,
+      yValue = args.y,
+      parseDate, x, y, xAxis, yAxis, area, svg, groups;
 
   // Axes scale
   // need to determine whether x axis is time scale or linear scale
@@ -74,7 +72,7 @@ kd3.area = function (args) {
     .style("text-anchor", "end")
     .text("");
 
- groups = svg.selectAll("")
+  groups = svg.selectAll("")
     .data(data)
     .enter()
     .append("g");

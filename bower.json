@@ -1,6 +1,6 @@
 {
   "name": "kd3",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "homepage": "https://github.com/stormpython/kd3",
   "authors": [
     "Shelby Sturgis",
@@ -24,6 +24,7 @@
   "dependencies": {
     "d3": "~3.4.1",
     "lodash": "~2.4.1",
-    "d3-plugins": "*"
+    "d3-plugins": "*",
+    "angular": "~1.2.12"
   }
 }
