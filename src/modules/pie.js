@@ -3,16 +3,16 @@ kd3.pie = function () {
   "use strict";
 
   var width = 500,
-    height = 500,
-    radius = Math.min(width, height)/ 2,
-    sort = null,
-    label = function(d) { return d[0]; },
-    value = function(d) { return d[1]; }, // ?
-    outerRadius = radius - 10,
-    innerRadius = 120,
-    color = d3.scale.category10(),
-    arc = d3.svg.arc(),
-    pie = d3.layout.pie();
+      height = 500,
+      radius = Math.min(width, height)/ 2,
+      sort = null,
+      label = function(d) { return d[0]; },
+      value = function(d) { return d[1]; },
+      outerRadius = radius - 10,
+      innerRadius = 0,
+      color = d3.scale.category10(),
+      arc = d3.svg.arc(),
+      pie = d3.layout.pie();
 
   function chart(selection) {
     selection.each(function(data) {

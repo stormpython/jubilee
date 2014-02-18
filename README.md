@@ -1,4 +1,22 @@
-Charts.js
-=========
+# Charts.js
+Basic D3 charts library
 
-Basic D3 charts library for Kibana 4
+
+## Environment Setup
+Fork the repository.
+
+You will need node and npm installed.
+If you do not have grunt installed, install it now.
+
+```bash
+npm install -g grunt cli
+```
+
+Change into the project's root directory.
+
+```bash
+npm install
+```
+
+Run Grunt with grunt. That's it!
+
