@@ -3,16 +3,17 @@ kd3.area = function () {
   "use strict";
 
   var margin = {top: 20, right: 20, bottom: 20, left: 50},
-    width = 760,
-    height = 120,
-    xValue = function(d) { return d[0]; },
-    yValue = function(d) { return d[1]; },
-    xScale = d3.time.scale(),
-    yScale = d3.scale.linear(),
-    xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(5),
-    yAxis = d3.svg.axis().scale(yScale).orient("left"),
-    area = d3.svg.area().x(X).y1(Y).interpolate("basis"),
-    line = d3.svg.line().x(X).y(Y).interpolate("basis");
+      width = 760,
+      height = 120,
+      xValue = function(d) { return d[0]; },
+      yValue = function(d) { return d[1]; },
+      interpolate = "linear",
+      xScale = d3.time.scale(),
+      yScale = d3.scale.linear(),
+      xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(5),
+      yAxis = d3.svg.axis().scale(yScale).orient("left"),
+      area = d3.svg.area().x(X).y1(Y),
+      line = d3.svg.line().x(X).y(Y);
 
   function chart(selection) {
     selection.each(function(data) {
@@ -28,6 +29,9 @@ kd3.area = function () {
       yScale
         .domain([0, d3.max(data, function(d) { return d[1]; })])
         .range([height - margin.top - margin.bottom, 0]);
+
+      area.interpolate(interpolate);
+      line.interpolate(interpolate);
 
       var svg = d3.select(this).selectAll("svg").data([data]);
 
@@ -95,6 +99,12 @@ kd3.area = function () {
   chart.y = function(_) {
     if (!arguments.length) { return yValue; }
     yValue = _;
+    return chart;
+  };
+
+  chart.interpolate = function(_) {
+    if (!arguments.length) { return interpolate; }
+    interpolate = _;
     return chart;
   };
 

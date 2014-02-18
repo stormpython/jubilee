@@ -1,17 +1,23 @@
-kbn.pie = function (args) {
+
+kbn.pie = function () {
   "use strict";
 
-  var width = args.width,
-      height = args.height,
+  var width = 500,
+      height = 500,
       radius = Math.min(width, height)/ 2,
-      outerRadius = args.outerRadius,
-      innterRadius = args.innerRadius,
-      el = args.element,
-      data = args.data,
-      labels = args.labels,
-      values = args.values,
+      outerRadius = ,
+      innterRadius = ,
       color = d3.scale.category10(),
-      arc, pie, svg, g;
+      arc = d3.svg.arc().outerRadius(radius - 60).innerRadius(120),
+      pie = d3.layout.pie().sort(null).value(function (d) { return d[0]; });
+
+  function chart(selection) {
+    selection.each(function(data) {
+      var svg = d3.select(this)
+
+
+    });
+  }
 
   arc = d3.svg.arc()
     .outerRadius(radius - 60) // add options to change

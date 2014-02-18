@@ -43,6 +43,7 @@
         height = 120,
         xValue = function(d) { return d[0]; },
         yValue = function(d) { return d[1]; },
+        interpolate = "linear",
         xScale = d3.time.scale(),
         yScale = d3.scale.linear(),
         xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(5),
@@ -65,6 +66,12 @@
           yScale
             .domain([0, d3.max(data, function(d) { return d[1]; })])
             .range([height - margin.top - margin.bottom, 0]);
+
+          area
+            .interpolate(interpolate);
+
+          line
+            .interpolate(interpolate);
 
           var svg = d3.select(this).selectAll("svg").data([data]);
 
@@ -135,6 +142,12 @@
         return chart;
       };
 
+      chart.interpolate = function(_) {
+        if (!arguments.length) { return interpolate; };
+        interpolate = _;
+        return chart;
+      };
+
       return chart;
     };
 
@@ -149,7 +162,8 @@
           .x(function(d) { return formatDate(d.x); })
           .y(function(d) { return d.y; })
           .height(500)
-          .width(500);
+          .width(500)
+          .interpolate("basis");
 
 
     d3.select("#area-chart")
