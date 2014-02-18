@@ -1,4 +1,4 @@
-# Charts.js
+# KD3
 Basic D3 charts library
 
 
