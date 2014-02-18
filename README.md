@@ -3,9 +3,7 @@ Basic D3 charts library
 
 
 ## Environment Setup
-Fork the repository.
-
-You will need node and npm installed.
+Fork the repository. You will need node and npm installed.
 If you do not have grunt installed, install it now.
 
 ```bash
