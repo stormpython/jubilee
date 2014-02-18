@@ -32,7 +32,7 @@
       var svg = d3.select(this).selectAll("svg").data([data]);
 
       var gEnter = svg.enter().append("svg").append("g");
-      gEnter.append("path").attr("class", "line");
+      gEnter.append("path").attr("class", "sparkline");
 
       svg.attr("width", width)
         .attr("height", height);
