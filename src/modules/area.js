@@ -74,6 +74,7 @@ kd3.area = function () {
 
   chart.margin = function(_) {
     if (!arguments.length) { return margin; }
+    console.log(_.top);
     margin.top = typeof _.top != 'undefined' ? _.top : margin.top;
     margin.right = typeof _.right != 'undefined' ? _.right : margin.right;
     margin.bottom = typeof _.bottom != 'undefined' ? _.bottom : margin.bottom;
