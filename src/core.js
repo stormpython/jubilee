@@ -1,6 +1,3 @@
-/**
- * Created by shelbysturgis on 2/13/14.
- */
 
 var kd3 = window.kd3 || {};
 
