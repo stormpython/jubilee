@@ -222,15 +222,15 @@ kd3.dendrogram = function () {
 
   return svg;
 };
-kd3.heatmap = function (args) {
+kd3.heatmap = function () {
   "use strict";
 
 };
-kd3.histogram = function (args) {
+kd3.histogram = function () {
   "use strict";
 
 };
-kd3.horizon = function (args) {
+kd3.horizon = function () {
   "use strict";
 
 };
@@ -339,7 +339,7 @@ kd3.line = function () {
   return chart;
 };
 
-kd3.map = function (args) {
+kd3.map = function () {
   "use strict";
 
 };
@@ -459,7 +459,7 @@ kd3.pie = function () {
   return chart;
 };
 
-kd3.scatterplot = function (args) {
+kd3.scatterplot = function () {
   "use strict";
 
 };
@@ -556,15 +556,15 @@ kd3.scatterplot = function (args) {
   return chart;
 };
 
-kd3.spiderChart = function (args) {
+kd3.spiderChart = function () {
   "use strict";
 
 };
-kd3.sunburst = function (args) {
+kd3.sunburst = function () {
   "use strict";
 
 };
-kd3.treemap = function (args) {
+kd3.treemap = function () {
   "use strict";
 
 };
