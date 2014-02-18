@@ -1,6 +1,3 @@
-/**
- * Created by shelbysturgis on 2/13/14.
- */
 
 var kd3 = window.kd3 || {};
 
@@ -141,6 +138,7 @@ kd3.area = function () {
 
   return chart;
 };
+
 kd3.dendrogram = function () {
   "use strict";
 
@@ -223,24 +221,15 @@ kd3.dendrogram = function () {
   d3.select(self.frameElement).style("height", height + "px");
 
   return svg;
-};/**
- * Created by shelbysturgis on 2/13/14.
- */
-
+};
 kd3.heatmap = function (args) {
   "use strict";
 
-};/**
- * Created by shelbysturgis on 2/13/14.
- */
-
+};
 kd3.histogram = function (args) {
   "use strict";
 
-};/**
- * Created by shelbysturgis on 2/13/14.
- */
-
+};
 kd3.horizon = function (args) {
   "use strict";
 
@@ -349,9 +338,6 @@ kd3.line = function () {
 
   return chart;
 };
-/**
- * Created by shelbysturgis on 2/13/14.
- */
 
 kd3.map = function (args) {
   "use strict";
@@ -472,9 +458,6 @@ kd3.pie = function () {
 
   return chart;
 };
-/**
- * Created by shelbysturgis on 2/13/14.
- */
 
 kd3.scatterplot = function (args) {
   "use strict";
@@ -572,28 +555,15 @@ kd3.scatterplot = function (args) {
 
   return chart;
 };
-/**
- * Created by shelbysturgis on 2/13/14.
- */
 
 kd3.spiderChart = function (args) {
   "use strict";
 
-};/**
- * Created by shelbysturgis on 2/13/14.
- */
-
+};
 kd3.sunburst = function (args) {
   "use strict";
 
-};/**
- * Created by shelbysturgis on 2/13/14.
- */
-/**
- *
- * Created by shelbysturgis on 2/13/14.
- */
-
+};
 kd3.treemap = function (args) {
   "use strict";
 

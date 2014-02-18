@@ -1,5 +1,5 @@
 
-kd3.heatmap = function (args) {
+kd3.heatmap = function () {
   "use strict";
 
 };

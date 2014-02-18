@@ -1,5 +1,5 @@
 
-kd3.scatterplot = function (args) {
+kd3.scatterplot = function () {
   "use strict";
 
 };

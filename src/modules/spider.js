@@ -1,5 +1,5 @@
 
-kd3.spiderChart = function (args) {
+kd3.spiderChart = function () {
   "use strict";
 
 };

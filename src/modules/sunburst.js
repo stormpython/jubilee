@@ -1,5 +1,5 @@
 
-kd3.sunburst = function (args) {
+kd3.sunburst = function () {
   "use strict";
 
 };

@@ -1,5 +1,5 @@
 
-kd3.horizon = function (args) {
+kd3.horizon = function () {
   "use strict";
 
 };

@@ -1,5 +1,5 @@
 
-kd3.histogram = function (args) {
+kd3.histogram = function () {
   "use strict";
 
 };

@@ -1,5 +1,5 @@
 
-kd3.map = function (args) {
+kd3.map = function () {
   "use strict";
 
 };

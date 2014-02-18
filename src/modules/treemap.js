@@ -1,5 +1,5 @@
 
-kd3.treemap = function (args) {
+kd3.treemap = function () {
   "use strict";
 
 };
