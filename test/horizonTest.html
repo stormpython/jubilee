@@ -55,7 +55,7 @@
       .mode("mirror")
       .interpolate("basis");
 
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("#horizon-chart").append("svg")
       .attr("width", width)
       .attr("height", height);
 
@@ -98,22 +98,31 @@
       ]
     }
 
-    console.log(data);
-
     // Offset so that positive is above-average and negative is below-average.
     var mean = data.rate.reduce(function(p, v) { return p + v; }, 0) / data.rate.length;
-
-    console.log(mean);
 
     // Transpose column values to rows.
     data = data.rate.map(function(rate, i) {
       return [Date.UTC(data.year[i], data.month[i] - 1), rate - mean];
     });
 
-    console.log(data);
-
     // Render the chart.
-    svg.data([data]).call(chart);
+    var g = svg.selectAll("g")
+      .data([{"cram": 1},{"cram": 2},{"cram": 3}, {"cram": 4}, {"cram": 4}, {"cram": 4}, {"cram": 4}, {"cram": 4}])
+      .enter().append("g")
+      .attr("class", "symbol")
+      .attr("transform", function (d, i) {
+        var m = height/8;
+        return "translate(0," + i * m + ")";
+      });
+
+    //svg.data([data]).call(chart);
+    g.each(function(d) {
+      d3.select(this)
+        .data([data])
+        .call(chart.height(height/8));
+    });
+
 
     // Enable mode buttons.
     d3.selectAll("#horizon-controls input[name=mode]").on("change", function() {

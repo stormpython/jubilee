@@ -1,19 +1,51 @@
-/**
- * Created by shelbysturgis on 2/13/14.
- */
 
-kd3.area = function (args) {
+kd3.area = function () {
   "use strict";
 
-  // Margins, Width, and Height
-  var margin = args.margin,
-      width = args.width,
-      height = args.height,
-      el = args.element,
-      data = args.data,
-      xValue = args.x,
-      yValue = args.y,
-      parseDate, x, y, xAxis, yAxis, area, svg, groups;
+  var margin = {top: 20, right: 20, bottom: 20, left: 20},
+      width = 760,
+      height = 120,
+      xValue = function(d) { return d[0]; },
+      yValue = function(d) { return d[1]; },
+      xScale = d3.time.scale(),
+      yScale = d3.scale.linear(),
+      xAxis = d3.svg.axis().scale(xScale).orient("bottom").tickSize(),
+      yAxis = d3.svg.axis().scale(yScale).orient("left").tickSize(),
+      area = d3.svg.area().x(X).y0(height).y1(Y),
+      line = d3.svg.line().x(X).y(Y);
+
+  function chart(selection) {
+    selection.each(function(data) {
+
+      xScale
+        .domain(d3.extent(data, function(d) { return d[0]; }))
+        .range([0, width - margin.left - margin.right]);
+
+      yScale
+        .domain([0, d3.max(data, function(d) { return d[1]; })])
+        .range([height - margin.top - margin.bottom, 0]);
+
+      var svg = d3.select(this).selectAll("svg")
+        .data([data])
+        .enter()
+        .append("svg").appeng("g")
+
+    });
+  }
+
+  chart.width = function(_) {
+    if (!arguments.length) return width;
+    width = _;
+    return chart;
+  };
+
+  chart.height = function(_) {
+    if (!arguments.length) return height;
+    height = _;
+    return chart;
+  };
+
+  return chart;
 
   // Axes scale
   // need to determine whether x axis is time scale or linear scale
