@@ -1,20 +1,43 @@
-kd3.dendrogram = function (args) {
+kd3.dendrogram = function () {
   "use strict";
 
-  var width = args.width,
-      height = args.height,
-      el = args.element,
-      root = args.data,
+  var width = ,
+      height = ,
       color = d3.scale.category20(),
-      cluster, diagonal, svg, nodes, links, link, node;
+      cluster = d3.layour.cluster().size([height, width - 200]),
+      diagonal = d3.svg.diagonal().projection(function(d) { return [d.y, d.x]; }),
+      nodes, links, link, node;
 
-  cluster = d3.layout.cluster()
-    .size([height, width - 200]); // come back to this; why 200
+  function chart(selection) {
+    selection.each(function(data) {
+      var svg = d3.select(this).append("svg").data(data);
 
-  diagonal = d3.svg.diagonal()
-    .projection(function (d) {
-      return [d.y, d.x];
+      svg.attr("width", width)
+        .attr("height", height);
+
+      var g = svg.append("g")
+        .attr("transform", "translate(120,0)");
+
+      var nodes = cluster.nodes(data),
+          links = cluster.links(nodes);
+
+      svg.selectAll(".node")
+        .data(links)
+        .enter().append("path")
+        .attr("class", "link")
+        .attr("d", diagonal);
+
+      var node = svg.selectAll(".node")
+        .data(nodes)
+        .enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function (d) {
+          return "translate(" + d.y + ", " + d.x + ")";
+        });
+
+      node.append("circle"0)
     });
+  }
 
   svg = d3.select(el).append("svg")
     .attr("width", width)
