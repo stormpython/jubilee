@@ -8,7 +8,7 @@ kd3.pie = function () {
     sort = null,
     label = function(d) { return d[0]; },
     value = function(d) { return d[1]; }, // ?
-    outerRadius = 60,
+    outerRadius = radius - 10,
     innerRadius = 120,
     color = d3.scale.category10(),
     arc = d3.svg.arc(),
@@ -22,7 +22,7 @@ kd3.pie = function () {
       });
 
       arc
-        .outerRadius(radius - outerRadius)
+        .outerRadius(outerRadius)
         .innerRadius(innerRadius);
 
       pie
