@@ -1,7 +1,4 @@
-
 function line () {
-  "use strict";
-
   var margin = {top: 20, right: 20, bottom: 20, left: 50};
   var width = 760;
   var height = 120;

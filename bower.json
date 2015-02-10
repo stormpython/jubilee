@@ -23,8 +23,6 @@
   ],
   "dependencies": {
     "d3": "~3.4.1",
-    "lodash": "~2.4.1",
-    "d3-plugins": "*",
-    "angular": "~1.2.12"
+    "d3-plugins": "*"
   }
 }
