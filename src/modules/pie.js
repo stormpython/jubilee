@@ -2,17 +2,17 @@
 kd3.pie = function () {
   "use strict";
 
-  var width = 500,
-      height = 500,
-      radius = Math.min(width, height)/ 2,
-      sort = null,
-      label = function(d) { return d[0]; },
-      value = function(d) { return d[1]; },
-      outerRadius = radius - 10,
-      innerRadius = 0,
-      color = d3.scale.category10(),
-      arc = d3.svg.arc(),
-      pie = d3.layout.pie();
+  var width = 500;
+  var height = 500;
+  var color = d3.scale.category20c();
+  var radius = Math.min(width, height)/ 2;
+  var sort = null;
+  var label = function(d) { return d[0]; };
+  var value = function(d) { return d[1]; };
+  var outerRadius = radius - 10;
+  var innerRadius = 0;
+  var arc = d3.svg.arc();
+  var pie = d3.layout.pie();
 
   function chart(selection) {
     selection.each(function(data) {
@@ -58,55 +58,55 @@ kd3.pie = function () {
     });
   }
 
-  chart.width = function(_) {
+  chart.width = function (_) {
     if (!arguments.length) { return width; }
     width = _;
     return chart;
   };
 
-  chart.height = function(_) {
+  chart.height = function (_) {
     if (!arguments.length) { return height; }
     height = _;
     return chart;
   };
 
-  chart.radius = function(_) {
+  chart.radius = function (_) {
     if (!arguments.length) { return radius; }
     radius = _;
     return chart;
   };
 
-  chart.sort = function(_) {
+  chart.sort = function (_) {
     if (!arguments.length) { return sort; }
     sort = _;
     return chart;
   };
 
-  chart.label = function(_) {
+  chart.label = function (_) {
     if (!arguments.length) { return label; }
     label = _;
     return chart;
   };
 
-  chart.value = function(_) {
+  chart.value = function (_) {
     if (!arguments.length) { return value; }
     value = _;
     return chart;
   };
 
-  chart.outerRadius = function(_) {
+  chart.outerRadius = function (_) {
     if (!arguments.length) { return outerRadius; }
     outerRadius = _;
     return chart;
   };
 
-  chart.innerRadius = function(_) {
+  chart.innerRadius = function (_) {
     if (!arguments.length) { return innerRadius; }
     innerRadius = _;
     return chart;
   };
 
-  chart.color = function(_) {
+  chart.color = function (_) {
     if (!arguments.length) { return color; }
     color = _;
     return chart;
