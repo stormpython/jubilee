@@ -58,13 +58,13 @@ define(function (require) {
 
     shapes.cx = function (_) {
       if (!arguments.length) { return cxValue; }
-      xValue = _;
+      cxValue = _;
       return shapes;
     };
 
     shapes.cy = function (_) {
       if (!arguments.length) { return cyValue; }
-      yValue = _;
+      cyValue = _;
       return shapes;
     };
 

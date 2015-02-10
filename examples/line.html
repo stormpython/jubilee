@@ -25,6 +25,7 @@
 
   <div id="chart"></div>
 
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script src="../src/modules/line.js" charset="utf-8"></script>
   <script>
     var color = d3.scale.category20b();
@@ -63,7 +64,7 @@
       .pointLabel(function (d) { return d.label; })
       .interpolate("linear")
       .addCircles(true)
-      .circleRadius(5);
+      .circleRadius(5)
 
     d3.select("#chart")
       .datum(data.series)
