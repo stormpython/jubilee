@@ -1,5 +1,5 @@
 define(function (require) {
-  var d3 = require('d3');
+  var d3 = require("d3");
 
   return function circles () {
     var cxValue = function (d) { return xScale(d[0]); };
@@ -16,7 +16,7 @@ define(function (require) {
     var strokeWidth = 3;
 
     function shapes(selection) {
-      selection.each(function (data, i) {
+      selection.each(function () {
 
         var layer = d3.select(this).selectAll("g")
           .data(function (d) { return d; });

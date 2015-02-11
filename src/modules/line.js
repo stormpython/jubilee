@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
   var circles = require("modules/circles");
 
-  return function line () {
+  return function lineChart () {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
     var width = 760;
     var height = 120;
@@ -39,7 +39,11 @@ define(function (require) {
 
         data = data.map(function (d, i) {
           return d.map(function (e, i) {
-            return [xValue.call(d, e, i), yValue.call(d, e, i), dLabel.call(d, e, i)];
+            return [
+              xValue.call(d, e, i),
+              yValue.call(d, e, i),
+              dLabel.call(d, e, i)
+            ];
           });
         });
 
@@ -70,7 +74,8 @@ define(function (require) {
           .attr("height", height);
 
         g = svg.append("g")
-          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+          .attr("transform", "translate(" +
+            margin.left + ", " + margin.top + ")");
 
         g.selectAll("g")
           .data(data, function (d) { return d; })
@@ -146,10 +151,10 @@ define(function (require) {
 
     chart.margin = function (_) {
       if (!arguments.length) { return margin; }
-      margin.top = typeof _.top != 'undefined' ? _.top : margin.top;
-      margin.right = typeof _.right != 'undefined' ? _.right : margin.right;
-      margin.bottom = typeof _.bottom != 'undefined' ? _.bottom : margin.bottom;
-      margin.left = typeof _.left != 'undefined' ? _.left : margin.left;
+      margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
+      margin.right = typeof _.right !== "undefined" ? _.right : margin.right;
+      margin.bottom = typeof _.bottom !== "undefined" ? _.bottom : margin.bottom;
+      margin.left = typeof _.left !== "undefined" ? _.left : margin.left;
       return chart;
     };
 
