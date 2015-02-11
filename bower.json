@@ -6,7 +6,7 @@
     "Shelby Sturgis",
     "Juan Thomassie"
   ],
-  "description": "Basic D3 Charting Library for Kibana 4",
+  "description": "Basic D3 Charting Library",
   "main": "core.js",
   "keywords": [
     "data",
