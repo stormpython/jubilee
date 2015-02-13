@@ -25,9 +25,9 @@
 
   <div id="chart"></div>
 
-  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script src="../node_modules/requirejs/require.js"></script>
-  <script>require(["line"], function (line) {
+  <script src="../src/require.config.js"></script>
+  <script>require(["d3", "line"], function (d3, line) {
       var lineChart = line;
       var data = {
           series: [

@@ -35,7 +35,7 @@ module.exports = function(grunt) {
       },
       js: {
         files: {
-          "kd3.min.js": ["kd3.js"]
+          "kd3.min.js": ["build/kd3.js"]
         }
       }
     },
@@ -56,14 +56,14 @@ module.exports = function(grunt) {
     copy: {
       css: {
         files: [
-          { src: "style/kd3.css", dest: "kd3.css" }
+          { src: "style/kd3.css", dest: "build/kd3.css" }
         ]
       }
     },
     cssmin: {
       dist: {
         files: {
-          "kd3.min.css" : ["kd3.css"]
+          "kd3.min.css" : ["build/kd3.css"]
         }
       }
     }

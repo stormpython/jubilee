@@ -7,7 +7,7 @@ define(function (require) {
     var xScale;
     var yScale;
 
-    // options
+    // Options
     var radius = 5;
     var circleClass = "circles";
     var color = d3.scale.category20c();
@@ -17,13 +17,15 @@ define(function (require) {
 
     function shapes(selection) {
       selection.each(function () {
+        var layer;
+        var circles;
 
-        var layer = d3.select(this).selectAll("g")
+        layer = d3.select(this).selectAll("g")
           .data(function (d) { return d; });
 
         layer.enter().append("g").attr("class", "layer");
 
-        var circles = layer.selectAll("circle")
+        circles = layer.selectAll("circle")
           .data(function (d) { return d; });
 
         // Enter

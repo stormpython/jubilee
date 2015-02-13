@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var circles = require("modules/circles");
+  var circles = require("circles");
 
   return function lineChart () {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
@@ -11,9 +11,10 @@ define(function (require) {
     var xValue = function (d) { return d[0]; };
     var yValue = function (d) { return d[1]; };
     var dLabel = function (d) { return d[2]; };
+    var lineX = function (d) { return xScale(d[0]); };
+    var lineY = function (d) { return yScale(d[1]); };
     var xAxis = d3.svg.axis().orient("bottom").ticks(5);
     var yAxis = d3.svg.axis().orient("left");
-    var line = d3.svg.line().x(X).y(Y);
     var xScale;
     var yScale;
     var xAxisTitle;
@@ -24,26 +25,23 @@ define(function (require) {
     var showYAxis = true;
     var addCircles = true;
     var lineClass = function (d, i) { return "line index " + i; };
-    var lineStroke = function (d, i) { return color(d[2]); };
+    var lineStroke = function (d) { return color(d[2]); };
     var circleClass = function (d, i) { return "circle index " + i; };
     var circleRadius = 5;
-    var circleFill = function (d, i) { return color(d[2]); };
-    var circleStroke = function (d, i) { return color(d[2]); };
+    var circleFill = function (d) { return color(d[2]); };
+    var circleStroke = function (d) { return color(d[2]); };
     var circleStrokeWidth = 3;
 
     function chart(selection) {
       selection.each(function (data) {
+        var line = d3.svg.line().x(lineX).y(lineY);
         var domain;
         var svg;
         var g;
 
-        data = data.map(function (d, i) {
+        data = data.map(function (d) {
           return d.map(function (e, i) {
-            return [
-              xValue.call(d, e, i),
-              yValue.call(d, e, i),
-              dLabel.call(d, e, i)
-            ];
+            return [xValue.call(d, e, i), yValue.call(d, e, i), dLabel.call(d, e, i)];
           });
         });
 
@@ -74,8 +72,7 @@ define(function (require) {
           .attr("height", height);
 
         g = svg.append("g")
-          .attr("transform", "translate(" +
-            margin.left + ", " + margin.top + ")");
+          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
         g.selectAll("g")
           .data(data, function (d) { return d; })
@@ -101,7 +98,7 @@ define(function (require) {
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text(xAxisTitle);
-        } 
+        }
 
         if (showYAxis) {
           g.select(".y.axis")
@@ -116,7 +113,7 @@ define(function (require) {
             .attr("dy", ".71em")
             .style("text-anchor", "end")
             .text(yAxisTitle);
-        } 
+        }
 
         if (addCircles) {
           var points = circles()
@@ -126,6 +123,7 @@ define(function (require) {
             .cy(yValue)
             .color(color)
             .radius(circleRadius)
+            .circleClass(circleClass)
             .fill(circleFill)
             .stroke(circleStroke)
             .strokeWidth(circleStrokeWidth);
@@ -133,14 +131,6 @@ define(function (require) {
           svg.call(points);
         }
       });
-    }
-
-    function X(d) {
-      return xScale(d[0]);
-    }
-
-    function Y(d) {
-      return yScale(d[1]);
     }
 
     function mapDomain (data) {
@@ -188,7 +178,7 @@ define(function (require) {
       return chart;
     };
 
-    chart.pointLabel = function (_) {
+    chart.dataLabel = function (_) {
       if (!arguments.length) { return dLabel; }
       dLabel = _;
       return chart;
