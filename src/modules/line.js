@@ -2,66 +2,61 @@ define(function (require) {
   var d3 = require("d3");
   var circles = require("circles");
 
-  return function lineChart () {
+  return function lineChart() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760;
-    var height = 120;
+    var width = 760 - margin.left - margin.right;
+    var height = 120 - margin.top - margin.bottom;
     var color = d3.scale.category20c();
     var interpolate = "linear";
     var xValue = function (d) { return d[0]; };
     var yValue = function (d) { return d[1]; };
-    var dLabel = function (d) { return d[2]; };
-    var lineX = function (d) { return xScale(d[0]); };
-    var lineY = function (d) { return yScale(d[1]); };
     var xAxis = d3.svg.axis().orient("bottom").ticks(5);
     var yAxis = d3.svg.axis().orient("left");
-    var xScale;
-    var yScale;
-    var xAxisTitle;
-    var yAxisTitle;
+    var xScale = d3.time.scale.utc().range([0, width]);
+    var yScale = d3.scale.linear().range([height, 0]).nice();
+    var xDomain = function (data) {
+      return d3.extent(data, function (d) { return d[0]; });
+    };
+    var yDomain = function (data) {
+      return [
+        Math.min(0, d3.min(data, function (d) { return d[1]; })),
+        Math.max(0, d3.max(data, function (d) { return d[1]; }))
+      ];
+    };
 
-    // Options
+    // Axis options
     var showXAxis = true;
     var showYAxis = true;
+    var xAxisTitle = "";
+    var yAxisTitle = "";
+
+    // Line Options
+    var lineClass = function (d, i) { return "line" + i; };
+    var lineStroke = function (d) { return color(d.label); };
+
+    // Circle Options
     var addCircles = true;
-    var lineClass = function (d, i) { return "line index " + i; };
-    var lineStroke = function (d) { return color(d[2]); };
-    var circleClass = function (d, i) { return "circle index " + i; };
-    var circleRadius = 5;
+    var circleClass = function (d, i) { return "circle" + i; };
+    // TODO: change the circles so that labels are not needed on all data objects.
     var circleFill = function (d) { return color(d[2]); };
     var circleStroke = function (d) { return color(d[2]); };
+    var circleRadius = 5;
     var circleStrokeWidth = 3;
 
     function chart(selection) {
       selection.each(function (data) {
-        var line = d3.svg.line().x(lineX).y(lineY);
-        var domain;
+        var line = d3.svg.line().x(X).y(Y);
         var svg;
         var g;
 
         data = data.map(function (d) {
           return d.map(function (e, i) {
-            return [xValue.call(d, e, i), yValue.call(d, e, i), dLabel.call(d, e, i)];
+            return [xValue.call(d, e, i), yValue.call(d, e, i)];
           });
         });
 
-        domain = mapDomain(data);
-
-        if (!xScale) {
-          xScale = d3.time.scale.utc()
-            .domain(d3.extent(domain, function (d) { return d[0]; }))
-            .range([0, width - margin.left - margin.right]);
-        }
-
-        if (!yScale) {
-          yScale = d3.scale.linear()
-            .domain([
-              Math.min(0, d3.min(domain, function (d) { return d[1]; })),
-              Math.max(0, d3.max(domain, function (d) { return d[1]; }))
-            ])
-            .range([height - margin.top - margin.bottom, 0])
-            .nice();
-        }
+        xScale.domain(xDomain.call(mapDomain(data)));
+        yScale.domain(yDomain.call(mapDomain(data)));
 
         line.interpolate(interpolate);
 
@@ -88,11 +83,7 @@ define(function (require) {
         if (showXAxis) {
           g.select(".x.axis")
             .attr("transform", "translate(0," + yScale.range()[0] + ")")
-            .call(xAxis.scale(xScale));
-        }
-
-        if (xAxisTitle) {
-          g.select(".x.axis")
+            .call(xAxis.scale(xScale))
             .append("text")
             .attr("y", 6)
             .attr("dy", ".71em")
@@ -102,11 +93,7 @@ define(function (require) {
 
         if (showYAxis) {
           g.select(".y.axis")
-            .call(yAxis.scale(yScale));
-        }
-
-        if (yAxisTitle) {
-          g.select(".y.axis")
+            .call(yAxis.scale(yScale))
             .append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", 6)
@@ -133,10 +120,18 @@ define(function (require) {
       });
     }
 
-    function mapDomain (data) {
+    function mapDomain(data) {
       return data.reduce(function (a, b) {
         return a.concat(b);
       });
+    }
+
+    function X(d) {
+      return xScale(d[0]);
+    }
+
+    function Y(d) {
+      return yScale(d[1]);
     }
 
     chart.margin = function (_) {
@@ -178,12 +173,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.dataLabel = function (_) {
-      if (!arguments.length) { return dLabel; }
-      dLabel = _;
-      return chart;
-    };
-
     chart.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale = _;
@@ -193,6 +182,18 @@ define(function (require) {
     chart.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale = _;
+      return chart;
+    };
+
+    chart.xDomain = function (_) {
+      if (!arguments.length) { return xDomain; }
+      xDomain = _;
+      return chart;
+    };
+
+    chart.yDomain = function (_) {
+      if (!arguments.length) { return yDomain; }
+      yDomain = _;
       return chart;
     };
 

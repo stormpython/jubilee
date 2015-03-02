@@ -1,82 +1,65 @@
 define(function (require) {
   var d3 = require("d3");
-  var circles = require("circles");
 
-  return function areaChart () {
+  return function areaChart() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760;
-    var height = 120;
+    var width = 760 - margin.left - margin.right;
+    var height = 120 - margin.top - margin.bottom;
     var color = d3.scale.category20c();
     var interpolate = "linear";
     var offset = "zero";
     var xValue = function (d) { return d[0]; };
     var yValue = function (d) { return d[1]; };
-    var dLabel = function (d) { return d[2]; };
     var xAxis = d3.svg.axis().orient("bottom").ticks(5);
     var yAxis = d3.svg.axis().orient("left");
-    var areaX = function (d) { return xScale(d[0]); };
-    var areaY0 = function (d) {
-      if (offset === 'overlap') { return yScale(0); }
-      return yScale(d.y0);
+    var xScale = d3.time.scale.utc().range([0, width]);
+    var yScale = d3.scale.linear().range([height, 0]);
+    var xDomain = function (data) {
+      return d3.extent(data, function (d) { return d[0]; });
     };
-    var areaY = function (d) {
-      if (offset === 'overlap') { return yScale(d.y); }
-      return yScale(d.y0 + d.y);
+    var yDomain = function (data) {
+      return [
+        Math.min(0, getYStackExtent.call(data, "min")),
+        Math.max(0, getYStackExtent.call(data, "max"))
+      ];
     };
-    var xScale;
-    var yScale;
-    var xAxisTitle;
-    var yAxisTitle;
 
-    // Options
+    //axis options
     var showXAxis = true;
     var showYAxis = true;
-    var addLines = true;
-    var addCircles = true;
+    var xAxisTitle = "";
+    var yAxisTitle = "";
+
+    // Area options
     var areaClass = function (d, i) { return "area index " + i; };
     var areaStroke = function (d) { return color(d[2]); };
     var areaFill = function (d) { return color(d[2]); };
+
+    // Line options
+    var addLines = true;
     var lineClass = function (d, i) { return "line index " + i; };
     var lineStroke = function (d) { return color(d[2]); };
-    var circleClass = function (d, i) { return "circle index " + i; };
-    var circleRadius = 5;
-    var circleFill = function (d) { return color(d[2]); };
-    var circleStroke = function (d) { return color(d[2]); };
-    var circleStrokeWidth = 3;
 
     function chart(selection) {
       selection.each(function (data) {
-        var area = d3.svg.area().x(areaX).y0(areaY0).y1(areaY);
-        var line = d3.svg.line().x(areaX).y(areaY);
-        var stack = d3.layout.stack().offset(offset).x(stackX).y(stackY);
+        var area = d3.svg.area().x(X).y0(Y0).y1(Y);
+        var line = d3.svg.line().x(X).y(Y);
+        var stack = d3.layout.stack().x(xValue).y(yValue);
         var layers;
-        var domain;
         var svg;
         var g;
 
         data = data.map(function (d) {
           return d.map(function (e, i) {
-            return [xValue.call(d, e, i), yValue.call(d, e, i), dLabel.call(d, e, i)];
+            return [xValue.call(d, e, i), yValue.call(d, e, i)];
           });
         });
 
+        stack.offset(offset);
         layers = stack(data);
-        domain = mapDomain(data);
 
-        if (!xScale) {
-          xScale = d3.time.scale.utc()
-            .domain(d3.extent(domain, function (d) { return d[0]; }))
-            .range([0, width - margin.left - margin.right]);
-        }
-
-        if (!yScale) {
-          yScale = d3.scale.linear()
-            .domain([
-              Math.min(0, getYStackExtent(layers, 'min')),
-              Math.max(0, getYStackExtent(layers, 'max'))
-            ])
-            .range([height - margin.top - margin.bottom, 0]);
-        }
+        xScale.domain(xDomain.call(mapDomain(data)));
+        yScale.domain(yDomain.call(mapDomain(data)));
 
         area.interpolate(interpolate);
         line.interpolate(interpolate);
@@ -115,11 +98,7 @@ define(function (require) {
         if (showXAxis) {
           g.select(".x.axis")
             .attr("transform", "translate(0," + yScale.range()[0] + ")")
-            .call(xAxis.scale(xScale));
-        }
-
-        if (xAxisTitle) {
-          g.select(".x.axis")
+            .call(xAxis.scale(xScale))
             .append("text")
             .attr("y", 6)
             .attr("dy", ".71em")
@@ -129,11 +108,7 @@ define(function (require) {
 
         if (showYAxis) {
           g.select(".y.axis")
-            .call(yAxis.scale(yScale));
-        }
-
-        if (yAxisTitle) {
-          g.select(".y.axis")
+            .call(yAxis.scale(yScale))
             .append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", 6)
@@ -141,31 +116,21 @@ define(function (require) {
             .style("text-anchor", "end")
             .text(yAxisTitle);
         }
-
-//                if (addCircles) {
-//                    var points = circles()
-//                        .xScale(xScale)
-//                        .yScale(yScale)
-//                        .cx(xValue)
-//                        .cy(yValue)
-//                        .color(color)
-//                        .radius(circleRadius)
-//                        .circleClass(circleClass)
-//                        .fill(circleFill)
-//                        .stroke(circleStroke)
-//                        .strokeWidth(circleStrokeWidth);
-//
-//                    svg.call(points);
-//                }
       });
     }
 
-    function stackX(d) {
-      return d[0];
+    function X(d) {
+      return xScale(d[0]);
     }
 
-    function stackY(d) {
-      return d[1];
+    function Y0(d) {
+      if (offset ==="overlap") { return yScale(0); }
+      return yScale(d.y0);
+    }
+
+    function Y(d) {
+      if (offset === "overlap") { return yScale(d.y); }
+      return yScale(d.y0 + d.y);
     }
 
     function mapDomain (data) {
@@ -176,10 +141,7 @@ define(function (require) {
 
     function getYStackExtent(data, extent) {
       return d3[extent](data, function (d) {
-        return d3[extent](d, function (e) {
-          if (offset === 'overlap') { return e.y; }
-          return e.y0 + e.y;
-        });
+        return d3[extent](d, Y);
       });
     }
 
@@ -219,12 +181,6 @@ define(function (require) {
     chart.y = function (_) {
       if (!arguments.length) { return yValue; }
       yValue = _;
-      return chart;
-    };
-
-    chart.dataLabel = function (_) {
-      if (!arguments.length) { return dLabel; }
-      dLabel = _;
       return chart;
     };
 
@@ -276,33 +232,9 @@ define(function (require) {
       return chart;
     };
 
-    chart.areaX = function (_) {
-      if (!arguments.length) { return areaX; }
-      areaX = _;
-      return chart;
-    };
-
-    chart.areaY0 = function (_) {
-      if (!arguments.length) { return areaY0; }
-      areaY0 = _;
-      return chart;
-    };
-
-    chart.areaY = function (_) {
-      if (!arguments.length) { return areaY; }
-      areaY = _;
-      return chart;
-    };
-
     chart.interpolate = function (_) {
       if (!arguments.length) { return interpolate; }
       interpolate = _;
-      return chart;
-    };
-
-    chart.stack = function (_) {
-      if (!arguments.length) { return stack; }
-      stack = _;
       return chart;
     };
 
@@ -327,42 +259,6 @@ define(function (require) {
     chart.lineClass = function (_) {
       if (!arguments.length) { return lineClass; }
       lineClass = _;
-      return chart;
-    };
-
-    chart.addCircles = function (_) {
-      if (!arguments.length) { return addCircles; }
-      addCircles = _;
-      return chart;
-    };
-
-    chart.circleClass = function (_) {
-      if (!arguments.length) { return circleClass; }
-      circleClass = _;
-      return chart;
-    };
-
-    chart.circleRadius = function (_) {
-      if (!arguments.length) { return circleRadius; }
-      circleRadius = _;
-      return chart;
-    };
-
-    chart.circleFill = function (_) {
-      if (!arguments.length) { return circleFill; }
-      circleFill = _;
-      return chart;
-    };
-
-    chart.circleStroke = function (_) {
-      if (!arguments.length) { return circleStroke; }
-      circleStroke = _;
-      return chart;
-    };
-
-    chart.circleStrokeWidth = function (_) {
-      if (!arguments.length) { return circleStrokeWidth; }
-      circleStrokeWidth = _;
       return chart;
     };
 

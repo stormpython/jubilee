@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
 
-  return function circles () {
+  return function circles() {
     var cxValue = function (d) { return xScale(d[0]); };
     var cyValue = function (d) { return yScale(d[1]); };
     var xScale;

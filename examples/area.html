@@ -78,9 +78,11 @@
     var myChart = areaChart()
         .width(width)
         .height(height)
-        .x(function (d) { return d.x; })
-        .y(function (d) { return d.y; })
-        .offset("overlap")
+//        .x(function (d) { return d.x; })
+//        .y(function (d) { return d.y; })
+//        .xScale(xScale)
+//        .areaX(areaX)
+        .offset("zero")
         .interpolate("cardinal")
         .addCircles(false);
 
@@ -95,12 +97,12 @@
         var color = d3.scale.category20c();
         var interpolate = "linear";
         var offset = "zero";
-        var xValue = function (d) { return d[0]; };
-        var yValue = function (d) { return d[1]; };
-        var dLabel = function (d) { return d[2]; };
+        var xValue = function (d) { return d.x; };
+        var yValue = function (d) { return d.y; };
+        var dLabel = function (d) { return d.label; };
         var xAxis = d3.svg.axis().orient("bottom").ticks(5);
         var yAxis = d3.svg.axis().orient("left");
-        var areaX = function (d) { return xScale(d[0]); };
+        var areaX = function (d) { return xScale(d.x); };
         var areaY0 = function (d) {
             if (offset === 'overlap') { return yScale(0); }
             return yScale(d.y0);
@@ -120,14 +122,14 @@
         var addLines = true;
         var addCircles = true;
         var areaClass = function (d, i) { return "area index " + i; };
-        var areaStroke = function (d) { return color(d[2]); };
-        var areaFill = function (d) { return color(d[2]); };
+        var areaStroke = function (d) { return color(d.label); };
+        var areaFill = function (d) { return color(d.label); };
         var lineClass = function (d, i) { return "line index " + i; };
-        var lineStroke = function (d) { return color(d[2]); };
+        var lineStroke = function (d) { return color(d.label); };
         var circleClass = function (d, i) { return "circle index " + i; };
         var circleRadius = 5;
-        var circleFill = function (d) { return color(d[2]); };
-        var circleStroke = function (d) { return color(d[2]); };
+        var circleFill = function (d) { return color(d.label); };
+        var circleStroke = function (d) { return color(d.label); };
         var circleStrokeWidth = 3;
 
         function chart(selection) {
@@ -142,7 +144,7 @@
 
                 data = data.map(function (d) {
                     return d.map(function (e, i) {
-                        return [xValue.call(d, e, i), yValue.call(d, e, i), dLabel.call(d, e, i)];
+                        return {x: xValue.call(d, e, i), y: yValue.call(d, e, i), label: dLabel.call(d, e, i)};
                     });
                 });
 
@@ -151,7 +153,7 @@
 
                 if (!xScale) {
                     xScale = d3.time.scale.utc()
-                        .domain(d3.extent(domain, function (d) { return d[0]; }))
+                        .domain(d3.extent(domain, xValue))
                         .range([0, width - margin.left - margin.right]);
                 }
 
@@ -168,7 +170,7 @@
                 line.interpolate(interpolate);
 
                 svg = d3.select(this).selectAll("svg")
-                    .data([layers])
+                    .data([data])
                     .enter().append("svg")
                     .attr("width", width)
                     .attr("height", height);
@@ -177,7 +179,7 @@
                     .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
                 g.selectAll("g")
-                    .data(data, function (d) { return d; })
+                    .data(layers, function (d) { return d; })
                     .enter().append("g")
                     .append("path")
                     .attr("class", areaClass)
@@ -187,7 +189,7 @@
 
                 if (addLines) {
                     g.selectAll("g")
-                        .data(data, function (d) { return d; })
+                        .data(layers, function (d) { return d; })
                         .enter().append("g")
                         .append("path")
                         .attr("class", lineClass)
@@ -247,11 +249,11 @@
         }
 
         function stackX(d) {
-            return d[0];
+            return d.x;
         }
 
         function stackY(d) {
-            return d[1];
+            return d.y;
         }
 
         function mapDomain (data) {

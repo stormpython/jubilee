@@ -1,116 +1,138 @@
+define(function (require) {
+  var d3 = require("d3");
 
-kd3.pie = function () {
-  "use strict";
+  return function pieChart () {
+    var width = 500;
+    var height = 500;
+    var color = d3.scale.category20c();
+    var radius = Math.min(width, height) / 2;
+    var sort = null;
+    var label = function (d) {
+      return d.label;
+    };
+    var value = function (d) {
+      return d.size;
+    };
+    var xScale = d3.scale.linear().range([0, 2 * Math.PI]);
+    var yScale = d3.scale.sqrt().range([0, radius]);
+    var startAngle = function (d) {
+      return Math.max(0, Math.min(2 * Math.PI, xScale(d.x)));
+    };
+    var endAngle = function (d) {
+      return Math.max(0, Math.min(2 * Math.PI, xScale(d.x + d.dx)));
+    };
+    var innerRadius = function (d) {
+      return Math.max(0, yScale(d.y));
+    };
+    var outerRadius = function (d) {
+      return Math.max(0, yScale(d.y + d.dy));
+    };
+    var partition = d3.layout.partition().sort(sort).value(value);
+    var arc = d3.svg.arc().startAngle(startAngle).endAngle(endAngle).innerRadius(innerRadius).outerRadius(outerRadius);
 
-  var width = 500;
-  var height = 500;
-  var color = d3.scale.category20c();
-  var radius = Math.min(width, height)/ 2;
-  var sort = null;
-  var label = function(d) { return d[0]; };
-  var value = function(d) { return d[1]; };
-  var outerRadius = radius - 10;
-  var innerRadius = 0;
-  var arc = d3.svg.arc();
-  var pie = d3.layout.pie();
+    // Pie options
+    var pieClass = function (d, i) { return "pie" + i; };
+    var pieStroke = "#fff";
+    var pieFill = function (d) { return color(d); };
 
-  function chart(selection) {
-    selection.each(function(data) {
+    function chart (selection) {
+      selection.each(function (data) {
+        var svg = d3.select(this).append("svg")
+          .attr("width", width)
+          .attr("height", height)
+          .append("g")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-      data = data.map(function(d, i) {
-        return [label.call(data, d, i), value.call(data, d, i)];
+
+        svg.datum(data).selectAll("path")
+          .data(partition.nodes)
+          .enter().append("path")
+          .attr("d", arc)
+          .attr("class", pieClass)
+          .style("stroke", pieStroke)
+          .style("fill", pieFill);
       });
+    }
 
-      arc
-        .outerRadius(outerRadius)
-        .innerRadius(innerRadius);
+    chart.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return chart;
+    };
 
-      pie
-        .sort(sort)
-        .value(function(d) { return d[1]; });
+    chart.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return chart;
+    };
 
-      var svg = d3.select(this).append("svg");
+    chart.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return chart;
+    };
 
-      svg
-        .attr("width", width)
-        .attr("height", height);
+    chart.radius = function (_) {
+      if (!arguments.length) { return radius; }
+      radius = _;
+      return chart;
+    };
 
-      var gEnter = svg.append("g")
-        .attr("transform", "translate(" + width/2 + ", " + height/2 + ")");
+    chart.sort = function (_) {
+      if (!arguments.length) { return sort; }
+      sort = _;
+      return chart;
+    };
 
-      var g = gEnter.selectAll(".arc")
-        .data(pie(data))
-        .enter().append("g")
-        .attr("class", "arc");
+    chart.label = function (_) {
+      if (!arguments.length) { return label; }
+      label = _;
+      return chart;
+    };
 
-      g.append("path")
-        .attr("d", arc)
-        .style("fill", function (d, i) {
-          return color(d.data[0]);
-        });
+    chart.value = function (_) {
+      if (!arguments.length) { return value; }
+      value = _;
+      return chart;
+    };
 
-      g.append("text")
-        .attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; })
-        .attr("dy", ".35em")
-        .style("text-anchor", "middle")
-        .style("fill", "white")
-        .text(function(d) { console.log(d); return d.data[0]; });
-    });
-  }
+    chart.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale = _;
+      return chart;
+    };
 
-  chart.width = function (_) {
-    if (!arguments.length) { return width; }
-    width = _;
+    chart.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale = _;
+      return chart;
+    };
+
+    chart.startAngle = function (_) {
+      if (!arguments.length) { return startAngle; }
+      startAngle = _;
+      return chart;
+    };
+
+    chart.endAngle = function (_) {
+      if (!arguments.length) { return endAngle; }
+      endAngle = _;
+      return chart;
+    };
+
+    chart.innerRadius = function (_) {
+      if (!arguments.length) { return innerRadius; }
+      innerRadius = _;
+      return chart;
+    };
+
+    chart.outerRadius = function (_) {
+      if (!arguments.length) { return outerRadius; }
+      outerRadius = _;
+      return chart;
+    };
+
     return chart;
   };
+});
 
-  chart.height = function (_) {
-    if (!arguments.length) { return height; }
-    height = _;
-    return chart;
-  };
-
-  chart.radius = function (_) {
-    if (!arguments.length) { return radius; }
-    radius = _;
-    return chart;
-  };
-
-  chart.sort = function (_) {
-    if (!arguments.length) { return sort; }
-    sort = _;
-    return chart;
-  };
-
-  chart.label = function (_) {
-    if (!arguments.length) { return label; }
-    label = _;
-    return chart;
-  };
-
-  chart.value = function (_) {
-    if (!arguments.length) { return value; }
-    value = _;
-    return chart;
-  };
-
-  chart.outerRadius = function (_) {
-    if (!arguments.length) { return outerRadius; }
-    outerRadius = _;
-    return chart;
-  };
-
-  chart.innerRadius = function (_) {
-    if (!arguments.length) { return innerRadius; }
-    innerRadius = _;
-    return chart;
-  };
-
-  chart.color = function (_) {
-    if (!arguments.length) { return color; }
-    color = _;
-    return chart;
-  };
-
-  return chart;
-};
