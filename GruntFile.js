@@ -9,21 +9,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: [
-          "src/core.js",
-          "src/modules/area.js",
-          "src/modules/dendrogram.js",
-          "src/modules/heatmap.js",
-          "src/modules/histogram.js",
-          "src/modules/horizon.js",
-          "src/modules/line.js",
-          "src/modules/map.js",
-          "src/modules/pie.js",
-          "src/modules/scatterplot.js",
-          "src/modules/sparkline.js",
-          "src/modules/spider.js",
-          "src/modules/sunburst.js",
-          "src/modules/sortedTable.js",
-          "src/modules/treemap.js",
+          "src/index.js"
         ],
         dest: "build/kd3.js"
       }
