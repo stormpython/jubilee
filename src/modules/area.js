@@ -23,6 +23,7 @@ define(function (require) {
         Math.max(0, getYStackExtent.call(data, "max"))
       ];
     };
+    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     //axis options
     var showXAxis = true;
@@ -67,14 +68,14 @@ define(function (require) {
         svg = d3.select(this).selectAll("svg")
           .data([layers])
           .enter().append("svg")
-          .attr("width", width)
-          .attr("height", height);
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom);
 
         g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
         g.selectAll("g")
-          .data(data, function (d) { return d; })
+          .data(function (d) { return d; })
           .enter().append("g")
           .append("path")
           .attr("class", areaClass)
@@ -84,7 +85,7 @@ define(function (require) {
 
         if (addLines) {
           g.selectAll("g")
-            .data(data, function (d) { return d; })
+            .data(function (d) { return d; })
             .enter().append("g")
             .append("path")
             .attr("class", lineClass)
@@ -184,18 +185,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
-      return chart;
-    };
-
-    chart.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
-      return chart;
-    };
-
     chart.xAxis = function (_) {
       if (!arguments.length) { return xAxis; }
       xAxis = _;
@@ -208,15 +197,33 @@ define(function (require) {
       return chart;
     };
 
-    chart.xAxisTitle = function (_) {
-      if (!arguments.length) { return xAxisTitle; }
-      xAxisTitle = _;
+    chart.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale = _;
       return chart;
     };
 
-    chart.yAxisTitle = function (_) {
-      if (!arguments.length) { return yAxisTitle; }
-      yAxisTitle = _;
+    chart.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale = _;
+      return chart;
+    };
+
+    chart.xDomain = function (_) {
+      if (!arguments.length) { return xDomain; }
+      xDomain = _;
+      return chart;
+    };
+
+    chart.yDomain = function (_) {
+      if (!arguments.length) { return yDomain; }
+      yDomain = _;
+      return chart;
+    };
+
+    chart.dispatch = function (_) {
+      if (!arguments.length) { return dispatch; }
+      dispatch = _;
       return chart;
     };
 
@@ -229,6 +236,18 @@ define(function (require) {
     chart.showYAxis = function (_) {
       if (!arguments.length) { return showYAxis; }
       showYAxis = _;
+      return chart;
+    };
+
+    chart.xAxisTitle = function (_) {
+      if (!arguments.length) { return xAxisTitle; }
+      xAxisTitle = _;
+      return chart;
+    };
+
+    chart.yAxisTitle = function (_) {
+      if (!arguments.length) { return yAxisTitle; }
+      yAxisTitle = _;
       return chart;
     };
 

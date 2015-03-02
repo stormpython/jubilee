@@ -23,6 +23,7 @@ define(function (require) {
         Math.max(0, d3.max(data, function (d) { return d[1]; }))
       ];
     };
+    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
     var showXAxis = true;
@@ -63,14 +64,14 @@ define(function (require) {
         svg = d3.select(this).selectAll("svg")
           .data([data])
           .enter().append("svg")
-          .attr("width", width)
-          .attr("height", height);
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom);
 
         g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
         g.selectAll("g")
-          .data(data, function (d) { return d; })
+          .data(function (d) { return d; })
           .enter().append("g")
           .append("path")
           .attr("class", lineClass)
@@ -173,6 +174,18 @@ define(function (require) {
       return chart;
     };
 
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return xAxis; }
+      xAxis = _;
+      return chart;
+    };
+
+    chart.yAxis = function (_) {
+      if (!arguments.length) { return yAxis; }
+      yAxis = _;
+      return chart;
+    };
+
     chart.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale = _;
@@ -197,27 +210,9 @@ define(function (require) {
       return chart;
     };
 
-    chart.xAxis = function (_) {
-      if (!arguments.length) { return xAxis; }
-      xAxis = _;
-      return chart;
-    };
-
-    chart.yAxis = function (_) {
-      if (!arguments.length) { return yAxis; }
-      yAxis = _;
-      return chart;
-    };
-
-    chart.xAxisTitle = function (_) {
-      if (!arguments.length) { return xAxisTitle; }
-      xAxisTitle = _;
-      return chart;
-    };
-
-    chart.yAxisTitle = function (_) {
-      if (!arguments.length) { return yAxisTitle; }
-      yAxisTitle = _;
+    chart.dispatch = function (_) {
+      if (!arguments.length) { return dispatch; }
+      dispatch = _;
       return chart;
     };
 
@@ -230,6 +225,18 @@ define(function (require) {
     chart.showYAxis = function (_) {
       if (!arguments.length) { return showYAxis; }
       showYAxis = _;
+      return chart;
+    };
+
+    chart.xAxisTitle = function (_) {
+      if (!arguments.length) { return xAxisTitle; }
+      xAxisTitle = _;
+      return chart;
+    };
+
+    chart.yAxisTitle = function (_) {
+      if (!arguments.length) { return yAxisTitle; }
+      yAxisTitle = _;
       return chart;
     };
 

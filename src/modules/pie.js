@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
 
-  return function pieChart () {
+  return function pieChart() {
     var width = 500;
     var height = 500;
     var color = d3.scale.category20c();
@@ -27,8 +27,7 @@ define(function (require) {
     var outerRadius = function (d) {
       return Math.max(0, yScale(d.y + d.dy));
     };
-    var partition = d3.layout.partition().sort(sort).value(value);
-    var arc = d3.svg.arc().startAngle(startAngle).endAngle(endAngle).innerRadius(innerRadius).outerRadius(outerRadius);
+    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Pie options
     var pieClass = function (d, i) { return "pie" + i; };
@@ -37,6 +36,13 @@ define(function (require) {
 
     function chart (selection) {
       selection.each(function (data) {
+        var partition = d3.layout.partition().sort(sort).value(value);
+        var arc = d3.svg.arc()
+          .startAngle(startAngle)
+          .endAngle(endAngle)
+          .innerRadius(innerRadius)
+          .outerRadius(outerRadius);
+
         var svg = d3.select(this).append("svg")
           .attr("width", width)
           .attr("height", height)
@@ -132,7 +138,30 @@ define(function (require) {
       return chart;
     };
 
+    chart.dispatch = function (_) {
+      if (!arguments.length) { return dispatch; }
+      dispatch = _;
+      return chart;
+    };
+
+    chart.pieClass = function (_) {
+      if (!arguments.length) { return pieClass; }
+      pieClass = _;
+      return chart;
+    };
+
+    chart.pieStroke = function (_) {
+      if (!arguments.length) { return pieStroke; }
+      pieStroke = _;
+      return chart;
+    };
+
+    chart.pieFill = function (_) {
+      if (!arguments.length) { return pieFill; }
+      pieFill= _;
+      return chart;
+    };
+
     return chart;
   };
 });
-
