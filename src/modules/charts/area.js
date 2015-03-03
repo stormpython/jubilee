@@ -8,6 +8,7 @@ define(function (require) {
     var color = d3.scale.category20c();
     var interpolate = "linear";
     var offset = "zero";
+    var label = function (d) { return d.label; };
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var xAxis = d3.svg.axis().orient("bottom").ticks(5);
@@ -52,7 +53,11 @@ define(function (require) {
 
         data = data.map(function (d) {
           return d.map(function (e, i) {
-            return {x: xValue.call(d, e, i), y: yValue.call(d, e, i)};
+            return {
+              label: label.call(d, e, i),
+              x: xValue.call(d, e, i),
+              y: yValue.call(d, e, i)
+            };
           });
         });
 
