@@ -176,6 +176,12 @@ define(function (require) {
       return chart;
     };
 
+    chart.label = function (_) {
+      if (!arguments.length) { return label; }
+      label = _;
+      return chart;
+    };
+
     chart.x = function (_) {
       if (!arguments.length) { return xValue; }
       xValue = _;
