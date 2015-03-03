@@ -8,4 +8,4 @@ Fork the repository. You will need node and npm. Change into the project's root 
 npm install && bower install
 ```
 
-Run Grunt with grunt. That's it!
+Run Grunt with `grunt`. That's it!
