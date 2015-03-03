@@ -2,6 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function areaChart() {
+    // Chart options
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
     var width = 760 - margin.left - margin.right;
     var height = 120 - margin.top - margin.bottom;
@@ -25,7 +26,7 @@ define(function (require) {
     };
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
-    //axis options
+    // Axis options
     var showXAxis = true;
     var showYAxis = true;
     var xAxisTitle = "";
@@ -58,8 +59,8 @@ define(function (require) {
         var area = d3.svg.area().x(X).y0(Y0).y1(Y).interpolate(interpolate);
         var line = d3.svg.line().x(X).y(Y).interpolate(interpolate);
 
-        xScale.domain(xDomain.call(mapDomain(data)));
-        yScale.domain(yDomain.call(mapDomain(data)));
+        xScale.domain(xDomain.call(this, mapDomain(data)));
+        yScale.domain(yDomain.call(this, mapDomain(data)));
 
         g.selectAll("g")
           .data(function (d) { return d; })
