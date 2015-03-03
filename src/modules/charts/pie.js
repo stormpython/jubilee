@@ -2,17 +2,13 @@ define(function (require) {
   var d3 = require("d3");
 
   return function pieChart() {
+    // Chart options
     var width = 500;
     var height = 500;
     var color = d3.scale.category20c();
     var radius = Math.min(width, height) / 2;
     var sort = null;
-    var label = function (d) {
-      return d.label;
-    };
-    var value = function (d) {
-      return d.size;
-    };
+    var value = function (d) { return d.size; };
     var xScale = d3.scale.linear().range([0, 2 * Math.PI]);
     var yScale = d3.scale.sqrt().range([0, radius]);
     var startAngle = function (d) {
@@ -30,9 +26,9 @@ define(function (require) {
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Pie options
-    var pieClass = function (d, i) { return "pie" + i; };
+    var pieClass = "pie";
     var pieStroke = "#fff";
-    var pieFill = function (d) { return color(d); };
+    var pieFill = function (d, i) { return color(i); };
 
     function chart (selection) {
       selection.each(function (data) {
@@ -48,7 +44,6 @@ define(function (require) {
           .attr("height", height)
           .append("g")
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
 
         svg.datum(data).selectAll("path")
           .data(partition.nodes)
@@ -87,12 +82,6 @@ define(function (require) {
     chart.sort = function (_) {
       if (!arguments.length) { return sort; }
       sort = _;
-      return chart;
-    };
-
-    chart.label = function (_) {
-      if (!arguments.length) { return label; }
-      label = _;
       return chart;
     };
 
