@@ -2,8 +2,8 @@ define(function (require) {
   var d3 = require("d3");
 
   return function circles() {
-    var cxValue = function (d) { return xScale(d[0]); };
-    var cyValue = function (d) { return yScale(d[1]); };
+    var cxValue = function (d) { return d.x; };
+    var cyValue = function (d) { return d.y; };
     var xScale;
     var yScale;
 
@@ -17,19 +17,20 @@ define(function (require) {
 
     function shapes(selection) {
       selection.each(function () {
-        var layer;
-        var circles;
+        var layer = d3.select(this).selectAll(".circle g")
+          .data(function (d) { return d; })
+          .enter().append("g")
+          .attr("class", "layer");
 
-        layer = d3.select(this).selectAll("g")
+        var circles = layer.selectAll(".circle")
           .data(function (d) { return d; });
 
-        layer.enter().append("g").attr("class", "layer");
-
-        circles = layer.selectAll("circle")
-          .data(function (d) { return d; });
+        // Exit
+        circles.exit().remove();
 
         // Enter
-        circles.enter().append("circle")
+        circles
+          .enter().append("circle")
           .attr("class", circleClass);
 
         // Update
@@ -38,12 +39,17 @@ define(function (require) {
           .attr("stroke", stroke)
           .attr("stroke-width", strokeWidth)
           .attr("r", radius)
-          .attr("cx", cxValue)
-          .attr("cy", cyValue);
-
-        // Exit
-        circles.exit().remove(); 
+          .attr("cx", X)
+          .attr("cy", Y);
       });
+    }
+
+    function X(d, i) {
+      return xScale(cxValue.call(this, d, i));
+    }
+
+    function Y(d, i) {
+      return yScale(cyValue.call(this, d, i));
     }
 
     shapes.xScale = function (_) {

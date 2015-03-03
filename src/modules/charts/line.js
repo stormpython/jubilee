@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var circles = require("modules/components/shapes/circles");
+  var circles = require("src/modules/components/shapes/circles");
 
   return function lineChart() {
     // Chart options
@@ -108,7 +108,7 @@ define(function (require) {
             .stroke(circleStroke)
             .strokeWidth(circleStrokeWidth);
 
-          svg.call(points);
+          g.call(points);
         }
       });
     }

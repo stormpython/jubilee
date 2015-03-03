@@ -3,20 +3,25 @@ module.exports = function(grunt) {
   //Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
-    bowerRequirejs: {
-      target: {
-        rjsConfig: "src/require.config.js"
+    connect: {
+      server: {
+        options: {
+          port: 8080,
+          protocol: "http",
+          hostname: "127.0.0.1",
+          base: ".",
+          livereload: true
+        }
       }
     },
     requirejs: {
       compile: {
         options: {
-          baseUrl: "src/",
-          findNestedDependencies: true,
+          baseUrl: ".",
           mainConfigFile: "src/require.config.js",
-          name: "src/index",
-          //name: "lib/almond/almond.js",
-          //include: ["src/require.config.js", "src/index.js"],
+          name: "node_modules/almond/almond",
+          include: ["src/require.config", "kd3"],
+          optimize: "none",
           out: "build/kd3.js",
           wrap: {
             startFile: "src/start.js",
@@ -47,20 +52,20 @@ module.exports = function(grunt) {
     watch: {
       js: {
         files: ["src/**/*.js"],
-        tasks: ["concat"]
+        tasks: []
       }
     },
     copy: {
       css: {
         files: [
-          { src: "style/kd3.css", dest: "build/kd3.css" }
+          { src: "src/style/kd3.css", dest: "build/kd3.css" }
         ]
       }
     },
     cssmin: {
       dist: {
         files: {
-          "kd3.min.css" : ["build/kd3.css"]
+          "build/kd3.min.css" : ["build/kd3.css"]
         }
       }
     }
@@ -73,11 +78,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-contrib-cssmin");
   grunt.loadNpmTasks("grunt-contrib-requirejs");
-  grunt.loadNpmTasks("grunt-bower-requirejs");
+  grunt.loadNpmTasks("grunt-contrib-connect");
 
-  grunt.registerTask("default", ["requirejs", "copy", "watch", "bowerRequirejs"]);
-  grunt.registerTask("production", ["concat", "uglify", "copy", "cssmin"]);
+  grunt.registerTask("default", ["copy", "connect", "watch"]);
+  grunt.registerTask("production", ["requirejs", "uglify", "copy", "cssmin"]);
   grunt.registerTask("release", ["production"]);
   grunt.registerTask("lint", ["jshint"]);
-  grunt.registerTask("requirejs", ["requirejs"]);
+  grunt.registerTask("build", ["requirejs", "copy"]);
 };

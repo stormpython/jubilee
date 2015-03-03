@@ -8,7 +8,6 @@
   } else {
     //Browser globals case. Just assign the
     //result to a property on the global.
-    root.libGlobalName = factory();
+    root.kd3 = factory();
   }
 }(this, function () {
-//almond, and your modules will be inlined here

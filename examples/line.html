@@ -25,49 +25,56 @@
 
   <div id="chart"></div>
 
-  <script src="../node_modules/requirejs/require.js"></script>
-  <script src="../src/require.config.js"></script>
-  <script>require(["d3", "line"], function (d3, line) {
-      var lineChart = line;
+  <script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
+  <script>
+    require(["index"], function (kd3) {
+      var lineChart = kd3.charts.line;
       var data = {
-          series: [
-              [
-                  { x: 1411761450000, y: 41, label: "band"},
-                  { x: 1411761480000, y: 18, label: "band"},
-                  { x: 1411761510000, y: 22, label: "band"},
-                  { x: 1411761540000, y: 17, label: "band"},
-                  { x: 1411761570000, y: 17, label: "band"}
-              ],
-              [
-                  { x: 1411761450000, y: 91, label: "of"},
-                  { x: 1411761480000, y: 88, label: "of"},
-                  { x: 1411761510000, y: 32, label: "of"},
-                  { x: 1411761540000, y: 47, label: "of"},
-                  { x: 1411761570000, y: 57, label: "of"}
-              ],
-              [
-                  { x: 1411761450000, y: 191, label: "brothers"},
-                  { x: 1411761480000, y: 188, label: "brothers"},
-                  { x: 1411761510000, y: 132, label: "brothers"},
-                  { x: 1411761540000, y: 147, label: "brothers"},
-                  { x: 1411761570000, y: 157, label: "brothers"}
-              ]
+        series: [
+          [
+            { x: 1411761450000, y: 41, label: "band"},
+            { x: 1411761480000, y: 18, label: "band"},
+            { x: 1411761510000, y: 22, label: "band"},
+            { x: 1411761540000, y: 17, label: "band"},
+            { x: 1411761570000, y: 17, label: "band"}
+          ],
+          [
+            { x: 1411761450000, y: 91, label: "of"},
+            { x: 1411761480000, y: 88, label: "of"},
+            { x: 1411761510000, y: 32, label: "of"},
+            { x: 1411761540000, y: 47, label: "of"},
+            { x: 1411761570000, y: 57, label: "of"}
+          ],
+          [
+            { x: 1411761450000, y: 191, label: "brothers"},
+            { x: 1411761480000, y: 188, label: "brothers"},
+            { x: 1411761510000, y: 132, label: "brothers"},
+            { x: 1411761540000, y: 147, label: "brothers"},
+            { x: 1411761570000, y: 157, label: "brothers"}
+          ],
+          [
+            { x: 1411761450000, y: 201, label: "brothers"},
+            { x: 1411761480000, y: 198, label: "brothers"},
+            { x: 1411761510000, y: 232, label: "brothers"},
+            { x: 1411761540000, y: 547, label: "brothers"},
+            { x: 1411761570000, y: 357, label: "brothers"}
           ]
+        ]
       };
 
       var myChart = lineChart()
-          .width(700)
-          .height(700)
-          .x(function (d) { return d.x; })
-          .y(function (d) { return d.y; })
-          .pointLabel(function (d) { return d.label; })
-          .interpolate("linear")
-          .addCircles(true)
-          .circleRadius(5)
+        .width(700)
+        .height(700)
+        .x(function (d) { return d.x; })
+        .y(function (d) { return d.y; })
+        .interpolate("linear")
+        .addCircles(true)
+        .circleRadius(3);
 
       d3.select("#chart")
-          .datum(data.series)
-          .call(myChart);
-  })</script>
+        .datum(data.series)
+        .call(myChart);
+  });
+  </script>
 </body>
 </html>

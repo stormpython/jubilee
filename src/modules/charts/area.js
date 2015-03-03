@@ -15,15 +15,17 @@ define(function (require) {
     var yAxis = d3.svg.axis().orient("left");
     var xScale = d3.time.scale.utc().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]).nice();
-    var xDomain = function (data) {
-      return d3.extent(data, xValue);
+    var xDomain = function (domainData) {
+      return d3.extent(domainData, xValue);
     };
-    var yDomain = function (data) {
+    var yDomain = function (domainData) {
       return [
-        Math.min(0, getYStackExtent.call(data, "min")),
-        Math.max(0, getYStackExtent.call(data, "max"))
+        Math.min(0, d3.min(domainData, Y)),
+        Math.max(0, d3.max(domainData, Y))
       ];
     };
+    var areaX = X;
+    var lineX = X;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -44,7 +46,7 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data) {
-        var stack = d3.layout.stack().x(X).y(Y).offset(offset);
+        var stack = d3.layout.stack().x(xValue).y(yValue).offset(offset);
         var layers = stack(data);
 
         var svg = d3.select(this).selectAll("svg")
@@ -56,13 +58,13 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var area = d3.svg.area().x(X).y0(Y0).y1(Y).interpolate(interpolate);
-        var line = d3.svg.line().x(X).y(Y).interpolate(interpolate);
+        var area = d3.svg.area().x(areaX).y0(Y0).y1(Y1).interpolate(interpolate);
+        var line = d3.svg.line().x(lineX).y(Y1).interpolate(interpolate);
 
-        xScale.domain(xDomain.call(this, mapDomain(data)));
-        yScale.domain(yDomain.call(this, mapDomain(data)));
+        xScale.domain(xDomain.call(this, mapDomain(layers)));
+        yScale.domain(yDomain.call(this, mapDomain(layers)));
 
-        g.selectAll("g")
+        g.selectAll("area")
           .data(function (d) { return d; })
           .enter().append("g")
           .append("path")
@@ -72,7 +74,7 @@ define(function (require) {
           .attr("d", area);
 
         if (addLines) {
-          g.selectAll("g")
+          g.selectAll("lines")
             .data(function (d) { return d; })
             .enter().append("g")
             .append("path")
@@ -112,12 +114,17 @@ define(function (require) {
       return xScale(xValue.call(null, d, i));
     }
 
+    function Y(d) {
+      if (offset === "overlap") { return d.y; }
+      return d.y0 + d.y;
+    }
+
     function Y0(d) {
       if (offset ==="overlap") { return yScale(0); }
       return yScale(d.y0);
     }
 
-    function Y(d) {
+    function Y1(d) {
       if (offset === "overlap") { return yScale(d.y); }
       return yScale(d.y0 + d.y);
     }
@@ -126,10 +133,6 @@ define(function (require) {
       return data.reduce(function (a, b) {
         return a.concat(b);
       });
-    }
-
-    function getYStackExtent(data, extent) {
-      return d3[extent](data, Y);
     }
 
     chart.margin = function (_) {
@@ -204,6 +207,18 @@ define(function (require) {
     chart.yDomain = function (_) {
       if (!arguments.length) { return yDomain; }
       yDomain = _;
+      return chart;
+    };
+
+    chart.areaX = function (_) {
+      if (!arguments.length) { return areaX; }
+      areaX = _;
+      return chart;
+    };
+
+    chart.lineX = function (_) {
+      if (!arguments.length) { return lineX; }
+      lineX = _;
       return chart;
     };
 

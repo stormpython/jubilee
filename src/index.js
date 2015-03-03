@@ -2,17 +2,17 @@ define(function (require) {
   return {
     version: "0.0.0",
     charts: {
-      line: require("modules/charts/line"),
-      area: require("modules/charts/area"),
-      pie: require("modules/charts/pie"),
-      histogram: require("modules/charts/histogram")
+      line: require("src/modules/charts/line"),
+      area: require("src/modules/charts/area"),
+      pie: require("src/modules/charts/pie"),
+      histogram: require("src/modules/charts/histogram")
     },
     components: {
       axis: {},
       legend: {},
       scales: {},
       shapes: {
-        circles: require("modules/components/shapes/circles")
+        circles: require("src/modules/components/shapes/circles")
       },
       tooltip: {}
     }
