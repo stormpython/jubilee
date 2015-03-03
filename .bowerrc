@@ -1,6 +1,3 @@
 {
-  "directory" : "lib",
-  "scripts": {
-    "postinstall": "bower-requirejs -c src/require.config.js"
-  }
+  "directory" : "lib"
 }

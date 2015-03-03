@@ -24,5 +24,8 @@
   "dependencies": {
     "d3": "~3.4.1",
     "d3-plugins": "*"
+  },
+  "devDependencies": {
+    "almond": "~0.3.1"
   }
 }

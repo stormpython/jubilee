@@ -1,7 +1,7 @@
 require.config({
   baseUrl: "./",
   paths: {
-    kd3: "./core",
+    kd3: "index",
     d3: "../lib/d3/d3"
   },
   shim: {

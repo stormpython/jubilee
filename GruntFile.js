@@ -8,15 +8,19 @@ module.exports = function(grunt) {
         rjsConfig: "src/require.config.js"
       }
     },
-    concat: {
-      options: {
-        separator: ""
-      },
-      dist: {
-        src: [
-          "src/index.js"
-        ],
-        dest: "build/kd3.js"
+    requirejs: {
+      compile: {
+        options: {
+          baseUrl: ".",
+          mainConfigFile: "src/require.config.js",
+          name: "lib/almond/almond.js",
+          include: ["src/require.config.js", "src/index.js"],
+          out: "build/kd3.js",
+          wrap: {
+            startFile: "src/start.js",
+            endFile: "src/end.js"
+          }
+        }
       }
     },
     uglify: {
@@ -66,11 +70,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-uglify");
   grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-contrib-cssmin");
+  grunt.loadNpmTasks("grunt-contrib-requirejs");
   grunt.loadNpmTasks("grunt-bower-requirejs");
 
-  grunt.registerTask("default", ["concat", "copy", "watch"]);
+  grunt.registerTask("default", ["requirejs", "copy", "watch", "bowerRequirejs"]);
   grunt.registerTask("production", ["concat", "uglify", "copy", "cssmin"]);
   grunt.registerTask("release", ["production"]);
   grunt.registerTask("lint", ["jshint"]);
-  grunt.registerTask("default", ["bowerRequirejs"]);
+  grunt.registerTask("requirejs", ["requirejs"]);
 };
