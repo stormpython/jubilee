@@ -67,6 +67,13 @@
                     { x: "balloon", y: 22 },
                     { x: "bam", y: 17 },
                     { x: "hero", y: 17 }
+                ],
+                [
+                    { x: "band", y: 141 },
+                    { x: "stick", y: 218 },
+                    { x: "balloon", y: 222 },
+                    { x: "bam", y: 217 },
+                    { x: "hero", y: 117 }
                 ]
             ]
         };
@@ -80,10 +87,11 @@
         var myChart = areaChart()
             .width(width)
             .height(height)
-            .addLines(false)
+            .addLines(true)
             .xScale(xScale)
             .xDomain(xDomain)
             .areaX(areaX)
+            .lineX(areaX)
             .interpolate("cardinal");
 
         d3.select("#chart")

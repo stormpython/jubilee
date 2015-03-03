@@ -21,9 +21,7 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-    "d3-plugins": "*"
-  },
+  "dependencies": {},
   "devDependencies": {
     "d3": "~3.5.5"
   }

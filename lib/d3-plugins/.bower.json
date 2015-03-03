@@ -9,5 +9,6 @@
   },
   "_source": "git://github.com/d3/d3-plugins.git",
   "_target": "*",
-  "_originalSource": "d3-plugins"
+  "_originalSource": "d3-plugins",
+  "_direct": true
 }
