@@ -3,6 +3,11 @@ module.exports = function(grunt) {
   //Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
+    bowerRequirejs: {
+      target: {
+        rjsConfig: "src/require.config.js"
+      }
+    },
     concat: {
       options: {
         separator: ""
@@ -61,9 +66,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-uglify");
   grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-contrib-cssmin");
+  grunt.loadNpmTasks("grunt-bower-requirejs");
 
   grunt.registerTask("default", ["concat", "copy", "watch"]);
   grunt.registerTask("production", ["concat", "uglify", "copy", "cssmin"]);
   grunt.registerTask("release", ["production"]);
   grunt.registerTask("lint", ["jshint"]);
+  grunt.registerTask("default", ["bowerRequirejs"]);
 };

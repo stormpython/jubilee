@@ -8,14 +8,14 @@ define(function (require) {
     var color = d3.scale.category20c();
     var interpolate = "linear";
     var offset = "zero";
-    var xValue = function (d) { return d[0]; };
-    var yValue = function (d) { return d[1]; };
+    var xValue = function (d) { return d.x; };
+    var yValue = function (d) { return d.y; };
     var xAxis = d3.svg.axis().orient("bottom").ticks(5);
     var yAxis = d3.svg.axis().orient("left");
     var xScale = d3.time.scale.utc().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]);
+    var yScale = d3.scale.linear().range([height, 0]).nice();
     var xDomain = function (data) {
-      return d3.extent(data, function (d) { return d[0]; });
+      return d3.extent(data, function (d) { return d.x; });
     };
     var yDomain = function (data) {
       return [
@@ -32,27 +32,27 @@ define(function (require) {
     var yAxisTitle = "";
 
     // Area options
-    var areaClass = function (d, i) { return "area index " + i; };
-    var areaStroke = function (d) { return color(d[2]); };
-    var areaFill = function (d) { return color(d[2]); };
+    var areaClass = "area";
+    var areaStroke = function (d, i) { return color(i); };
+    var areaFill = function (d, i) { return color(i); };
 
     // Line options
     var addLines = true;
-    var lineClass = function (d, i) { return "line index " + i; };
-    var lineStroke = function (d) { return color(d[2]); };
+    var lineClass = "line";
+    var lineStroke = function (d, i) { return color(i); };
 
     function chart(selection) {
       selection.each(function (data) {
+        var stack = d3.layout.stack().x(X).y(Y);
         var area = d3.svg.area().x(X).y0(Y0).y1(Y);
         var line = d3.svg.line().x(X).y(Y);
-        var stack = d3.layout.stack().x(xValue).y(yValue);
         var layers;
         var svg;
         var g;
 
         data = data.map(function (d) {
           return d.map(function (e, i) {
-            return [xValue.call(d, e, i), yValue.call(d, e, i)];
+            return {x: xValue.call(d, e, i), y: yValue.call(d, e, i)};
           });
         });
 
@@ -121,7 +121,7 @@ define(function (require) {
     }
 
     function X(d) {
-      return xScale(d[0]);
+      return xScale(d.x);
     }
 
     function Y0(d) {
@@ -141,9 +141,7 @@ define(function (require) {
     }
 
     function getYStackExtent(data, extent) {
-      return d3[extent](data, function (d) {
-        return d3[extent](d, Y);
-      });
+      return d3[extent](data, Y);
     }
 
     chart.margin = function (_) {
@@ -281,6 +279,7 @@ define(function (require) {
       return chart;
     };
 
+    d3.rebind(chart, dispatch, "on");
     return chart;
   };
 });

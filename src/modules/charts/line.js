@@ -8,19 +8,19 @@ define(function (require) {
     var height = 120 - margin.top - margin.bottom;
     var color = d3.scale.category20c();
     var interpolate = "linear";
-    var xValue = function (d) { return d[0]; };
-    var yValue = function (d) { return d[1]; };
+    var xValue = function (d) { return d.x; };
+    var yValue = function (d) { return d.y; };
     var xAxis = d3.svg.axis().orient("bottom").ticks(5);
     var yAxis = d3.svg.axis().orient("left");
     var xScale = d3.time.scale.utc().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]).nice();
     var xDomain = function (data) {
-      return d3.extent(data, function (d) { return d[0]; });
+      return d3.extent(data, function (d) { return d.x; });
     };
     var yDomain = function (data) {
       return [
-        Math.min(0, d3.min(data, function (d) { return d[1]; })),
-        Math.max(0, d3.max(data, function (d) { return d[1]; }))
+        Math.min(0, d3.min(data, function (d) { return d.y; })),
+        Math.max(0, d3.max(data, function (d) { return d.y; }))
       ];
     };
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
@@ -32,15 +32,14 @@ define(function (require) {
     var yAxisTitle = "";
 
     // Line Options
-    var lineClass = function (d, i) { return "line" + i; };
-    var lineStroke = function (d) { return color(d.label); };
+    var lineClass = "line";
+    var lineStroke = function (d, i) { return color(i); };
 
     // Circle Options
     var addCircles = true;
-    var circleClass = function (d, i) { return "circle" + i; };
-    // TODO: change the circles so that labels are not needed on all data objects.
-    var circleFill = function (d) { return color(d[2]); };
-    var circleStroke = function (d) { return color(d[2]); };
+    var circleClass = "circle";
+    var circleFill = function (d, i, j) { return color(j); };
+    var circleStroke = function (d, i, j) { return color(j); };
     var circleRadius = 5;
     var circleStrokeWidth = 3;
 
@@ -52,12 +51,12 @@ define(function (require) {
 
         data = data.map(function (d) {
           return d.map(function (e, i) {
-            return [xValue.call(d, e, i), yValue.call(d, e, i)];
+            return {x: xValue.call(d, e, i), y: yValue.call(d, e, i)};
           });
         });
 
-        xScale.domain(xDomain.call(mapDomain(data)));
-        yScale.domain(yDomain.call(mapDomain(data)));
+        xScale.domain(xDomain && xDomain.call(this, mapDomain(data)));
+        yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
 
         line.interpolate(interpolate);
 
@@ -128,11 +127,11 @@ define(function (require) {
     }
 
     function X(d) {
-      return xScale(d[0]);
+      return xScale(d.x);
     }
 
     function Y(d) {
-      return yScale(d[1]);
+      return yScale(d.y);
     }
 
     chart.margin = function (_) {
@@ -294,6 +293,7 @@ define(function (require) {
       return chart;
     };
 
+    d3.rebind(chart, dispatch, "on");
     return chart;
   };
 });

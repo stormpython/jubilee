@@ -11,8 +11,8 @@ define(function (require) {
     var radius = 5;
     var circleClass = "circles";
     var color = d3.scale.category20c();
-    var fill = function (d) { return color(d[2]); };
-    var stroke = function (d) { return color(d[2]); };
+    var fill = function (d, i, j) { return color(j); };
+    var stroke = function (d, i, j) { return color(j); };
     var strokeWidth = 3;
 
     function shapes(selection) {
