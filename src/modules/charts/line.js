@@ -3,12 +3,12 @@ define(function (require) {
   var circles = require("modules/components/shapes/circles");
 
   return function lineChart() {
+    // Chart options
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
     var width = 760 - margin.left - margin.right;
     var height = 120 - margin.top - margin.bottom;
     var color = d3.scale.category20c();
     var interpolate = "linear";
-    var label = function (d) { return d.label; };
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var xAxis = d3.svg.axis().orient("bottom").ticks(5);
@@ -16,12 +16,12 @@ define(function (require) {
     var xScale = d3.time.scale.utc().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]).nice();
     var xDomain = function (data) {
-      return d3.extent(data, function (d) { return d.x; });
+      return d3.extent(data, xValue);
     };
     var yDomain = function (data) {
       return [
-        Math.min(0, d3.min(data, function (d) { return d.y; })),
-        Math.max(0, d3.max(data, function (d) { return d.y; }))
+        Math.min(0, d3.min(data, yValue)),
+        Math.max(0, d3.max(data, yValue))
       ];
     };
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
@@ -46,33 +46,21 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data) {
-        var line = d3.svg.line().x(X).y(Y);
-        var svg;
-        var g;
-
-        data = data.map(function (d) {
-          return d.map(function (e, i) {
-            return {
-              label: label.call(d, e, i),
-              x: xValue.call(d, e, i),
-              y: yValue.call(d, e, i)
-            };
-          });
-        });
-
-        xScale.domain(xDomain && xDomain.call(this, mapDomain(data)));
-        yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
-
-        line.interpolate(interpolate);
-
-        svg = d3.select(this).selectAll("svg")
+        var svg = d3.select(this).selectAll("svg")
           .data([data])
           .enter().append("svg")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom);
 
-        g = svg.append("g")
+        var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+        var line = d3.svg.line().x(X).y(Y);
+
+        xScale.domain(xDomain && xDomain.call(this, mapDomain(data)));
+        yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
+
+        line.interpolate(interpolate);
 
         g.selectAll("g")
           .data(function (d) { return d; })
@@ -131,12 +119,12 @@ define(function (require) {
       });
     }
 
-    function X(d) {
-      return xScale(d.x);
+    function X(d, i) {
+      return xScale(xValue.call(null, d, i));
     }
 
-    function Y(d) {
-      return yScale(d.y);
+    function Y(d, i) {
+      return yScale(yValue.call(null, d, i));
     }
 
     chart.margin = function (_) {
@@ -163,12 +151,6 @@ define(function (require) {
     chart.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return chart;
-    };
-
-    chart.label = function (_) {
-      if (!arguments.length) { return label; }
-      label = _;
       return chart;
     };
 

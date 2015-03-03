@@ -10827,7 +10827,7 @@ define('modules/charts/histogram',['require','d3'],function (require) {
     return chart;
   };
 });
-define('index',['require','modules/charts/line','modules/charts/area','modules/charts/pie','modules/charts/histogram','modules/components/shapes/circles'],function (require) {
+define('kd3',['require','modules/charts/line','modules/charts/area','modules/charts/pie','modules/charts/histogram','modules/components/shapes/circles'],function (require) {
   return {
     version: "0.0.0",
     charts: {
@@ -10851,5 +10851,5 @@ define('index',['require','modules/charts/line','modules/charts/area','modules/c
   //this snippet. Ask almond to synchronously require the
   //module value for 'main' here and return it as the
   //value to use for the public API for the built file.
-  return require('index');
+  return require('kd3');
 }));

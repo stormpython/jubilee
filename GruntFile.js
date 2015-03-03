@@ -11,10 +11,12 @@ module.exports = function(grunt) {
     requirejs: {
       compile: {
         options: {
-          baseUrl: ".",
+          baseUrl: "src/",
+          findNestedDependencies: true,
           mainConfigFile: "src/require.config.js",
-          name: "lib/almond/almond.js",
-          include: ["src/require.config.js", "src/index.js"],
+          name: "src/index",
+          //name: "lib/almond/almond.js",
+          //include: ["src/require.config.js", "src/index.js"],
           out: "build/kd3.js",
           wrap: {
             startFile: "src/start.js",

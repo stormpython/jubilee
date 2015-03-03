@@ -5,7 +5,7 @@
   out: "build/kd3.js",
   optimize: "none",
 
-  include: ["require.config", "index"],
+  include: ["require.config", "kd3"],
   name: "../lib/almond/almond",
 
   wrap: {
