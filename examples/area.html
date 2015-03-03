@@ -88,14 +88,14 @@
             .width(width)
             .height(height)
             .addLines(true)
-            .xScale(xScale)
-            .xDomain(xDomain)
-            .areaX(areaX)
-            .lineX(areaX)
+//            .xScale(xScale)
+//            .xDomain(xDomain)
+//            .areaX(areaX)
+//            .lineX(areaX)
             .interpolate("cardinal");
 
         d3.select("#chart")
-            .datum(ordinalData.series)
+            .datum(data.series)
             .call(myChart);
     });
 </script>
