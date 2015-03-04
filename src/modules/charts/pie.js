@@ -18,6 +18,7 @@ define(function (require) {
       return Math.max(0, Math.min(2 * Math.PI, xScale(d.x + d.dx)));
     };
     var innerRadius = function (d) {
+      if (d.depth === 1) { return 0; }
       return Math.max(0, yScale(d.y));
     };
     var outerRadius = function (d) {
