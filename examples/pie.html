@@ -4,6 +4,44 @@
   <title></title>
 </head>
 <body>
+  <style>
+    body {
+      font: 10px sans-serif;
+    }
 
+    .arc path {
+        stroke: #fff;
+    }
+  </style>
+
+  <div id="chart"></div>
+
+  <script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
+  <script>
+    require(["index"], function (kd3) {
+      var pie = kd3.charts.pie;
+      var pieChart = pie();
+
+      var pieData = {
+        children: [
+          {
+            size: 20
+          },
+          {
+            size: 60
+          },
+          {
+            size: 140,
+            children: [
+              {size: 50},
+              {size: 50}
+            ]
+          }
+        ]
+      };
+
+      d3.select("#chart").datum(pieData).call(pieChart);
+    });
+  </script>
 </body>
 </html>
