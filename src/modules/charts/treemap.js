@@ -1,5 +1,1 @@
-
-kd3.treemap = function () {
-  "use strict";
-
-};
+define(function (require) {});

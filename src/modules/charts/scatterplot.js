@@ -1,5 +1,1 @@
-
-kd3.scatterplot = function () {
-  "use strict";
-
-};
+define(function (require) {});

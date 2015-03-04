@@ -7,6 +7,7 @@ define(function (require) {
       pie: require("src/modules/charts/pie"),
       histogram: require("src/modules/charts/histogram")
     },
+    maps: {},
     components: {
       axis: {},
       legend: {},

@@ -1,5 +1,1 @@
-
-kd3.dendrogram = function () {
-  "use strict";
-
-};
+define(function (require) {});

@@ -24,6 +24,7 @@ define(function (require) {
         Math.max(0, d3.max(data, yValue))
       ];
     };
+    var lineX = X;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -55,12 +56,10 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var line = d3.svg.line().x(X).y(Y);
+        var line = d3.svg.line().x(lineX).y(Y).interpolate(interpolate);
 
         xScale.domain(xDomain && xDomain.call(this, mapDomain(data)));
         yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
-
-        line.interpolate(interpolate);
 
         g.selectAll("g")
           .data(function (d) { return d; })
@@ -199,6 +198,12 @@ define(function (require) {
     chart.yDomain = function (_) {
       if (!arguments.length) { return yDomain; }
       yDomain = _;
+      return chart;
+    };
+
+    chart.lineX = function (_) {
+      if (!arguments.length) { return lineX; }
+      lineX = _;
       return chart;
     };
 

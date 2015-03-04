@@ -1,5 +1,1 @@
-
-kd3.horizon = function () {
-  "use strict";
-
-};
+define(function (require) {});

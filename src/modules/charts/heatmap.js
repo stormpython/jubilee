@@ -1,5 +1,1 @@
-
-kd3.heatmap = function () {
-  "use strict";
-
-};
+define(function (require) {});
