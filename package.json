@@ -1,5 +1,5 @@
 {
-  "name": "kd3",
+  "name": "Elasti",
   "version": "0.1.0",
   "description": "Basic D3 Charting Library",
   "main": "index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/stormpython/kd3.git"
+    "url": "git://github.com/stormpython/elasti.git"
   },
   "keywords": [
     "data",
@@ -23,9 +23,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/stormpython/kd3/issues"
+    "url": "https://github.com/stormpython/elasti/issues"
   },
-  "homepage": "https://github.com/stormpython/kd3",
+  "homepage": "https://github.com/stormpython/elasti",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.11.0",

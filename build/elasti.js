@@ -8,7 +8,7 @@
   } else {
     //Browser globals case. Just assign the
     //result to a property on the global.
-    root.kd3 = factory();
+    root.elasti = factory();
   }
 }(this, function () {
 /**
@@ -447,7 +447,7 @@ define("node_modules/almond/almond", function(){});
 require.config({
   baseUrl: "../",
   paths: {
-    kd3: "src/index",
+    elasti: "src/index",
     d3: "lib/d3/d3"
   },
   shim: {},
@@ -10103,6 +10103,7 @@ define('src/modules/charts/line',['require','d3','src/modules/components/shapes/
         Math.max(0, d3.max(data, yValue))
       ];
     };
+    var lineX = X;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -10134,12 +10135,10 @@ define('src/modules/charts/line',['require','d3','src/modules/components/shapes/
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var line = d3.svg.line().x(X).y(Y);
+        var line = d3.svg.line().x(lineX).y(Y).interpolate(interpolate);
 
         xScale.domain(xDomain && xDomain.call(this, mapDomain(data)));
         yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
-
-        line.interpolate(interpolate);
 
         g.selectAll("g")
           .data(function (d) { return d; })
@@ -10281,6 +10280,12 @@ define('src/modules/charts/line',['require','d3','src/modules/components/shapes/
       return chart;
     };
 
+    chart.lineX = function (_) {
+      if (!arguments.length) { return lineX; }
+      lineX = _;
+      return chart;
+    };
+
     chart.dispatch = function (_) {
       if (!arguments.length) { return dispatch; }
       dispatch = _;
@@ -10387,15 +10392,17 @@ define('src/modules/charts/area',['require','d3'],function (require) {
     var yAxis = d3.svg.axis().orient("left");
     var xScale = d3.time.scale.utc().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]).nice();
-    var xDomain = function (data) {
-      return d3.extent(data, xValue);
+    var xDomain = function (domainData) {
+      return d3.extent(domainData, xValue);
     };
-    var yDomain = function (data) {
+    var yDomain = function (domainData) {
       return [
-        Math.min(0, getYStackExtent.call(data, "min")),
-        Math.max(0, getYStackExtent.call(data, "max"))
+        Math.min(0, d3.min(domainData, Y)),
+        Math.max(0, d3.max(domainData, Y))
       ];
     };
+    var areaX = X;
+    var lineX = X;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -10416,7 +10423,7 @@ define('src/modules/charts/area',['require','d3'],function (require) {
 
     function chart(selection) {
       selection.each(function (data) {
-        var stack = d3.layout.stack().x(X).y(Y).offset(offset);
+        var stack = d3.layout.stack().x(xValue).y(yValue).offset(offset);
         var layers = stack(data);
 
         var svg = d3.select(this).selectAll("svg")
@@ -10428,13 +10435,13 @@ define('src/modules/charts/area',['require','d3'],function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var area = d3.svg.area().x(X).y0(Y0).y1(Y).interpolate(interpolate);
-        var line = d3.svg.line().x(X).y(Y).interpolate(interpolate);
+        var area = d3.svg.area().x(areaX).y0(Y0).y1(Y1).interpolate(interpolate);
+        var line = d3.svg.line().x(lineX).y(Y1).interpolate(interpolate);
 
-        xScale.domain(xDomain.call(this, mapDomain(data)));
-        yScale.domain(yDomain.call(this, mapDomain(data)));
+        xScale.domain(xDomain.call(this, mapDomain(layers)));
+        yScale.domain(yDomain.call(this, mapDomain(layers)));
 
-        g.selectAll("g")
+        g.selectAll("area")
           .data(function (d) { return d; })
           .enter().append("g")
           .append("path")
@@ -10444,7 +10451,7 @@ define('src/modules/charts/area',['require','d3'],function (require) {
           .attr("d", area);
 
         if (addLines) {
-          g.selectAll("g")
+          g.selectAll("lines")
             .data(function (d) { return d; })
             .enter().append("g")
             .append("path")
@@ -10484,12 +10491,17 @@ define('src/modules/charts/area',['require','d3'],function (require) {
       return xScale(xValue.call(null, d, i));
     }
 
+    function Y(d) {
+      if (offset === "overlap") { return d.y; }
+      return d.y0 + d.y;
+    }
+
     function Y0(d) {
       if (offset ==="overlap") { return yScale(0); }
       return yScale(d.y0);
     }
 
-    function Y(d) {
+    function Y1(d) {
       if (offset === "overlap") { return yScale(d.y); }
       return yScale(d.y0 + d.y);
     }
@@ -10498,10 +10510,6 @@ define('src/modules/charts/area',['require','d3'],function (require) {
       return data.reduce(function (a, b) {
         return a.concat(b);
       });
-    }
-
-    function getYStackExtent(data, extent) {
-      return d3[extent](data, Y);
     }
 
     chart.margin = function (_) {
@@ -10576,6 +10584,18 @@ define('src/modules/charts/area',['require','d3'],function (require) {
     chart.yDomain = function (_) {
       if (!arguments.length) { return yDomain; }
       yDomain = _;
+      return chart;
+    };
+
+    chart.areaX = function (_) {
+      if (!arguments.length) { return areaX; }
+      areaX = _;
+      return chart;
+    };
+
+    chart.lineX = function (_) {
+      if (!arguments.length) { return lineX; }
+      lineX = _;
       return chart;
     };
 
@@ -10663,6 +10683,7 @@ define('src/modules/charts/pie',['require','d3'],function (require) {
       return Math.max(0, Math.min(2 * Math.PI, xScale(d.x + d.dx)));
     };
     var innerRadius = function (d) {
+      if (d.depth === 1) { return 0; }
       return Math.max(0, yScale(d.y));
     };
     var outerRadius = function (d) {
@@ -11066,15 +11087,16 @@ define('src/modules/charts/histogram',['require','d3'],function (require) {
     return chart;
   };
 });
-define('kd3',['require','src/modules/charts/line','src/modules/charts/area','src/modules/charts/pie','src/modules/charts/histogram','src/modules/components/shapes/circles'],function (require) {
+define('elasti',['require','src/modules/charts/line','src/modules/charts/area','src/modules/charts/pie','src/modules/charts/histogram','src/modules/components/shapes/circles'],function (require) {
   return {
-    version: "0.0.0",
+    version: "0.1.0",
     charts: {
       line: require("src/modules/charts/line"),
       area: require("src/modules/charts/area"),
       pie: require("src/modules/charts/pie"),
       histogram: require("src/modules/charts/histogram")
     },
+    maps: {},
     components: {
       axis: {},
       legend: {},
@@ -11090,5 +11112,5 @@ define('kd3',['require','src/modules/charts/line','src/modules/charts/area','src
   //this snippet. Ask almond to synchronously require the
   //module value for 'main' here and return it as the
   //value to use for the public API for the built file.
-  return require('kd3');
+  return require('elasti');
 }));

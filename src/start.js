@@ -8,6 +8,6 @@
   } else {
     //Browser globals case. Just assign the
     //result to a property on the global.
-    root.kd3 = factory();
+    root.elasti = factory();
   }
 }(this, function () {

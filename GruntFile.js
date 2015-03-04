@@ -20,9 +20,9 @@ module.exports = function(grunt) {
           baseUrl: ".",
           mainConfigFile: "src/require.config.js",
           name: "node_modules/almond/almond",
-          include: ["src/require.config", "kd3"],
+          include: ["src/require.config", "elasti"],
           optimize: "none",
-          out: "build/kd3.js",
+          out: "build/elasti.js",
           wrap: {
             startFile: "src/start.js",
             endFile: "src/end.js"
@@ -37,7 +37,7 @@ module.exports = function(grunt) {
       },
       js: {
         files: {
-          "kd3.min.js": ["build/kd3.js"]
+          "build/elasti.min.js": ["build/elasti.js"]
         }
       }
     },
@@ -58,14 +58,14 @@ module.exports = function(grunt) {
     copy: {
       css: {
         files: [
-          { src: "src/style/kd3.css", dest: "build/kd3.css" }
+          { src: "src/style/elasti.css", dest: "build/elasti.css" }
         ]
       }
     },
     cssmin: {
       dist: {
         files: {
-          "build/kd3.min.css" : ["build/kd3.css"]
+          "build/elasti.min.css" : ["build/elasti.css"]
         }
       }
     }

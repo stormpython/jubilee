@@ -1,4 +1,4 @@
-# KD3
+# Elasti
 Basic D3 charts library
 
 ## Environment Setup
