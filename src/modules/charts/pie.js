@@ -11,12 +11,12 @@ define(function (require) {
     var value = function (d) { return d.x; };
     var label = function (d) { return d.name; };
     var arc = d3.svg.arc();
+    var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
     var pieFill = function (d, i) { return color(i); };
     var pieClass = "pie";
 
     // Text options
-    //var text = function (d) { return d.data.key; };
     var textFill = "white";
     var textAnchor = "middle";
     var textDY = ".35em";
@@ -111,6 +111,12 @@ define(function (require) {
       return chart;
     };
 
+    chart.dispatch = function (_) {
+      if (!arguments.length) { return dispatch; }
+      dispatch = _;
+      return chart;
+    };
+
     chart.pieFill = function (_) {
       if (!arguments.length) { return pieFill; }
       pieFill = _;
@@ -120,12 +126,6 @@ define(function (require) {
     chart.pieClass = function (_) {
       if (!arguments.length) { return pieClass; }
       pieClass = _;
-      return chart;
-    };
-
-    chart.text = function (_) {
-      if (!arguments.length) { return text; }
-      text = _;
       return chart;
     };
 
@@ -153,6 +153,7 @@ define(function (require) {
       return chart;
     };
 
+    d3.rebind(chart, dispatch, "on");
     return chart;
   };
 });

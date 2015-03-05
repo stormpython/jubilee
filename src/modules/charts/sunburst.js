@@ -151,6 +151,7 @@ define(function (require) {
       return chart;
     };
 
+    d3.rebind(chart, dispatch, "on");
     return chart;
   };
 });
