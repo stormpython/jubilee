@@ -6,11 +6,10 @@ define(function (require) {
     var width = 500;
     var height = 500;
     var color = d3.scale.category20c();
-    var radius = Math.min(width, height) / 2;
     var sort = null;
     var value = function (d) { return d.size; };
     var xScale = d3.scale.linear().range([0, 2 * Math.PI]);
-    var yScale = d3.scale.sqrt().range([0, radius]);
+    var yScale = d3.scale.sqrt();
     var startAngle = function (d) {
       return Math.max(0, Math.min(2 * Math.PI, xScale(d.x)));
     };
@@ -35,18 +34,22 @@ define(function (require) {
 
     function chart (selection) {
       selection.each(function (data) {
+        var radius = Math.min(width, height) / 2;
         var partition = d3.layout.partition().sort(sort).value(value);
-        var arc = d3.svg.arc()
-          .startAngle(startAngle)
-          .endAngle(endAngle)
-          .innerRadius(innerRadius)
-          .outerRadius(outerRadius);
-
         var svg = d3.select(this).append("svg")
           .attr("width", width)
           .attr("height", height)
           .append("g")
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+        var arc = d3.svg.arc();
+
+        yScale.range([0, radius]);
+
+        arc
+          .startAngle(startAngle)
+          .endAngle(endAngle)
+          .innerRadius(innerRadius)
+          .outerRadius(outerRadius);
 
         svg.datum(data).selectAll("path")
           .data(partition.nodes)
@@ -73,12 +76,6 @@ define(function (require) {
     chart.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return chart;
-    };
-
-    chart.radius = function (_) {
-      if (!arguments.length) { return radius; }
-      radius = _;
       return chart;
     };
 
