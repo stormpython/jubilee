@@ -7,6 +7,7 @@ define(function (require) {
       pie: require("src/modules/charts/pie"),
       sunburst: require("src/modules/charts/sunburst"),
       dendrogram: require("src/modules/charts/dendrogram"),
+      treemap: require("src/modules/charts/treemap"),
       histogram: require("src/modules/charts/histogram")
     },
     maps: {},

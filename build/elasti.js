@@ -10669,19 +10669,19 @@ define('src/modules/charts/pie',['require','d3'],function (require) {
   return function pieChart() {
     var width = 300;
     var height = 300;
-    var radius = Math.min(width, height) / 2;
     var color = d3.scale.category10();
-    var outerRadius = radius - 60;
+    var outerRadius = null;
     var innerRadius = 0;
     var sort = null;
     var value = function (d) { return d.x; };
+    var label = function (d) { return d.name; };
     var arc = d3.svg.arc();
+    var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
     var pieFill = function (d, i) { return color(i); };
     var pieClass = "pie";
 
     // Text options
-    var text = function (d) { return d.data.key; };
     var textFill = "white";
     var textAnchor = "middle";
     var textDY = ".35em";
@@ -10690,12 +10690,13 @@ define('src/modules/charts/pie',['require','d3'],function (require) {
     function chart (selection) {
       selection.each(function (data) {
         var pie = d3.layout.pie().sort(sort).value(value);
+        var radius = Math.min(width, height) / 2;
 
         var svg = d3.select(this).append("svg")
           .attr("width", width)
           .attr("height", height)
           .append("g")
-          .attr("transform", "translate(" + width + "," + height + ")");
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
         var g = svg.selectAll(".arc")
           .data(pie(data))
@@ -10703,7 +10704,7 @@ define('src/modules/charts/pie',['require','d3'],function (require) {
           .append("g")
           .attr("class", "arc");
 
-        arc.outerRadius(outerRadius).innerRadius(innerRadius);
+        arc.outerRadius(outerRadius || radius).innerRadius(innerRadius);
 
         g.append("path")
           .attr("d", arc)
@@ -10715,7 +10716,9 @@ define('src/modules/charts/pie',['require','d3'],function (require) {
           .attr("dy", textDY)
           .style("text-anchor", textAnchor)
           .style("fill", textFill)
-          .text(text);
+          .text(function (d) {
+            return label.call(this, d.data);
+          });
       });
     }
 
@@ -10731,18 +10734,91 @@ define('src/modules/charts/pie',['require','d3'],function (require) {
       return chart;
     };
 
-    chart.radius = function (_) {
-      if (!arguments.length) { return radius; }
-      radius = _;
-      return chart;
-    };
-
     chart.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
       return chart;
     };
 
+    chart.outerRadius = function (_) {
+      if (!arguments.length) { return outerRadius; }
+      outerRadius = _;
+      return chart;
+    };
+
+    chart.innerRadius = function (_) {
+      if (!arguments.length) { return innerRadius; }
+      innerRadius = _;
+      return chart;
+    };
+
+    chart.sort = function (_) {
+      if (!arguments.length) { return sort; }
+      sort = _;
+      return chart;
+    };
+
+    chart.value = function (_) {
+      if (!arguments.length) { return value; }
+      value = _;
+      return chart;
+    };
+
+    chart.label = function (_) {
+      if (!arguments.length) { return label; }
+      label = _;
+      return chart;
+    };
+
+    chart.arc = function (_) {
+      if (!arguments.length) { return arc; }
+      arc = _;
+      return chart;
+    };
+
+    chart.dispatch = function (_) {
+      if (!arguments.length) { return dispatch; }
+      dispatch = _;
+      return chart;
+    };
+
+    chart.pieFill = function (_) {
+      if (!arguments.length) { return pieFill; }
+      pieFill = _;
+      return chart;
+    };
+
+    chart.pieClass = function (_) {
+      if (!arguments.length) { return pieClass; }
+      pieClass = _;
+      return chart;
+    };
+
+    chart.textFill = function (_) {
+      if (!arguments.length) { return textFill; }
+      textFill = _;
+      return chart;
+    };
+
+    chart.textAnchor = function (_) {
+      if (!arguments.length) { return textAnchor; }
+      textAnchor = _;
+      return chart;
+    };
+
+    chart.textDY = function (_) {
+      if (!arguments.length) { return textDY; }
+      textDY = _;
+      return chart;
+    };
+
+    chart.textTransform = function (_) {
+      if (!arguments.length) { return textTransform; }
+      textTransform = _;
+      return chart;
+    };
+
+    d3.rebind(chart, dispatch, "on");
     return chart;
   };
 });
@@ -10754,11 +10830,10 @@ define('src/modules/charts/sunburst',['require','d3'],function (require) {
     var width = 500;
     var height = 500;
     var color = d3.scale.category20c();
-    var radius = Math.min(width, height) / 2;
     var sort = null;
     var value = function (d) { return d.size; };
     var xScale = d3.scale.linear().range([0, 2 * Math.PI]);
-    var yScale = d3.scale.sqrt().range([0, radius]);
+    var yScale = d3.scale.sqrt();
     var startAngle = function (d) {
       return Math.max(0, Math.min(2 * Math.PI, xScale(d.x)));
     };
@@ -10783,18 +10858,22 @@ define('src/modules/charts/sunburst',['require','d3'],function (require) {
 
     function chart (selection) {
       selection.each(function (data) {
+        var radius = Math.min(width, height) / 2;
         var partition = d3.layout.partition().sort(sort).value(value);
-        var arc = d3.svg.arc()
-          .startAngle(startAngle)
-          .endAngle(endAngle)
-          .innerRadius(innerRadius)
-          .outerRadius(outerRadius);
-
         var svg = d3.select(this).append("svg")
           .attr("width", width)
           .attr("height", height)
           .append("g")
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+        var arc = d3.svg.arc();
+
+        yScale.range([0, radius]);
+
+        arc
+          .startAngle(startAngle)
+          .endAngle(endAngle)
+          .innerRadius(innerRadius)
+          .outerRadius(outerRadius);
 
         svg.datum(data).selectAll("path")
           .data(partition.nodes)
@@ -10821,12 +10900,6 @@ define('src/modules/charts/sunburst',['require','d3'],function (require) {
     chart.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return chart;
-    };
-
-    chart.radius = function (_) {
-      if (!arguments.length) { return radius; }
-      radius = _;
       return chart;
     };
 
@@ -10901,6 +10974,237 @@ define('src/modules/charts/sunburst',['require','d3'],function (require) {
       pieFill= _;
       return chart;
     };
+
+    d3.rebind(chart, dispatch, "on");
+    return chart;
+  };
+});
+
+define('src/modules/charts/dendrogram',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function dendrogram() {
+    var marginFactor = 0.5;
+    var width = 300;
+    var height = 800;
+    var color = d3.scale.category20b();
+    var value = function (d) { return d.size; };
+    var projection = function (d) { return [d.y, d.x]; };
+    var transform = "translate(20,0)";
+    var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
+
+    // Node options
+    var nodeRadius = 4.5;
+    var nodeTransform = function (d) { return "translate(" + d.y + "," + d.x + ")"; };
+    var nodeFill = function (d, i) { return color(i); };
+    var nodeStroke = function (d, i) { return color(i); };
+    var nodeClass = "node";
+
+    // Link options
+    var linkClass = "link";
+
+    // Text options
+    var label = function (d) { return d.children ? d.name : d.name + ": " + d.size; };
+    var textDX = function (d) { return d.children ? -8 : 8; };
+    var textDY = 3;
+    var textAnchor = function (d) { return d.children ? "end" : "start"; };
+
+    function chart(selection) {
+      selection.each(function (data) {
+        var cluster = d3.layout.cluster()
+          .size([height, width - (width * marginFactor)])
+          .value(value);
+
+        var diagonal = d3.svg.diagonal().projection(projection);
+        var nodes = cluster.nodes(data);
+        var links = cluster.links(nodes);
+
+        var svg = d3.select(this).append("svg")
+          .attr("width", width)
+          .attr("height", height)
+          .append("g")
+          .attr("transform", transform);
+
+
+        var link = svg.selectAll(".link")
+          .data(links)
+          .enter().append("path")
+          .attr("class", linkClass)
+          .attr("d", diagonal);
+
+        var node = svg.selectAll(".node")
+          .data(nodes)
+          .enter().append("g")
+          .attr("class", nodeClass)
+          .attr("transform", nodeTransform);
+
+        node.append("circle")
+          .attr("r", nodeRadius)
+          .style("fill", nodeFill)
+          .style("stroke", nodeStroke);
+
+        node.append("text")
+          .attr("dx", textDX)
+          .attr("dy", textDY)
+          .style("text-anchor", textAnchor)
+          .text(label);
+
+        d3.select(this.frameElement).style("height", height + "px");
+      });
+    }
+
+    chart.marginFactor = function (_) {
+      if (!arguments.length) { return marginFactor; }
+      marginFactor = _;
+      return chart;
+    };
+
+    chart.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return chart;
+    };
+
+    chart.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return chart;
+    };
+
+    chart.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return chart;
+    };
+
+    chart.value = function (_) {
+      if (!arguments.length) { return value; }
+      value = _;
+      return chart;
+    };
+
+    chart.projection = function (_) {
+      if (!arguments.length) { return projection; }
+      projection = _;
+      return chart;
+    };
+
+    chart.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
+      return chart;
+    };
+
+    chart.dispatch = function (_) {
+      if (!arguments.length) { return dispatch;}
+      dispatch = _;
+      return chart;
+    };
+
+    chart.nodeRadius = function (_) {
+      if (!arguments.length) { return nodeRadius; }
+      nodeRadius = _;
+      return chart;
+    };
+
+    chart.nodeFill = function (_) {
+      if (!arguments.length) { return nodeFill; }
+      nodeFill = _;
+      return chart;
+    };
+
+    chart.nodeStroke = function (_) {
+      if (!arguments.length) { return nodeStroke; }
+      nodeStroke = _;
+      return chart;
+    };
+
+    chart.nodeClass = function (_) {
+      if (!arguments.length) { return nodeClass; }
+      nodeClass = _;
+      return chart;
+    };
+
+    chart.linkClass = function (_) {
+      if (!arguments.length) { return linkClass; }
+      linkClass = _;
+      return chart;
+    };
+
+    chart.label = function (_) {
+      if (!arguments.length) { return label; }
+      label = _;
+      return chart;
+    };
+
+    chart.textDX = function (_) {
+      if (!arguments.length) { return textDX; }
+      textDX = _;
+      return chart;
+    };
+
+    chart.textDY = function (_) {
+      if (!arguments.length) { return textDY; }
+      textDY = _;
+      return chart;
+    };
+
+    chart.textAnchor = function (_) {
+      if (!arguments.length) { return textAnchor; }
+      textAnchor = _;
+      return chart;
+    };
+
+    d3.rebind(chart, dispatch, "on");
+    return chart;
+  };
+});
+
+define('src/modules/charts/treemap',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function treemap() {
+    var margin = {top: 40, right: 10, bottom: 10, left: 10};
+    var width = 960 - margin.left - margin.right;
+    var height = 500 - margin.top - margin.bottom;
+    var color = d3.scale.category20c();
+    var sticky = true;
+    var value = function (d) { return d.size; };
+
+    var nodeClass = "node";
+    var nodeColor = function (d, i) { return d.children ? color(i) : null; };
+    var label = function (d) { return d.children ? null : d.name; };
+
+    function chart(selection) {
+      selection.each(function (data) {
+        var treemap = d3.layout.treemap()
+          .size([width, height])
+          .sticky(sticky)
+          .value(value);
+
+        var div = d3.select(this).append("div")
+          .style("position", "relative")
+          .style("width", (width + margin.left + margin.right) + "px")
+          .style("height", (height + margin.top + margin.bottom) + "px")
+          .style("left", margin.left + "px")
+          .style("top", margin.top + "px");
+
+        div.datum(data).selectAll(".node")
+          .data(treemap.nodes)
+          .enter().append("div")
+          .attr("class", nodeClass)
+          .call(position)
+          .style("background", nodeColor)
+          .text(label);
+      });
+    }
+
+    function position() {
+      this.style("left", function(d) { return d.x + "px"; })
+        .style("top", function(d) { return d.y + "px"; })
+        .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+        .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+    }
 
     return chart;
   };
@@ -11172,7 +11476,7 @@ define('src/modules/charts/histogram',['require','d3'],function (require) {
     return chart;
   };
 });
-define('elasti',['require','src/modules/charts/line','src/modules/charts/area','src/modules/charts/pie','src/modules/charts/sunburst','src/modules/charts/histogram','src/modules/components/shapes/circles'],function (require) {
+define('elasti',['require','src/modules/charts/line','src/modules/charts/area','src/modules/charts/pie','src/modules/charts/sunburst','src/modules/charts/dendrogram','src/modules/charts/treemap','src/modules/charts/histogram','src/modules/components/shapes/circles'],function (require) {
   return {
     version: "0.1.0",
     charts: {
@@ -11180,6 +11484,8 @@ define('elasti',['require','src/modules/charts/line','src/modules/charts/area','
       area: require("src/modules/charts/area"),
       pie: require("src/modules/charts/pie"),
       sunburst: require("src/modules/charts/sunburst"),
+      dendrogram: require("src/modules/charts/dendrogram"),
+      treemap: require("src/modules/charts/treemap"),
       histogram: require("src/modules/charts/histogram")
     },
     maps: {},
