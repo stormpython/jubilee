@@ -2,57 +2,55 @@ define(function (require) {
   var d3 = require("d3");
 
   return function pieChart() {
-    // Chart options
-    var width = 500;
-    var height = 500;
-    var color = d3.scale.category20c();
+    var width = 300;
+    var height = 300;
     var radius = Math.min(width, height) / 2;
+    var color = d3.scale.category10();
+    var outerRadius = radius - 60;
+    var innerRadius = 0;
     var sort = null;
-    var value = function (d) { return d.size; };
-    var xScale = d3.scale.linear().range([0, 2 * Math.PI]);
-    var yScale = d3.scale.sqrt().range([0, radius]);
-    var startAngle = function (d) {
-      return Math.max(0, Math.min(2 * Math.PI, xScale(d.x)));
-    };
-    var endAngle = function (d) {
-      return Math.max(0, Math.min(2 * Math.PI, xScale(d.x + d.dx)));
-    };
-    var innerRadius = function (d) {
-      if (d.depth === 1) { return 0; }
-      return Math.max(0, yScale(d.y));
-    };
-    var outerRadius = function (d) {
-      return Math.max(0, yScale(d.y + d.dy));
-    };
-    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
+    var value = function (d) { return d.x; };
+    var arc = d3.svg.arc();
 
-    // Pie options
-    var pieClass = "pie";
-    var pieStroke = "#fff";
     var pieFill = function (d, i) { return color(i); };
+    var pieClass = "pie";
+
+    // Text options
+    var text = function (d) { return d.data.key; };
+    var textFill = "white";
+    var textAnchor = "middle";
+    var textDY = ".35em";
+    var textTransform = function (d) { return "translate(" + arc.centroid(d) + ")"; };
 
     function chart (selection) {
       selection.each(function (data) {
-        var partition = d3.layout.partition().sort(sort).value(value);
-        var arc = d3.svg.arc()
-          .startAngle(startAngle)
-          .endAngle(endAngle)
-          .innerRadius(innerRadius)
-          .outerRadius(outerRadius);
+        var pie = d3.layout.pie().sort(sort).value(value);
 
         var svg = d3.select(this).append("svg")
           .attr("width", width)
           .attr("height", height)
           .append("g")
-          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+          .attr("transform", "translate(" + width + "," + height + ")");
 
-        svg.datum(data).selectAll("path")
-          .data(partition.nodes)
-          .enter().append("path")
+        var g = svg.selectAll(".arc")
+          .data(pie(data))
+          .enter()
+          .append("g")
+          .attr("class", "arc");
+
+        arc.outerRadius(outerRadius).innerRadius(innerRadius);
+
+        g.append("path")
           .attr("d", arc)
           .attr("class", pieClass)
-          .style("stroke", pieStroke)
           .style("fill", pieFill);
+
+        g.append("text")
+          .attr("transform", textTransform)
+          .attr("dy", textDY)
+          .style("text-anchor", textAnchor)
+          .style("fill", textFill)
+          .text(text);
       });
     }
 
@@ -68,87 +66,15 @@ define(function (require) {
       return chart;
     };
 
-    chart.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
-      return chart;
-    };
-
     chart.radius = function (_) {
       if (!arguments.length) { return radius; }
       radius = _;
       return chart;
     };
 
-    chart.sort = function (_) {
-      if (!arguments.length) { return sort; }
-      sort = _;
-      return chart;
-    };
-
-    chart.value = function (_) {
-      if (!arguments.length) { return value; }
-      value = _;
-      return chart;
-    };
-
-    chart.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
-      return chart;
-    };
-
-    chart.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
-      return chart;
-    };
-
-    chart.startAngle = function (_) {
-      if (!arguments.length) { return startAngle; }
-      startAngle = _;
-      return chart;
-    };
-
-    chart.endAngle = function (_) {
-      if (!arguments.length) { return endAngle; }
-      endAngle = _;
-      return chart;
-    };
-
-    chart.innerRadius = function (_) {
-      if (!arguments.length) { return innerRadius; }
-      innerRadius = _;
-      return chart;
-    };
-
-    chart.outerRadius = function (_) {
-      if (!arguments.length) { return outerRadius; }
-      outerRadius = _;
-      return chart;
-    };
-
-    chart.dispatch = function (_) {
-      if (!arguments.length) { return dispatch; }
-      dispatch = _;
-      return chart;
-    };
-
-    chart.pieClass = function (_) {
-      if (!arguments.length) { return pieClass; }
-      pieClass = _;
-      return chart;
-    };
-
-    chart.pieStroke = function (_) {
-      if (!arguments.length) { return pieStroke; }
-      pieStroke = _;
-      return chart;
-    };
-
-    chart.pieFill = function (_) {
-      if (!arguments.length) { return pieFill; }
-      pieFill= _;
+    chart.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
       return chart;
     };
 

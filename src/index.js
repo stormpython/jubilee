@@ -5,6 +5,7 @@ define(function (require) {
       line: require("src/modules/charts/line"),
       area: require("src/modules/charts/area"),
       pie: require("src/modules/charts/pie"),
+      sunburst: require("src/modules/charts/sunburst"),
       histogram: require("src/modules/charts/histogram")
     },
     maps: {},
