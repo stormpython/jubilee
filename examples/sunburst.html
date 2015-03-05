@@ -19,10 +19,10 @@
   <script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
   <script>
     require(["index"], function (elasti) {
-      var pie = elasti.charts.pie;
-      var pieChart = pie();
+      var sunburst = elasti.charts.sunburst;
+      var sunburstChart = sunburst().width(700).height(700);
 
-      var pieData = {
+      var sunburstData = {
         children: [
           {
             size: 20
@@ -40,7 +40,7 @@
         ]
       };
 
-      d3.select("#chart").datum(pieData).call(pieChart);
+      d3.select("#chart").datum(sunburstData).call(sunburstChart);
     });
   </script>
 </body>
