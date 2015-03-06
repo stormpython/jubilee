@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function clipPath() {
-    var id = d3.random();
+    var id = "uniqueID";
     var x = null;
     var y = null;
     var width = null;
