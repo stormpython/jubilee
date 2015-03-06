@@ -13,7 +13,8 @@ define(function (require) {
     },
     maps: {},
     components: {
-      axis: {},
+      axis: require("src/modules/components/axis/axis"),
+      clipPath: require("src/modules/components/clipPath/clipPath"),
       legend: {},
       scales: {},
       shapes: {
