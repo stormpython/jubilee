@@ -16,11 +16,9 @@ define(function (require) {
       axis: require("src/modules/components/axis/axis"),
       clipPath: require("src/modules/components/clipPath/clipPath"),
       legend: {},
-      scales: {},
       shapes: {
         circles: require("src/modules/components/shapes/circles")
-      },
-      tooltip: {}
+      }
     }
   };
 });
