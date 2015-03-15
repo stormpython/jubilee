@@ -2,11 +2,11 @@ define(function (require) {
   var d3 = require("d3");
 
   return function clipPath() {
-    var id = "uniqueID";
+    var id = uniqueID();
     var x = null;
     var y = null;
-    var width = null;
-    var height = null;
+    var width = 50;
+    var height = 50;
 
     function component(selection) {
       selection.each(function () {
@@ -20,6 +20,11 @@ define(function (require) {
           .attr("width", width)
           .attr("height", height);
       });
+    }
+
+    function uniqueID() {
+      var randomNumber = Math.floor(Math.random * 100);
+      return "uniqueId_" + randomNumber;
     }
 
     component.id = function (_) {
