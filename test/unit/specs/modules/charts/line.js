@@ -2,6 +2,7 @@ define(function (require) {
   describe("Line Chart Tests", function () {
     var lineChart = require("src/modules/charts/line");
     var d3fixture = require("fixtures/fixture");
+
     var isFunction = (typeof lineChart === "function");
     var myChart = lineChart();
     var fixture;

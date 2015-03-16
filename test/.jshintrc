@@ -1,7 +1,12 @@
 {
   "globals": {
     "define": true,
-    "require": true
+    "require": true,
+    "console": false,
+    "describe": true,
+    "it": true,
+    "beforeEach": true,
+    "afterEach": true
   },
   "bitwise": true,
   "camelcase": true,
