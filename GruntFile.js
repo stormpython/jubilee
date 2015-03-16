@@ -3,6 +3,14 @@ module.exports = function(grunt) {
   //Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
+    mocha: {
+      all: {
+        src: ["test/unit/index.html"]
+      },
+      options: {
+        run: true
+      }
+    },
     connect: {
       server: {
         options: {
@@ -79,10 +87,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-cssmin");
   grunt.loadNpmTasks("grunt-contrib-requirejs");
   grunt.loadNpmTasks("grunt-contrib-connect");
+  grunt.loadNpmTasks("grunt-mocha");
 
   grunt.registerTask("default", ["copy", "connect", "watch"]);
   grunt.registerTask("production", ["requirejs", "uglify", "copy", "cssmin"]);
   grunt.registerTask("release", ["production"]);
   grunt.registerTask("lint", ["jshint"]);
+  grunt.registerTask("test", ["mocha"]);
   grunt.registerTask("build", ["requirejs", "copy"]);
 };

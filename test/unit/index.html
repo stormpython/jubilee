@@ -6,14 +6,11 @@
     <link rel="stylesheet" media="all" href="../../node_modules/mocha/mocha.css">
   </head>
   <body>
-    <div id="mocha"><p><a href=".">Index</a></p></div>
-    <div id="messages"></div>
-    <div id="fixtures"></div>
+    <div id="mocha"></div>
 
     <script src="../../node_modules/mocha/mocha.js"></script>
     <script src="../../node_modules/chai/chai.js"></script>
     <script src="../../node_modules/requirejs/require.js"></script>
-    <script src="../../src/require.config.js"></script>
     <script>
       mocha.setup({
         ui: "bdd",
@@ -23,12 +20,18 @@
       require.config({
         baseUrl: '/',
         paths: {
-          specs: "/specs"
+          specs: "test/unit/specs",
+          d3: "lib/d3/d3"
         }
+      });
+
+      <!-- Tests -->
+      require([
+        "specs/modules/charts/line"
+      ], function () {
+        mocha.run();
       });
     </script>
 
-    <script src="cow_test.js"></script>
-    <script>mocha.run();</script>
   </body>
 </html>
