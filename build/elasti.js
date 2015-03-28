@@ -67,7 +67,7 @@ var requirejs, require, define;
 
                 //Lop off the last part of baseParts, so that . matches the
                 //"directory" and not name of the baseName's module. For instance,
-                //baseName of "one/two/three", maps to "one/two/three.js", but we
+                //baseName of "one/two/three", map to "one/two/three.js", but we
                 //want the directory, "one/two" for this normalization.
                 name = baseParts.slice(0, baseParts.length - 1).concat(name);
 
@@ -9959,7 +9959,7 @@ define("src/require.config", function(){});
   if (typeof define === "function" && define.amd) define('d3',d3); else if (typeof module === "object" && module.exports) module.exports = d3;
   this.d3 = d3;
 }();
-define('src/modules/components/shapes/circles',['require','d3'],function (require) {
+define('src/modules/component/shape/circles',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function circles() {
@@ -10077,9 +10077,9 @@ define('src/modules/components/shapes/circles',['require','d3'],function (requir
   };
 });
 
-define('src/modules/charts/line',['require','d3','src/modules/components/shapes/circles'],function (require) {
+define('src/modules/chart/line',['require','d3','src/modules/component/shape/circles'],function (require) {
   var d3 = require("d3");
-  var circles = require("src/modules/components/shapes/circles");
+  var circles = require("src/modules/component/shape/circles");
 
   return function lineChart() {
     // Chart options
@@ -10375,7 +10375,7 @@ define('src/modules/charts/line',['require','d3','src/modules/components/shapes/
   };
 });
 
-define('src/modules/charts/area',['require','d3'],function (require) {
+define('src/modules/chart/area',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function areaChart() {
@@ -10663,7 +10663,7 @@ define('src/modules/charts/area',['require','d3'],function (require) {
     return chart;
   };
 });
-define('src/modules/charts/pie',['require','d3'],function (require) {
+define('src/modules/chart/pie',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function pieChart() {
@@ -10822,7 +10822,7 @@ define('src/modules/charts/pie',['require','d3'],function (require) {
     return chart;
   };
 });
-define('src/modules/charts/sunburst',['require','d3'],function (require) {
+define('src/modules/chart/sunburst',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function sunburst() {
@@ -10980,7 +10980,7 @@ define('src/modules/charts/sunburst',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/charts/dendrogram',['require','d3'],function (require) {
+define('src/modules/chart/dendrogram',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function dendrogram() {
@@ -11160,7 +11160,7 @@ define('src/modules/charts/dendrogram',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/charts/treemap',['require','d3'],function (require) {
+define('src/modules/chart/treemap',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function treemap() {
@@ -11210,7 +11210,7 @@ define('src/modules/charts/treemap',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/charts/histogram',['require','d3'],function (require) {
+define('src/modules/chart/histogram',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function histogram() {
@@ -11476,17 +11476,17 @@ define('src/modules/charts/histogram',['require','d3'],function (require) {
     return chart;
   };
 });
-define('elasti',['require','src/modules/charts/line','src/modules/charts/area','src/modules/charts/pie','src/modules/charts/sunburst','src/modules/charts/dendrogram','src/modules/charts/treemap','src/modules/charts/histogram','src/modules/components/shapes/circles'],function (require) {
+define('elasti',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/pie','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/component/shape/circles'],function (require) {
   return {
     version: "0.1.0",
     charts: {
-      line: require("src/modules/charts/line"),
-      area: require("src/modules/charts/area"),
-      pie: require("src/modules/charts/pie"),
-      sunburst: require("src/modules/charts/sunburst"),
-      dendrogram: require("src/modules/charts/dendrogram"),
-      treemap: require("src/modules/charts/treemap"),
-      histogram: require("src/modules/charts/histogram")
+      line: require("src/modules/chart/line"),
+      area: require("src/modules/chart/area"),
+      pie: require("src/modules/chart/pie"),
+      sunburst: require("src/modules/chart/sunburst"),
+      dendrogram: require("src/modules/chart/dendrogram"),
+      treemap: require("src/modules/chart/treemap"),
+      histogram: require("src/modules/chart/histogram")
     },
     maps: {},
     components: {
@@ -11494,7 +11494,7 @@ define('elasti',['require','src/modules/charts/line','src/modules/charts/area','
       legend: {},
       scales: {},
       shapes: {
-        circles: require("src/modules/components/shapes/circles")
+        circles: require("src/modules/component/shape/circles")
       },
       tooltip: {}
     }

@@ -1,23 +1,26 @@
 define(function (require) {
   return {
     version: "0.1.0",
-    charts: {
-      line: require("src/modules/charts/line"),
-      area: require("src/modules/charts/area"),
-      pie: require("src/modules/charts/pie"),
-      scatter : require("src/modules/charts/scatterplot"),
-      sunburst: require("src/modules/charts/sunburst"),
-      dendrogram: require("src/modules/charts/dendrogram"),
-      treemap: require("src/modules/charts/treemap"),
-      histogram: require("src/modules/charts/histogram")
+    chart: {
+      line: require("src/modules/chart/line"),
+      area: require("src/modules/chart/area"),
+      pie: require("src/modules/chart/pie"),
+      scatter : require("src/modules/chart/scatterplot"),
+      sunburst: require("src/modules/chart/sunburst"),
+      dendrogram: require("src/modules/chart/dendrogram"),
+      treemap: require("src/modules/chart/treemap"),
+      histogram: require("src/modules/chart/histogram")
     },
-    maps: {},
-    components: {
-      axis: require("src/modules/components/axis/axis"),
-      clipPath: require("src/modules/components/clipPath/clipPath"),
+    map: {},
+    layout: {
+      grid: require("src/modules/layout/grid")
+    },
+    component: {
+      axis: require("src/modules/component/axis/axis"),
+      clipPath: require("src/modules/component/clipPath/clipPath"),
       legend: {},
-      shapes: {
-        circles: require("src/modules/components/shapes/circles")
+      shape: {
+        circles: require("src/modules/component/shape/circles")
       }
     }
   };

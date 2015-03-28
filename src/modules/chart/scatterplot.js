@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var circles = require("src/modules/components/shapes/circles");
+  var circles = require("src/modules/component/shape/circles");
 
   return function scatterPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
