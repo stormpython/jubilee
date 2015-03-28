@@ -13,7 +13,8 @@ define(function (require) {
     },
     map: {},
     layout: {
-      grid: require("src/modules/layout/grid")
+      grid: require("src/modules/layout/grid"),
+      split: require("src/modules/layout/split")
     },
     component: {
       axis: require("src/modules/component/axis/axis"),
