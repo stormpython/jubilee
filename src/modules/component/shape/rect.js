@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
 
-  return function circles() {
+  return function rect() {
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var barHeight;
@@ -14,7 +14,7 @@ define(function (require) {
     var barClass = "bar";
     var barFill;
 
-    function shapes(selection) {
+    function shape(selection) {
       selection.each(function () {
         var layer = d3.select(this).selectAll("layer")
           .data(function (d) { return d; })
@@ -47,60 +47,60 @@ define(function (require) {
       return yScale(yValue.call(this, d, i));
     }
 
-    shapes.x = function (_) {
+    shape.x = function (_) {
       if (!arguments.length) { return xValue; }
       xValue = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.y = function (_) {
+    shape.y = function (_) {
       if (!arguments.length) { return yValue; }
       yValue = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.barWidth = function (_) {
+    shape.barWidth = function (_) {
       if (!arguments.length) { return barWidth; }
       barWidth = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.barHeight = function (_) {
+    shape.barHeight = function (_) {
       if (!arguments.length) { return barHeight; }
       barHeight = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.gClass = function (_) {
+    shape.gClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.barClass = function (_) {
+    shape.barClass = function (_) {
       if (!arguments.length) { return barClass; }
       barClass = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.barFill = function (_) {
+    shape.barFill = function (_) {
       if (!arguments.length) { return barFill; }
       barFill = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.xScale = function (_) {
+    shape.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.yScale = function (_) {
+    shape.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale = _;
-      return shapes;
+      return shape;
     };
 
-    return shapes;
+    return shape;
   };
 });

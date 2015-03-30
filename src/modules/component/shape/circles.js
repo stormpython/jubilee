@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
 
-  return function circles() {
+  return function circle() {
     var cxValue = function (d) { return d.x; };
     var cyValue = function (d) { return d.y; };
     var xScale;
@@ -16,7 +16,7 @@ define(function (require) {
     var stroke = function (d, i, j) { return color(j); };
     var strokeWidth = 3;
 
-    function shapes(selection) {
+    function shape(selection) {
       selection.each(function () {
         var layer = d3.select(this).selectAll("circleG")
           .data(function (d) { return d; })
@@ -53,72 +53,72 @@ define(function (require) {
       return yScale(cyValue.call(this, d, i));
     }
 
-    shapes.xScale = function (_) {
+    shape.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.yScale = function (_) {
+    shape.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.cx = function (_) {
+    shape.cx = function (_) {
       if (!arguments.length) { return cxValue; }
       cxValue = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.cy = function (_) {
+    shape.cy = function (_) {
       if (!arguments.length) { return cyValue; }
       cyValue = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.radius = function (_) {
+    shape.radius = function (_) {
       if (!arguments.length) { return radius; }
       radius = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.gClass = function (_) {
+    shape.gClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.circleClass = function (_) {
+    shape.circleClass = function (_) {
       if (!arguments.length) { return circleClass; }
       circleClass = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.color = function (_) {
+    shape.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.fill = function (_) {
+    shape.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.stroke = function (_) {
+    shape.stroke = function (_) {
       if (!arguments.length) { return stroke; }
       stroke = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.strokeWidth = function (_) {
+    shape.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return shapes;
+      return shape;
     };
 
-    return shapes;
+    return shape;
   };
 });
