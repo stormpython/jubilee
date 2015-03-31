@@ -4,8 +4,8 @@ define(function (require) {
   return function line() {
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
-    var barHeight;
-    var barWidth;
+    var color = d3.scale.category10();
+    var interpolate = "basis";
     var xScale;
     var yScale;
 
@@ -16,27 +16,34 @@ define(function (require) {
 
     function shape(selection) {
       selection.each(function () {
+        var line = d3.svg.line()
+          .interpolate(interpolate)
+          .x(X)
+          .y(Y);
+
         var layer = d3.select(this).selectAll("layer")
           .data(function (d) { return d; })
           .enter().append("g")
           .attr("class", gClass);
 
-        var bars = layer.selectAll("rect")
-          .data(function (d) { return d; });
+        layer.append("path")
+          .attr("class", lineClass)
+          .attr("d", function (d, i) {
+            return line(values.call(null, d, i));
+          })
+          .attr("fill", lineFill)
+          .attr("stroke", lineStroke)
+          .attr("stroke-width", strokeWidth);
 
-        bars.exit().remove();
-
-        bars
-          .enter().append("rect")
-          .attr("class", barClass)
-          .attr("fill", barFill);
-
-        bars
-          .attr("x", X)
-          .attr("y", Y)
-          .attr("height", barHeight)
-          .attr("width", barWidth);
       });
+    }
+
+    function X(d, i) {
+      return xScale(xValue(null, d, i));
+    }
+
+    function Y(d, i) {
+      return yScale(yValue(null, d, i));
     }
 
     return shape;
