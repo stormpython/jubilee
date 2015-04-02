@@ -53,12 +53,10 @@
     var yScale = d3.scale.linear().domain([0, 41]).range([0, width]);
 
     var horizontalBars = rect()
-      .width(width)
-      .height(height)
       .x(function (d) { return 0; })
       .y(function (d) { return d.x; })
-      .rectWidth(function (d) { return yScale(d.y); })
-      .rectHeight(function () { return xScale.rangeBand(); })
+      .width(function (d) { return yScale(d.y); })
+      .height(function () { return xScale.rangeBand(); })
       .xScale(yScale)
       .yScale(xScale);
 
@@ -66,12 +64,10 @@
     var yScale2 = d3.scale.linear().domain([0, 41]).range([height, 0]);
 
     var verticalBars = rect()
-      .width(width)
-      .height(height)
       .x(function (d) { return d.x; })
       .y(function (d) { return d.y; })
-      .rectWidth(function () { return width / 5; })
-      .rectHeight(function (d) { return height - yScale2(d.y); })
+      .width(function () { return width / 5; })
+      .height(function (d) { return height - yScale2(d.y); })
       .xScale(xScale2)
       .yScale(yScale2);
 

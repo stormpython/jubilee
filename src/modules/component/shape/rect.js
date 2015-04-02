@@ -6,8 +6,8 @@ define(function (require) {
     var y = function (d) { return d.y; };
     var rx = 0;
     var ry = 0;
-    var rectWidth = function () { return 10; };
-    var rectHeight = function () { return height; };
+    var width = function () { return 10; };
+    var height = function () { return height; };
     var color = d3.scale.category10();
     var xScale = null;
     var yScale = null;
@@ -43,8 +43,8 @@ define(function (require) {
           .attr("y", Y)
           .attr("rx", rx)
           .attr("ry", ry)
-          .attr("height", rectHeight)
-          .attr("width", rectWidth);
+          .attr("height", height)
+          .attr("width", width);
       });
     }
 
@@ -89,18 +89,6 @@ define(function (require) {
     shape.height = function (_) {
       if (!arguments.length) { return height; }
       height = _;
-      return shape;
-    };
-
-    shape.rectWidth = function (_) {
-      if (!arguments.length) { return rectWidth; }
-      rectWidth = _;
-      return shape;
-    };
-
-    shape.rectHeight = function (_) {
-      if (!arguments.length) { return rectHeight; }
-      rectHeight = _;
       return shape;
     };
 
