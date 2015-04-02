@@ -1,5 +1,5 @@
 # Jubilee (a.k.a the Ultimate sidekick)
-Reusable D3 Components Library
+D3 Reusable Components Library
 
 ## Disclosure
 This repository is still in its early stage, so things may not work properly.
