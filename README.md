@@ -1,5 +1,5 @@
-# Elasti
-Reusable D3 components library
+# Jubilee (a.k.a the Ultimate sidekick)
+Reusable D3 Components Library
 
 ## Environment Setup
 Fork the repository. You will need node, npm, and grunt. Change into the project's root directory.
