@@ -21,7 +21,8 @@ define(function (require) {
       clipPath: require("src/modules/component/clipPath/clipPath"),
       legend: {},
       shape: {
-        circles: require("src/modules/component/shape/circles")
+        circle: require("src/modules/component/shape/circle"),
+        rect: require("src/modules/component/shape/rect")
       }
     }
   };

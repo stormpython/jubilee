@@ -2,24 +2,31 @@ define(function (require) {
   var d3 = require("d3");
 
   return function rect() {
-    var xValue = function (d) { return d.x; };
-    var yValue = function (d) { return d.y; };
-    var barHeight;
-    var barWidth;
-    var xScale;
-    var yScale;
+    var x = function (d) { return d.x; };
+    var y = function (d) { return d.y; };
+    var rx = 0;
+    var ry = 0;
+    var height = 20;
+    var width = 20;
+    var rectWidth = function () { return 10; };
+    var rectHeight = function () { return height; };
+    var color = d3.scale.category10();
+    var xScale = null;
+    var yScale = null;
 
     // Options
-    var gClass = "layer";
-    var barClass = "bar";
-    var barFill;
+    var groupClass = "layer";
+    var rectClass = "bar";
+    var fill = function (d, i) { return color(i); };
+    var stroke;
+    var strokeWidth;
 
     function shape(selection) {
-      selection.each(function () {
+      selection.each(function (data, i) {
         var layer = d3.select(this).selectAll("layer")
           .data(function (d) { return d; })
           .enter().append("g")
-          .attr("class", gClass);
+          .attr("class", groupClass);
 
         var bars = layer.selectAll("rect")
           .data(function (d) { return d; });
@@ -28,64 +35,110 @@ define(function (require) {
 
         bars
           .enter().append("rect")
-          .attr("class", barClass)
-          .attr("fill", barFill);
+          .attr("class", rectClass)
+          .attr("fill", fill)
+          .attr("stroke", stroke)
+          .attr("strokeWidth", strokeWidth);
 
         bars
           .attr("x", X)
           .attr("y", Y)
-          .attr("height", barHeight)
-          .attr("width", barWidth);
+          .attr("rx", rx)
+          .attr("ry", ry)
+          .attr("height", rectHeight)
+          .attr("width", rectWidth);
       });
     }
 
     function X(d, i) {
-      return xScale(xValue.call(this, d, i));
+      return xScale(x.call(this, d, i));
     }
 
     function Y(d, i) {
-      return yScale(yValue.call(this, d, i));
+      return yScale(y.call(this, d, i));
     }
 
     shape.x = function (_) {
-      if (!arguments.length) { return xValue; }
-      xValue = _;
+      if (!arguments.length) { return x; }
+      x = _;
       return shape;
     };
 
     shape.y = function (_) {
-      if (!arguments.length) { return yValue; }
-      yValue = _;
+      if (!arguments.length) { return y; }
+      y = _;
       return shape;
     };
 
-    shape.barWidth = function (_) {
-      if (!arguments.length) { return barWidth; }
-      barWidth = _;
+    shape.rx = function (_) {
+      if (!arguments.length) { return rx; }
+      rx = _;
       return shape;
     };
 
-    shape.barHeight = function (_) {
-      if (!arguments.length) { return barHeight; }
-      barHeight = _;
+    shape.ry = function (_) {
+      if (!arguments.length) { return ry; }
+      ry = _;
       return shape;
     };
 
-    shape.gClass = function (_) {
+    shape.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return shape;
+    };
+
+    shape.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return shape;
+    };
+
+    shape.rectWidth = function (_) {
+      if (!arguments.length) { return rectWidth; }
+      rectWidth = _;
+      return shape;
+    };
+
+    shape.rectHeight = function (_) {
+      if (!arguments.length) { return rectHeight; }
+      rectHeight = _;
+      return shape;
+    };
+
+    shape.groupClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
       return shape;
     };
 
-    shape.barClass = function (_) {
-      if (!arguments.length) { return barClass; }
-      barClass = _;
+    shape.rectClass= function (_) {
+      if (!arguments.length) { return rectClass; }
+      rectClass = _;
       return shape;
     };
 
-    shape.barFill = function (_) {
-      if (!arguments.length) { return barFill; }
-      barFill = _;
+    shape.fill = function (_) {
+      if (!arguments.length) { return fill; }
+      fill = _;
+      return shape;
+    };
+
+    shape.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return shape;
+    };
+
+    shape.stroke = function (_) {
+      if (!arguments.length) { return stroke; }
+      stroke = _;
+      return shape;
+    };
+
+    shape.strokeWidth = function (_) {
+      if (!arguments.length) { return strokeWidth; }
+      strokeWidth = _;
       return shape;
     };
 

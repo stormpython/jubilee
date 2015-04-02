@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var circles = require("src/modules/component/shape/circles");
+  var circle = require("src/modules/component/shape/circle");
 
   return function scatterPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
@@ -89,7 +89,7 @@ define(function (require) {
               .text(yAxisText);
         }
 
-        var points = circles()
+        var points = circle()
           .xScale(xScale)
           .yScale(yScale)
           .cx(xValue)

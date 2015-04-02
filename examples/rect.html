@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+<style>
+  body {
+    font: 10px sans-serif;
+  }
+</style>
+
+<div id="horizontal"></div>
+<div id="vertical"></div>
+
+<script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
+<script>
+  require(["index"], function (jubilee) {
+    var rect = jubilee.component.shape.rect;
+    var data = {
+      series: [
+        [
+          { x: 1411761450000, y: 41, label: "band", color: "green"},
+          { x: 1411761480000, y: 18, label: "band", color: "blue"},
+          { x: 1411761510000, y: 22, label: "band", color: "purple"},
+          { x: 1411761540000, y: 17, label: "band", color: "red"},
+          { x: 1411761570000, y: 17, label: "band", color: "yellow"}
+        ]
+      ]
+    };
+    var ordinalData = {
+      series: [
+        [
+          { x: "band", y: 41 },
+          { x: "stick", y: 18 },
+          { x: "balloon", y: 22 },
+          { x: "bam", y: 17 },
+          { x: "hero", y: 17 }
+        ],
+//        [
+//          { x: "band", y: 141 },
+//          { x: "stick", y: 218 },
+//          { x: "balloon", y: 222 },
+//          { x: "bam", y: 217 },
+//          { x: "hero", y: 117 }
+//        ]
+      ]
+    };
+
+    var width = 700;
+    var height = 400;
+    var xScale = d3.scale.ordinal().domain(["band", "stick", "balloon", "bam", "hero"]).rangeBands([0, height], 0.1);
+    var yScale = d3.scale.linear().domain([0, 41]).range([0, width]);
+
+    var horizontalBars = rect()
+      .width(width)
+      .height(height)
+      .x(function (d) { return 0; })
+      .y(function (d) { return d.x; })
+      .rectWidth(function (d) { return yScale(d.y); })
+      .rectHeight(function () { return xScale.rangeBand(); })
+      .xScale(yScale)
+      .yScale(xScale);
+
+    var xScale2 = d3.time.scale().domain([1411761450000,1411761570000]).range([0, width]);
+    var yScale2 = d3.scale.linear().domain([0, 41]).range([height, 0]);
+
+    var verticalBars = rect()
+      .width(width)
+      .height(height)
+      .x(function (d) { return d.x; })
+      .y(function (d) { return d.y; })
+      .rectWidth(function () { return width / 5; })
+      .rectHeight(function (d) { return height - yScale2(d.y); })
+      .xScale(xScale2)
+      .yScale(yScale2);
+
+    d3.select("#horizontal")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .datum(ordinalData.series)
+      .call(horizontalBars);
+
+    d3.select("#vertical")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .datum(data.series)
+      .call(verticalBars);
+  });
+</script>
+</body>
+</html>
