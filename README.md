@@ -1,5 +1,5 @@
 # Elasti
-Reusable D3 charts
+Reusable D3 components library
 
 ## Environment Setup
 Fork the repository. You will need node, npm, and grunt. Change into the project's root directory.
