@@ -6,8 +6,6 @@ define(function (require) {
     var y = function (d) { return d.y; };
     var rx = 0;
     var ry = 0;
-    var height = 20;
-    var width = 20;
     var rectWidth = function () { return 10; };
     var rectHeight = function () { return height; };
     var color = d3.scale.category10();
