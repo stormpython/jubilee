@@ -2,6 +2,6 @@
   if (typeof define === "function" && define.amd) {
     define([], factory);
   } else {
-    root.elasti = factory();
+    root.jubilee = factory();
   }
 }(this, function () {

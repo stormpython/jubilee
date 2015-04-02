@@ -28,9 +28,9 @@ module.exports = function(grunt) {
           baseUrl: ".",
           mainConfigFile: "src/require.config.js",
           name: "node_modules/almond/almond",
-          include: ["src/require.config", "elasti"],
+          include: ["src/require.config", "jubilee"],
           optimize: "none",
-          out: "build/elasti.js",
+          out: "build/jubilee.js",
           wrap: {
             startFile: "src/start.js",
             endFile: "src/end.js"
@@ -45,7 +45,7 @@ module.exports = function(grunt) {
       },
       js: {
         files: {
-          "build/elasti.min.js": ["build/elasti.js"]
+          "build/jubilee.min.js": ["build/jubilee.js"]
         }
       }
     },
@@ -66,14 +66,14 @@ module.exports = function(grunt) {
     copy: {
       css: {
         files: [
-          { src: "src/style/elasti.css", dest: "build/elasti.css" }
+          { src: "src/style/jubilee.css", dest: "build/jubilee.css" }
         ]
       }
     },
     cssmin: {
       dist: {
         files: {
-          "build/elasti.min.css" : ["build/elasti.css"]
+          "build/jubilee.min.css" : ["build/jubilee.css"]
         }
       }
     }

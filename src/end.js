@@ -1,2 +1,2 @@
-  return require('elasti');
+  return require('jubilee');
 }));

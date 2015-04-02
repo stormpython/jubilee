@@ -1,12 +1,11 @@
 {
-  "name": "Elasti",
+  "name": "jubilee",
   "version": "0.1.0",
-  "homepage": "https://github.com/stormpython/elasti",
+  "homepage": "https://github.com/stormpython/jubilee",
   "authors": [
-    "Shelby Sturgis",
-    "Juan Thomassie"
+    "Shelby Sturgis"
   ],
-  "description": "Basic D3 Charting Library",
+  "description": "D3 Reusable Components Library",
   "main": "core.js",
   "keywords": [
     "data",

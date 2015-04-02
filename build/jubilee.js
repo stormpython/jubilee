@@ -1,14 +1,8 @@
 (function (root, factory) {
   if (typeof define === "function" && define.amd) {
-    //Allow using this built library as an AMD module
-    //in another project. That other project will only
-    //see this AMD call, not the internal modules in
-    //the closure below.
     define([], factory);
   } else {
-    //Browser globals case. Just assign the
-    //result to a property on the global.
-    root.elasti = factory();
+    root.jubilee = factory();
   }
 }(this, function () {
 /**
@@ -67,7 +61,7 @@ var requirejs, require, define;
 
                 //Lop off the last part of baseParts, so that . matches the
                 //"directory" and not name of the baseName's module. For instance,
-                //baseName of "one/two/three", map to "one/two/three.js", but we
+                //baseName of "one/two/three", maps to "one/two/three.js", but we
                 //want the directory, "one/two" for this normalization.
                 name = baseParts.slice(0, baseParts.length - 1).concat(name);
 
@@ -445,14 +439,15 @@ var requirejs, require, define;
 define("node_modules/almond/almond", function(){});
 
 require.config({
-  baseUrl: "../",
+  baseUrl: "/",
   paths: {
-    elasti: "src/index",
+    jubilee: "src/index",
     d3: "lib/d3/d3"
   },
   shim: {},
   packages: []
 });
+
 define("src/require.config", function(){});
 
 !function() {
@@ -9962,7 +9957,7 @@ define("src/require.config", function(){});
 define('src/modules/component/shape/circles',['require','d3'],function (require) {
   var d3 = require("d3");
 
-  return function circles() {
+  return function circle() {
     var cxValue = function (d) { return d.x; };
     var cyValue = function (d) { return d.y; };
     var xScale;
@@ -9970,20 +9965,21 @@ define('src/modules/component/shape/circles',['require','d3'],function (require)
 
     // Options
     var radius = 5;
+    var gClass = "layer";
     var circleClass = "circles";
     var color = d3.scale.category20c();
     var fill = function (d, i, j) { return color(j); };
     var stroke = function (d, i, j) { return color(j); };
     var strokeWidth = 3;
 
-    function shapes(selection) {
+    function shape(selection) {
       selection.each(function () {
-        var layer = d3.select(this).selectAll(".circle g")
+        var layer = d3.select(this).selectAll("circleG")
           .data(function (d) { return d; })
           .enter().append("g")
-          .attr("class", "layer");
+          .attr("class", gClass);
 
-        var circles = layer.selectAll(".circle")
+        var circles = layer.selectAll("circlePoints")
           .data(function (d) { return d; });
 
         // Exit
@@ -10013,67 +10009,73 @@ define('src/modules/component/shape/circles',['require','d3'],function (require)
       return yScale(cyValue.call(this, d, i));
     }
 
-    shapes.xScale = function (_) {
+    shape.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.yScale = function (_) {
+    shape.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.cx = function (_) {
+    shape.cx = function (_) {
       if (!arguments.length) { return cxValue; }
       cxValue = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.cy = function (_) {
+    shape.cy = function (_) {
       if (!arguments.length) { return cyValue; }
       cyValue = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.radius = function (_) {
+    shape.radius = function (_) {
       if (!arguments.length) { return radius; }
       radius = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.circleClass = function (_) {
+    shape.gClass = function (_) {
+      if (!arguments.length) { return gClass; }
+      gClass = _;
+      return shape;
+    };
+
+    shape.circleClass = function (_) {
       if (!arguments.length) { return circleClass; }
       circleClass = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.color = function (_) {
+    shape.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.fill = function (_) {
+    shape.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.stroke = function (_) {
+    shape.stroke = function (_) {
       if (!arguments.length) { return stroke; }
       stroke = _;
-      return shapes;
+      return shape;
     };
 
-    shapes.strokeWidth = function (_) {
+    shape.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return shapes;
+      return shape;
     };
 
-    return shapes;
+    return shape;
   };
 });
 
@@ -10822,6 +10824,124 @@ define('src/modules/chart/pie',['require','d3'],function (require) {
     return chart;
   };
 });
+define('src/modules/chart/scatterplot',['require','d3','src/modules/component/shape/circles'],function (require) {
+  var d3 = require("d3");
+  var circles = require("src/modules/component/shape/circles");
+
+  return function scatterPlot() {
+    var margin = {top: 20, right: 20, bottom: 20, left: 50};
+    var width = 760 - margin.left - margin.right;
+    var height = 620 - margin.top - margin.bottom;
+    var color = d3.scale.category20c();
+    var xValue = function (d) { return d.x; };
+    var yValue = function (d) { return d.y; };
+    var zValue = function (d) { return d.z; };
+    var xScale = d3.scale.linear().range([0, width]);
+    var yScale = d3.scale.linear().range([height, 0]);
+    var xAxis = d3.svg.axis().orient("bottom");
+    var yAxis = d3.svg.axis().orient("left");
+    var xDomain = function (domainData) {
+      return d3.extent(domainData, xValue);
+    };
+    var yDomain = function (domainData) {
+      return d3.extent(domainData, yValue);
+    };
+    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
+
+    var showXAxis = true;
+    var xAxisClass = "x axis";
+    var xAxisTextClass = "x label";
+    var xAxisTextX = function () { return width / 2; };
+    var xAxisTextY = 30;
+    var xAxisTextDY = ".71em";
+    var xAxisTextAnchor = "middle";
+    var xAxisText = "";
+
+    var showYAxis = true;
+    var yAxisClass = "y axis";
+    var yAxisTextClass = "y label";
+    var yAxisTextTransform = "rotate(-90)";
+    var yAxisTextX = -height / 2;
+    var yAxisTextY = -60;
+    var yAxisTextDY = ".71em";
+    var yAxisTextAnchor = "middle";
+    var yAxisText = "";
+
+    var circleRadius = zValue;
+    var circleClass = "circle";
+    var circleFill = function (d, i) { return color(i); };
+    var circleStroke = function (d, i) { return color(i); };
+    var circleStrokeWidth = 3;
+
+    function chart(selection) {
+      selection.each(function (data) {
+
+        var svg = d3.select(this).append("svg")
+          .data([data])
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom);
+
+        var g = svg.append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        xScale.domain(xDomain.call(this, mapDomain(data)));
+        yScale.domain(yDomain.call(this, mapDomain(data)));
+
+        if (showXAxis) {
+          g.append("g")
+            .attr("class", xAxisClass)
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis.scale(xScale))
+            .append("text")
+              .attr("class", xAxisTextClass)
+              .attr("x", xAxisTextX)
+              .attr("y", xAxisTextY)
+              .attr("dy", xAxisTextDY)
+              .style("text-anchor", xAxisTextAnchor)
+              .text(xAxisText);
+        }
+
+        if (showYAxis) {
+          g.append("g")
+            .attr("class", yAxisClass)
+            .call(yAxis.scale(yScale))
+            .append("text")
+              .attr("class", yAxisTextClass)
+              .attr("transform", yAxisTextTransform)
+              .attr("y", yAxisTextY)
+              .attr("x", yAxisTextX)
+              .attr("dy", yAxisTextDY)
+              .style("text-anchor", yAxisTextAnchor)
+              .text(yAxisText);
+        }
+
+        var points = circles()
+          .xScale(xScale)
+          .yScale(yScale)
+          .cx(xValue)
+          .cy(yValue)
+          .color(color)
+          .radius(circleRadius)
+          .circleClass(circleClass)
+          .fill(circleFill)
+          .stroke(circleStroke)
+          .strokeWidth(circleStrokeWidth);
+
+        g.call(points);
+      });
+    }
+
+    function mapDomain (data) {
+      return data.reduce(function (a, b) {
+        return a.concat(b);
+      });
+    }
+
+    d3.rebind(chart, dispatch, "on");
+    return chart;
+  };
+});
+
 define('src/modules/chart/sunburst',['require','d3'],function (require) {
   var d3 = require("d3");
 
@@ -11170,6 +11290,8 @@ define('src/modules/chart/treemap',['require','d3'],function (require) {
     var color = d3.scale.category20c();
     var sticky = true;
     var value = function (d) { return d.size; };
+    var children = function (d) { return d.children; };
+    var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
     var nodeClass = "node";
     var nodeColor = function (d, i) { return d.children ? color(i) : null; };
@@ -11180,6 +11302,7 @@ define('src/modules/chart/treemap',['require','d3'],function (require) {
         var treemap = d3.layout.treemap()
           .size([width, height])
           .sticky(sticky)
+          .children(children)
           .value(value);
 
         var div = d3.select(this).append("div")
@@ -11205,6 +11328,33 @@ define('src/modules/chart/treemap',['require','d3'],function (require) {
         .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
         .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
     }
+
+    chart.margin = function (_) {
+      if (!arguments.length) { return margin; }
+      margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
+      margin.right = typeof _.right !== "undefined" ? _.right : margin.right;
+      margin.bottom = typeof _.bottom !== "undefined" ? _.bottom : margin.bottom;
+      margin.left = typeof _.left !== "undefined" ? _.left : margin.left;
+      return chart;
+    };
+
+    chart.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return chart;
+    };
+
+    chart.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return chart;
+    };
+
+    chart.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return chart;
+    };
 
     return chart;
   };
@@ -11476,33 +11626,253 @@ define('src/modules/chart/histogram',['require','d3'],function (require) {
     return chart;
   };
 });
-define('elasti',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/pie','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/component/shape/circles'],function (require) {
+define('src/modules/layout/grid',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function grid() {
+    var gridSize = [10, 10];
+    var rowScale = d3.scale.linear();
+    var columnScale = d3.scale.linear();
+
+    function layout(data) {
+      var rows = Math.ceil(Math.sqrt(data.length));
+      var columns = rows;
+      var gridCellWidth = gridSize[0] / columns;
+      var gridCellHeight = gridSize[1] / rows;
+      var cell = 0;
+
+      rowScale.domain([0, rows]).range([0, gridSize[1]]);
+      columnScale.domain([0, columns]).range([0, gridSize[0]]);
+
+      d3.range(rows).forEach(function (row) {
+        d3.range(columns).forEach(function (col) {
+          if (!data[cell]) { return; }
+
+          data[cell].x = columnScale(col);
+          data[cell].y = rowScale(row);
+          data[cell].height = gridCellHeight;
+          data[cell].width = gridCellWidth;
+          cell++;
+        });
+      });
+
+      return data;
+    }
+
+    layout.gridSize = function (_) {
+      if (!arguments.length) { return gridSize; }
+      gridSize = _;
+      return layout;
+    };
+
+    return layout;
+  };
+});
+define('src/modules/layout/split',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function split() {
+    var splitBy = function (d) { return d; };
+    var element = "div";
+    var elementClass = function () { return "horizontal"; };
+    var predicate = false;
+
+    function layout(selection) {
+      selection.each(function (data) {
+        var elem = d3.select(this).data([data]);
+
+        var elems = elem.selectAll("splits")
+          .data(splitBy)
+          .enter().append(element)
+          .attr("class",  elementClass);
+
+        if (predicate) {
+          elems.call(split);
+        }
+      });
+    }
+
+    layout.splitBy = function (_) {
+      if (!arguments.length) { return splitBy; }
+      splitBy = _;
+      return layout;
+    };
+
+    layout.element = function (_) {
+      if (!arguments.length) { return element; }
+      element = _;
+      return layout;
+    };
+
+    layout.elementClass = function (_) {
+      if (!arguments.length) { return elementClass; }
+      elementClass = _;
+      return layout;
+    };
+
+    layout.predicate = function (_) {
+      if (!arguments.length) { return predicate; }
+      predicate = _;
+      return layout;
+    };
+
+    return layout;
+  };
+});
+define('src/modules/component/axis/axis',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function axis() {
+    var transform = "translate(0,0)";
+    var scale = null;
+
+    var text = "";
+    var textY = 6;
+    var textDY = ".71em";
+    var textAnchor = "end";
+
+    function component(selection) {
+      selection.each(function () {
+        var g = d3.select(this).select("axis")
+          .attr("transform", transform)
+          .call(scale);
+
+        g.append("text")
+          .attr("y", textY)
+          .attr("dy", textDY)
+          .style("text-anchor", textAnchor)
+          .text(text);
+      });
+    }
+
+    component.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
+      return component;
+    };
+
+    component.scale = function (_) {
+      if (!arguments.length) { return scale; }
+      scale = _;
+      return component;
+    };
+
+    component.text = function (_) {
+      if (!arguments.length) { return text; }
+      text = _;
+      return component;
+    };
+
+    component.textY = function (_) {
+      if (!arguments.length) { return textY; }
+      textY = _;
+      return component;
+    };
+
+    component.textDY = function (_) {
+      if (!arguments.length) { return textDY; }
+      textDY = _;
+      return component;
+    };
+
+    component.textAnchor = function (_) {
+      if (!arguments.length) { return textAnchor; }
+      textAnchor = _;
+      return component;
+    };
+
+    return component;
+  };
+});
+define('src/modules/component/clipPath/clipPath',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function clipPath() {
+    var id = uniqueID();
+    var x = null;
+    var y = null;
+    var width = 50;
+    var height = 50;
+
+    function component(selection) {
+      selection.each(function () {
+        return d3.select("this")
+          .attr("clip-path", "url(#" + id + ")")
+          .append("clipPath")
+          .attr("id", id)
+          .append("rect")
+          .attr("x", x)
+          .attr("y", y)
+          .attr("width", width)
+          .attr("height", height);
+      });
+    }
+
+    function uniqueID() {
+      var randomNumber = Math.floor(Math.random * 100);
+      return "uniqueId_" + randomNumber;
+    }
+
+    component.id = function (_) {
+      if (!arguments.length) { return id; }
+      id = _;
+      return component;
+    };
+
+    component.x = function (_) {
+      if (!arguments.length) { return x; }
+      x = _;
+      return component;
+    };
+
+    component.y = function (_) {
+      if (!arguments.length) { return y; }
+      y = _;
+      return component;
+    };
+
+    component.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return component;
+    };
+
+    component.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return component;
+    };
+
+    return component;
+  };
+});
+define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/clipPath/clipPath','src/modules/component/shape/circles'],function (require) {
   return {
     version: "0.1.0",
-    charts: {
+    chart: {
       line: require("src/modules/chart/line"),
       area: require("src/modules/chart/area"),
       pie: require("src/modules/chart/pie"),
+      scatter : require("src/modules/chart/scatterplot"),
       sunburst: require("src/modules/chart/sunburst"),
       dendrogram: require("src/modules/chart/dendrogram"),
       treemap: require("src/modules/chart/treemap"),
       histogram: require("src/modules/chart/histogram")
     },
-    maps: {},
-    components: {
-      axis: {},
+    map: {},
+    layout: {
+      grid: require("src/modules/layout/grid"),
+      split: require("src/modules/layout/split")
+    },
+    component: {
+      axis: require("src/modules/component/axis/axis"),
+      clipPath: require("src/modules/component/clipPath/clipPath"),
       legend: {},
-      scales: {},
-      shapes: {
+      shape: {
         circles: require("src/modules/component/shape/circles")
-      },
-      tooltip: {}
+      }
     }
   };
 });
-  //The modules for your project will be inlined above
-  //this snippet. Ask almond to synchronously require the
-  //module value for 'main' here and return it as the
-  //value to use for the public API for the built file.
-  return require('elasti');
+  return require('jubilee');
 }));
