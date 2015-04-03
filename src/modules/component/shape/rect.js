@@ -11,7 +11,7 @@ define(function (require) {
     var color = d3.scale.category10();
 
     // Options
-    var groupClass = "layer";
+    var gClass = "layer";
     var rectClass = "bar";
     var fill = function (d, i) { return color(i); };
     var stroke;
@@ -22,7 +22,7 @@ define(function (require) {
         var layer = d3.select(this).selectAll("layer")
           .data(function (d) { return d; })
           .enter().append("g")
-          .attr("class", groupClass);
+          .attr("class", gClass);
 
         var bars = layer.selectAll("rect")
           .data(function (d) { return d; });
@@ -82,7 +82,7 @@ define(function (require) {
       return shape;
     };
 
-    shape.groupClass = function (_) {
+    shape.gClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
       return shape;
