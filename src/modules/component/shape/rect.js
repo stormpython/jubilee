@@ -39,21 +39,13 @@ define(function (require) {
           .attr("strokeWidth", strokeWidth);
 
         bars
-          .attr("x", X)
-          .attr("y", Y)
+          .attr("x", x)
+          .attr("y", y)
           .attr("rx", rx)
           .attr("ry", ry)
           .attr("height", height)
           .attr("width", width);
       });
-    }
-
-    function X(d, i) {
-      return xScale(x.call(this, d, i));
-    }
-
-    function Y(d, i) {
-      return yScale(y.call(this, d, i));
     }
 
     shape.x = function (_) {
