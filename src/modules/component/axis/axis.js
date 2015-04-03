@@ -1,10 +1,11 @@
 define(function (require) {
   var d3 = require("d3");
 
-  return function axis() {
+  return function axes() {
     var transform = "translate(0,0)";
-    var scale = null;
+    var axis = null;
 
+    var gClass = "axis";
     var title = "";
     var titleY = 6;
     var titleDY = ".71em";
@@ -12,27 +13,34 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function () {
-        var g = d3.select(this).select("axis")
+        var g = d3.select(this).append("g")
+          .attr("class", gClass)
           .attr("transform", transform)
-          .call(scale);
+          .call(axis);
 
         g.append("text")
           .attr("y", titleY)
           .attr("dy", titleDY)
           .style("title-anchor", titleAnchor)
-          .title(title);
+          .text(title);
       });
     }
+
+    component.axis= function (_) {
+      if (!arguments.length) { return axis; }
+      axis = _;
+      return component;
+    };
+
+    component.gClass = function (_) {
+      if (!arguments.length) { return gClass; }
+      gClass = _;
+      return component;
+    };
 
     component.transform = function (_) {
       if (!arguments.length) { return transform; }
       transform = _;
-      return component;
-    };
-
-    component.scale = function (_) {
-      if (!arguments.length) { return scale; }
-      scale = _;
       return component;
     };
 
