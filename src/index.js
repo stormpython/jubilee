@@ -22,7 +22,8 @@ define(function (require) {
       legend: {},
       shape: {
         circle: require("src/modules/component/shape/circle"),
-        rect: require("src/modules/component/shape/rect")
+        rect: require("src/modules/component/shape/rect"),
+        path: require("src/modules/component/shape/path")
       }
     }
   };

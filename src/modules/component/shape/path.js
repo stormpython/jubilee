@@ -2,16 +2,13 @@ define(function (require) {
   var d3 = require("d3");
 
   return function path() {
-    var x = function (d) { return d.x; };
-    var y = function (d) { return d.y; };
-    var y0 = function (d) { return d.y0; }
+    var pathGenerator = null;
     var color = d3.scale.category10();
-    var interpolate = "basis";
-    var pathFunction = d3.svg.line().interpolate(interpolate).x(x).y(y);
 
     // Options
     var gClass = "layer";
     var pathClass = "line";
+    var transform = "translate(0,0)");
     var fill = function (d, i) { return color(i); };
     var stroke = 3;
     var strokeWidth = 1;
@@ -24,47 +21,24 @@ define(function (require) {
           .attr("class", gClass);
 
         layer.append("path")
-          .attr("class", lineClass)
-          .attr("d", function (d) { return pathFunction(d); })
+          .attr("transform", transform)
+          .attr("class", pathClass)
+          .attr("d", pathGenerator)
           .attr("fill", fill)
           .attr("stroke", stroke)
           .attr("stroke-width", strokeWidth);
       });
     }
 
-    shape.x = function (_) {
-      if (!arguments.length) { return x; }
-      x = _;
-      return shape;
-    };
-
-    shape.y = function (_) {
-      if (!arguments.length) { return y; }
-      y = _;
-      return shape;
-    };
-
-    shape.y0 = function (_) {
-      if (!arguments.length) { return y0; }
-      y0 = _;
+    shape.pathGenerator = function (_) {
+      if (!arguments.length) { return pathGenerator; }
+      pathGenerator = _;
       return shape;
     };
 
     shape.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return shape;
-    };
-
-    shape.interpolate = function (_) {
-      if (!arguments.length) { return interpolate; }
-      interpolate = _;
-      return shape;
-    };
-
-    shape.pathFunction = function (_) {
-      if (!arguments.length) { return pathFunction; }
-      pathFunction = _;
       return shape;
     };
 
@@ -77,6 +51,12 @@ define(function (require) {
     shape.pathClass = function (_) {
       if (!arguments.length) { return pathClass; }
       pathClass = _;
+      return shape;
+    };
+
+    shape.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
       return shape;
     };
 
