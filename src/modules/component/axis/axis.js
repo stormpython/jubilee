@@ -5,10 +5,10 @@ define(function (require) {
     var transform = "translate(0,0)";
     var scale = null;
 
-    var text = "";
-    var textY = 6;
-    var textDY = ".71em";
-    var textAnchor = "end";
+    var title = "";
+    var titleY = 6;
+    var titleDY = ".71em";
+    var titleAnchor = "end";
 
     function component(selection) {
       selection.each(function () {
@@ -17,10 +17,10 @@ define(function (require) {
           .call(scale);
 
         g.append("text")
-          .attr("y", textY)
-          .attr("dy", textDY)
-          .style("text-anchor", textAnchor)
-          .text(text);
+          .attr("y", titleY)
+          .attr("dy", titleDY)
+          .style("title-anchor", titleAnchor)
+          .title(title);
       });
     }
 
@@ -36,27 +36,27 @@ define(function (require) {
       return component;
     };
 
-    component.text = function (_) {
-      if (!arguments.length) { return text; }
-      text = _;
+    component.title = function (_) {
+      if (!arguments.length) { return title; }
+      title = _;
       return component;
     };
 
-    component.textY = function (_) {
-      if (!arguments.length) { return textY; }
-      textY = _;
+    component.titleY = function (_) {
+      if (!arguments.length) { return titleY; }
+      titleY = _;
       return component;
     };
 
-    component.textDY = function (_) {
-      if (!arguments.length) { return textDY; }
-      textDY = _;
+    component.titleDY = function (_) {
+      if (!arguments.length) { return titleDY; }
+      titleDY = _;
       return component;
     };
 
-    component.textAnchor = function (_) {
-      if (!arguments.length) { return textAnchor; }
-      textAnchor = _;
+    component.titleAnchor = function (_) {
+      if (!arguments.length) { return titleAnchor; }
+      titleAnchor = _;
       return component;
     };
 

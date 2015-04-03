@@ -18,7 +18,7 @@ define(function (require) {
     var strokeWidth;
 
     function shape(selection) {
-      selection.each(function (data, i) {
+      selection.each(function () {
         var layer = d3.select(this).selectAll("layer")
           .data(function (d) { return d; })
           .enter().append("g")
