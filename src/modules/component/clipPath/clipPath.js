@@ -3,8 +3,8 @@ define(function (require) {
 
   return function clipPath() {
     var id = uniqueID();
-    var x = null;
-    var y = null;
+    var x = 0;
+    var y = 0;
     var width = 50;
     var height = 50;
 
