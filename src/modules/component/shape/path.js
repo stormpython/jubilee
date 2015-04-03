@@ -8,7 +8,7 @@ define(function (require) {
     // Options
     var gClass = "layer";
     var pathClass = "line";
-    var transform = "translate(0,0)");
+    var transform = "translate(0,0)";
     var fill = function (d, i) { return color(i); };
     var stroke = 3;
     var strokeWidth = 1;
