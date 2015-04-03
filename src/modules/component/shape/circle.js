@@ -4,12 +4,12 @@ define(function (require) {
   return function circle() {
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
+    var radius = 5;
+    var color = d3.scale.category20c();
 
     // Options
-    var radius = 5;
     var gClass = "layer";
     var circleClass = "circles";
-    var color = d3.scale.category20c();
     var fill = function (d, i, j) { return color(j); };
     var stroke = function (d, i, j) { return color(j); };
     var strokeWidth = 3;
