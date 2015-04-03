@@ -9,8 +9,6 @@ define(function (require) {
     var width = function () { return 10; };
     var height = function () { return height; };
     var color = d3.scale.category10();
-    var xScale = null;
-    var yScale = null;
 
     // Options
     var groupClass = "layer";
@@ -117,18 +115,6 @@ define(function (require) {
     shape.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return shape;
-    };
-
-    shape.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
-      return shape;
-    };
-
-    shape.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
       return shape;
     };
 

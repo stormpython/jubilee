@@ -96,10 +96,8 @@ define(function (require) {
 
         if (addCircles) {
           var points = circle()
-            .xScale(xScale)
-            .yScale(yScale)
-            .cx(xValue)
-            .cy(yValue)
+            .cx(X)
+            .cy(Y)
             .color(color)
             .radius(circleRadius)
             .circleClass(circleClass)

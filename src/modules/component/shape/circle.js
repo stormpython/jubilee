@@ -2,10 +2,8 @@ define(function (require) {
   var d3 = require("d3");
 
   return function circle() {
-    var cxValue = function (d) { return d.x; };
-    var cyValue = function (d) { return d.y; };
-    var xScale;
-    var yScale;
+    var cx = function (d) { return d.x; };
+    var cy = function (d) { return d.y; };
 
     // Options
     var radius = 5;
@@ -40,40 +38,20 @@ define(function (require) {
           .attr("stroke", stroke)
           .attr("stroke-width", strokeWidth)
           .attr("r", radius)
-          .attr("cx", X)
-          .attr("cy", Y);
+          .attr("cx", cx)
+          .attr("cy", cy);
       });
     }
 
-    function X(d, i) {
-      return xScale(cxValue.call(this, d, i));
-    }
-
-    function Y(d, i) {
-      return yScale(cyValue.call(this, d, i));
-    }
-
-    shape.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
-      return shape;
-    };
-
-    shape.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
-      return shape;
-    };
-
     shape.cx = function (_) {
-      if (!arguments.length) { return cxValue; }
-      cxValue = _;
+      if (!arguments.length) { return cx; }
+      cx = _;
       return shape;
     };
 
     shape.cy = function (_) {
-      if (!arguments.length) { return cyValue; }
-      cyValue = _;
+      if (!arguments.length) { return cy; }
+      cy = _;
       return shape;
     };
 
