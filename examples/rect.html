@@ -56,8 +56,6 @@
       ]
     };
 
-
-
     var width = 700;
     var height = 400;
     var xScale = d3.scale.ordinal().domain(["band", "stick", "balloon", "bam", "hero"]).rangeBands([height, 0], 0.1);
@@ -106,7 +104,7 @@
       .append("svg")
       .attr("height", height)
       .append("g")
-      .attr("transform", "translate(50,10)")
+      .attr("transform", "translate(50,0)")
       .datum(ordinalData.series)
       .call(yAxis);
   });
