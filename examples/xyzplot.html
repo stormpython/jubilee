@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+<style>
+  body {
+    font: 10px sans-serif;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .line {
+    fill: none;
+    stroke-width: 1.5px;
+  }
+
+  .area {
+    stroke-width: 1.5px;
+    opacity: 0.6;
+  }
+</style>
+
+<div id="chart"></div>
+
+<script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
+<script>
+  require(["index"], function (jubilee) {
+    var xyzPlot = jubilee.chart.xyzplot;
+    var rect = jubilee.component.shape.rect;
+    var circle = jubilee.component.shape.circle;
+    var path = jubilee.component.shape.path;
+    var data = {
+      series: [
+        [
+          { x: 16, y: 22, z: 0.2 },
+          { x: 20, y: 41, z: 0.5 },
+          { x: 25, y: 18, z: 0.6 },
+          { x: 45, y: 17, z: 0.9 },
+          { x: 96, y: 17, z: 0.3 }
+        ]
+      ]
+    };
+
+    var width = 700;
+    var height = 400;
+    var color = d3.scale.category10();
+    var xScale = d3.scale.linear().domain([16, 96]).range([0, width]);
+    var leftScale = d3.scale.linear().domain([0, 41]).range([height, 0]);
+    var rightScale = d3.scale.linear().domain([0, 0.9]).range([height, 0]);
+
+    var bars = rect()
+      .x(function (d) { return xScale(d.x); })
+      .y(function (d) { return leftScale(d.y); })
+      .width(10)
+      .height(function (d) { return height - leftScale(d.y); });
+
+    var circles = circle()
+      .cx(function (d) { return xScale(d.x); })
+      .cy(function (d) { return rightScale(d.z); })
+      .radius(5)
+      .stroke(function (d, i) { return color(i); })
+      .fill(function (d, i) { return color(i); });
+
+    var line = d3.svg.line()
+      .x(function (d) { return xScale(d.x); })
+      .y(function (d) { return rightScale(d.z); })
+      .interpolate("linear");
+
+    var area = d3.svg.area()
+      .x(function (d) { return xScale(d.x); })
+      .y(function (d) { return rightScale(d.z); })
+      .y0(function () { return rightScale(0); })
+      .interpolate("cardinal")
+
+    var lines = path().pathGenerator(line).pathClass("line");
+    var areas = path().pathGenerator(area).pathClass("area").fill("green");
+
+    var chart = xyzPlot()
+      .width(width)
+      .height(height)
+      .xScale(xScale)
+      .leftScale(leftScale)
+      .rightScale(rightScale)
+      .shapes([bars, circles, lines, areas]);
+
+    d3.select("#chart")
+      .datum(data.series)
+      .call(chart);
+  });
+</script>
+</body>
+</html>

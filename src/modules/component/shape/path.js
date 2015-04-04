@@ -7,15 +7,15 @@ define(function (require) {
 
     // Options
     var gClass = "layer";
-    var pathClass = "line";
+    var pathClass = "path";
     var transform = "translate(0,0)";
-    var fill = function (d, i) { return color(i); };
-    var stroke = 3;
+    var fill = "none";
+    var stroke = function (d, i) { return color(i); };
     var strokeWidth = 1;
 
     function shape(selection) {
       selection.each(function () {
-        var layer = d3.select(this).selectAll("layer")
+        var layer = d3.select(this).selectAll("pathG")
           .data(function (d) { return d; })
           .enter().append("g")
           .attr("class", gClass);
@@ -23,10 +23,10 @@ define(function (require) {
         layer.append("path")
           .attr("transform", transform)
           .attr("class", pathClass)
-          .attr("d", pathGenerator)
           .attr("fill", fill)
           .attr("stroke", stroke)
-          .attr("stroke-width", strokeWidth);
+          .attr("stroke-width", strokeWidth)
+          .attr("d", pathGenerator);
       });
     }
 

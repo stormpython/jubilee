@@ -20,7 +20,7 @@ define(function (require) {
     var rightAxisTitle = "";
 
     function chart(selection) {
-      selection.each(function (data, i) {
+      selection.each(function (data) {
         var xAxis = d3.svg.axis().orient("bottom");
         var leftAxis = d3.svg.axis().orient("left");
         var rightAxis = d3.svg.axis().orient("right");
@@ -42,7 +42,8 @@ define(function (require) {
         }
 
         if (showXAxis) {
-          g.select(".x.axis")
+          g.append("g")
+            .attr("class", "x axis")
             .attr("transform", "translate(0," + leftScale.range()[0] + ")")
             .call(xAxis.scale(xScale))
             .append("text")
@@ -53,7 +54,8 @@ define(function (require) {
         }
 
         if (showLeftAxis) {
-          g.select(".left.axis")
+          g.append("g")
+            .attr("class", "left axis")
             .call(leftAxis.scale(leftScale))
             .append("text")
             .attr("y", 6)
@@ -63,7 +65,8 @@ define(function (require) {
         }
 
         if (showRightAxis) {
-          g.select(".right.axis")
+          g.append("g")
+            .attr("class", "right axis")
             .attr("transform", "translate(" + xScale.range()[1] + "," + "0)")
             .call(rightAxis.scale(rightScale))
             .append("text")
