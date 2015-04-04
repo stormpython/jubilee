@@ -9,7 +9,8 @@ define(function (require) {
       sunburst: require("src/modules/chart/sunburst"),
       dendrogram: require("src/modules/chart/dendrogram"),
       treemap: require("src/modules/chart/treemap"),
-      histogram: require("src/modules/chart/histogram")
+      histogram: require("src/modules/chart/histogram"),
+      xyzplot: require("src/modules/chart/xyzplot")
     },
     map: {},
     layout: {
@@ -23,7 +24,8 @@ define(function (require) {
       shape: {
         circle: require("src/modules/component/shape/circle"),
         rect: require("src/modules/component/shape/rect"),
-        path: require("src/modules/component/shape/path")
+        path: require("src/modules/component/shape/path"),
+        line: require("src/modules/component/shape/line")
       }
     }
   };
