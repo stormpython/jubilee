@@ -34,7 +34,7 @@
     var myChart = pieChart()
         .width(500)
         .height(500)
-        .value(function (d) { return d.x; })
+        .value(function (d) { return d.y; })
         .label(function (d) { return d.label; });
 
     d3.select("#chart")

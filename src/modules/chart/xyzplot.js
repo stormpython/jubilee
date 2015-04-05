@@ -9,6 +9,9 @@ define(function (require) {
     var leftScale = null;
     var rightScale = null;
     var shapes = null;
+    var graphData = null;
+    var graphTransform = null;
+    var graphs = null;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -38,6 +41,25 @@ define(function (require) {
         if (shapes instanceof Array) {
           shapes.forEach(function (shape) {
             if (typeof shape === "function") { g.call(shape); }
+          });
+        }
+
+        if (typeof graphs === "function") {
+          g.data(function (d) { return d; })
+            .append("g")
+            .attr("class", "layer")
+            .selectAll("g")
+            .data(function (d) { return d; })
+            .enter()
+            .append("g")
+            .attr("transform", graphTransform)
+            .datum(graphData)
+            .call(graphs);
+        }
+
+        if (graphs instanceof Array) {
+          graphs.forEach(function (graph, i) {
+            g.datum(graphData[i]).call(graph);
           });
         }
 
@@ -120,6 +142,24 @@ define(function (require) {
     chart.shapes = function (_) {
       if (!arguments.length) { return shapes; }
       shapes = _;
+      return chart;
+    };
+
+    chart.graphs = function (_) {
+      if (!arguments.length) { return graphs; }
+      graphs = _;
+      return chart;
+    };
+
+    chart.graphData = function (_) {
+      if (!arguments.length) { return graphData; }
+      graphData = _;
+      return chart;
+    };
+
+    chart.graphTransform = function (_) {
+      if (!arguments.length) { return graphTransform; }
+      graphTransform = _;
       return chart;
     };
 
