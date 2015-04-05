@@ -9,9 +9,9 @@ define(function (require) {
     var draw = null;
 
     function component(selection) {
-      selection.each(function () {
+      selection.each(function (data, i) {
         var g = d3.select(this)
-          .data(function (d) { return d; })
+          .data(data, function (d) { return d; })
           .append("g")
           .attr("class", gClass);
 
