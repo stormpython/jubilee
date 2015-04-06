@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var graph = require("src/modules/component/chart/chart");
+  var graphFunc = require("src/modules/component/chart/chart");
 
   return function xzyPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
@@ -28,10 +28,6 @@ define(function (require) {
         var xAxis = d3.svg.axis().orient("bottom");
         var leftAxis = d3.svg.axis().orient("left");
         var rightAxis = d3.svg.axis().orient("right");
-        var chartDraw = graph()
-          .transform(graphTransform)
-          .datum(graphData)
-          .draw(graphs);
 
         var svg = d3.select(this).selectAll("svg")
           .data([data])
@@ -50,14 +46,8 @@ define(function (require) {
         }
 
         if (typeof graphs === "function") {
-          g.call(chartDraw);
+          g.call(graphFunc().transform(graphTransform).datum(graphData).draw(graphs));
         }
-
-        //if (graphs instanceof Array) {
-        //  graphs.forEach(function (graph, i) {
-        //    g.datum(graphData[i]).call(chartDraw);
-        //  });
-        //}
 
         if (showXAxis) {
           g.append("g")

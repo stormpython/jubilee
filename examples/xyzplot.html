@@ -36,49 +36,99 @@
       series: [
         [
           { x: 16, y: 22, z: 0.2,
-            pie: [
-              { val: 41, label: "band"},
-              { val: 18, label: "summary"},
-              { val: 22, label: "is"},
-              { val: 17, label: "what"},
-              { val: 17, label: "good"}
-            ]
+            sunburst: {
+              children: [
+                {
+                  size: 20
+                },
+                {
+                  size: 60
+                },
+                {
+                  size: 140,
+                  children: [
+                    {size: 50},
+                    {size: 50}
+                  ]
+                }
+              ]
+            }
           },
           { x: 20, y: 41, z: 0.5,
-            pie: [
-              { val: 41, label: "band"},
-              { val: 18, label: "summary"},
-              { val: 22, label: "is"},
-              { val: 17, label: "what"},
-              { val: 17, label: "good"}
-            ]
+            sunburst: {
+              children: [
+                {
+                  size: 20
+                },
+                {
+                  size: 60
+                },
+                {
+                  size: 140,
+                  children: [
+                    {size: 50},
+                    {size: 50}
+                  ]
+                }
+              ]
+            }
           },
           { x: 25, y: 18, z: 0.6,
-            pie: [
-              { val: 41, label: "band"},
-              { val: 18, label: "summary"},
-              { val: 22, label: "is"},
-              { val: 17, label: "what"},
-              { val: 17, label: "good"}
-            ]
+            sunburst: {
+              children: [
+                {
+                  size: 20
+                },
+                {
+                  size: 60
+                },
+                {
+                  size: 140,
+                  children: [
+                    {size: 50},
+                    {size: 50}
+                  ]
+                }
+              ]
+            }
           },
           { x: 45, y: 17, z: 0.9,
-            pie: [
-              { val: 41, label: "band"},
-              { val: 18, label: "summary"},
-              { val: 22, label: "is"},
-              { val: 17, label: "what"},
-              { val: 17, label: "good"}
-            ]
+            sunburst: {
+              children: [
+                {
+                  size: 20
+                },
+                {
+                  size: 60
+                },
+                {
+                  size: 140,
+                  children: [
+                    {size: 50},
+                    {size: 50}
+                  ]
+                }
+              ]
+            }
           },
           { x: 96, y: 17, z: 0.3,
-            pie: [
-              { val: 41, label: "band"},
-              { val: 18, label: "summary"},
-              { val: 22, label: "is"},
-              { val: 17, label: "what"},
-              { val: 17, label: "good"}
-            ]
+            sunburst: {
+              children: [
+                {
+                  size: 20
+                },
+                {
+                  size: 60
+                },
+                {
+                  size: 140,
+                  children: [
+                    {size: 50},
+                    {size: 50}
+                  ]
+                }
+              ]
+            }
           }
         ]
       ]
@@ -126,11 +176,9 @@
 
     var pieWidth = 50;
     var pieHeight = 50;
-    var pieChart = jubilee.chart.pie()
+    var sunburst = jubilee.chart.sunburst()
       .width(pieWidth)
-      .height(pieHeight)
-      .value(function (d) { return d.val; })
-      .label(function (d) { return d.label; });
+      .height(pieHeight);
 
     var chart = jubilee.chart.xyzplot()
       .margin({top: 50, right: 50})
@@ -139,15 +187,12 @@
       .xScale(xScale)
       .leftScale(leftScale)
       .rightScale(rightScale)
-      .shapes([areas, bars, circles, lines])
+      .shapes([areas, bars, lines, circles])
       .graphTransform(function (d) {
-        return "translate(" + (xScale(d.x) - (pieWidth / 2)) + "," + (leftScale(d.y) - (pieHeight / 2)) + ")";
+        return "translate(" + (xScale(d.x) - (pieWidth / 2)) + "," + (rightScale(d.z) - (pieHeight / 2)) + ")";
       })
-      .graphData(function (d) { return d.pie; })
-      .graphs(pieChart)
-      .on("hover", function (d, i) {
-        console.log(d, i);
-      });
+      .graphData(function (d) { return d.sunburst; })
+      .graphs(sunburst);
 
     d3.select("#chart")
       .datum(data.series)
