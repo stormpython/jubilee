@@ -9954,20 +9954,18 @@ define("src/require.config", function(){});
   if (typeof define === "function" && define.amd) define('d3',d3); else if (typeof module === "object" && module.exports) module.exports = d3;
   this.d3 = d3;
 }();
-define('src/modules/component/shape/circle',['require','d3'],function (require) {
+define('src/modules/shape/circle',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function circle() {
-    var cxValue = function (d) { return d.x; };
-    var cyValue = function (d) { return d.y; };
-    var xScale;
-    var yScale;
+    var cx = function (d) { return d.x; };
+    var cy = function (d) { return d.y; };
+    var radius = 5;
+    var color = d3.scale.category20c();
 
     // Options
-    var radius = 5;
     var gClass = "layer";
     var circleClass = "circles";
-    var color = d3.scale.category20c();
     var fill = function (d, i, j) { return color(j); };
     var stroke = function (d, i, j) { return color(j); };
     var strokeWidth = 3;
@@ -9996,40 +9994,20 @@ define('src/modules/component/shape/circle',['require','d3'],function (require) 
           .attr("stroke", stroke)
           .attr("stroke-width", strokeWidth)
           .attr("r", radius)
-          .attr("cx", X)
-          .attr("cy", Y);
+          .attr("cx", cx)
+          .attr("cy", cy);
       });
     }
 
-    function X(d, i) {
-      return xScale(cxValue.call(this, d, i));
-    }
-
-    function Y(d, i) {
-      return yScale(cyValue.call(this, d, i));
-    }
-
-    shape.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
-      return shape;
-    };
-
-    shape.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
-      return shape;
-    };
-
     shape.cx = function (_) {
-      if (!arguments.length) { return cxValue; }
-      cxValue = _;
+      if (!arguments.length) { return cx; }
+      cx = _;
       return shape;
     };
 
     shape.cy = function (_) {
-      if (!arguments.length) { return cyValue; }
-      cyValue = _;
+      if (!arguments.length) { return cy; }
+      cy = _;
       return shape;
     };
 
@@ -10079,9 +10057,9 @@ define('src/modules/component/shape/circle',['require','d3'],function (require) 
   };
 });
 
-define('src/modules/chart/line',['require','d3','src/modules/component/shape/circle'],function (require) {
+define('src/modules/chart/line',['require','d3','src/modules/shape/circle'],function (require) {
   var d3 = require("d3");
-  var circle = require("src/modules/component/shape/circle");
+  var circle = require("src/modules/shape/circle");
 
   return function lineChart() {
     // Chart options
@@ -10177,10 +10155,8 @@ define('src/modules/chart/line',['require','d3','src/modules/component/shape/cir
 
         if (addCircles) {
           var points = circle()
-            .xScale(xScale)
-            .yScale(yScale)
-            .cx(xValue)
-            .cy(yValue)
+            .cx(X)
+            .cy(Y)
             .color(color)
             .radius(circleRadius)
             .circleClass(circleClass)
@@ -10824,9 +10800,9 @@ define('src/modules/chart/pie',['require','d3'],function (require) {
     return chart;
   };
 });
-define('src/modules/chart/scatterplot',['require','d3','src/modules/component/shape/circle'],function (require) {
+define('src/modules/chart/scatterplot',['require','d3','src/modules/shape/circle'],function (require) {
   var d3 = require("d3");
-  var circle = require("src/modules/component/shape/circle");
+  var circle = require("src/modules/shape/circle");
 
   return function scatterPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
@@ -11626,6 +11602,267 @@ define('src/modules/chart/histogram',['require','d3'],function (require) {
     return chart;
   };
 });
+define('src/modules/component/chart/chart',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function chart() {
+    var gClass = "layer";
+    var chartClass = "chart";
+    var transform = null;
+    var datum = null;
+    var draw = null;
+
+    function component(selection) {
+      selection.each(function (data, i) {
+        var g = d3.select(this)
+          .data(data, function (d) { return d; })
+          .append("g")
+          .attr("class", gClass);
+
+        g.selectAll("g")
+          .data(function (d) { return d; })
+          .enter().append("g")
+          .attr("class", chartClass)
+          .attr("transform", transform)
+          .datum(datum)
+          .call(draw);
+      });
+    }
+
+    component.gClass = function (_) {
+      if (!arguments.length) { return gClass; }
+      gClass = _;
+      return component;
+    };
+
+    component.chartClass = function (_) {
+      if (!arguments.length) { return chartClass; }
+      chartClass = _;
+      return component;
+    };
+
+    component.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
+      return component;
+    };
+
+    component.datum = function (_) {
+      if (!arguments.length) { return datum; }
+      datum = _;
+      return component;
+    };
+
+    component.draw = function (_) {
+      if (!arguments.length) { return draw; }
+      draw = _;
+      return component;
+    };
+
+    return component;
+  };
+});
+define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/chart'],function (require) {
+  var d3 = require("d3");
+  var graph = require("src/modules/component/chart/chart");
+
+  return function xzyPlot() {
+    var margin = {top: 20, right: 20, bottom: 20, left: 50};
+    var width = 760 - margin.left - margin.right;
+    var height = 120 - margin.top - margin.bottom;
+    var xScale = null;
+    var leftScale = null;
+    var rightScale = null;
+    var shapes = null;
+    var graphData = null;
+    var graphTransform = null;
+    var graphs = null;
+    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
+
+    // Axis options
+    var showXAxis = true;
+    var xAxisTitle = "";
+    var showLeftAxis = true;
+    var leftAxisTitle = "";
+    var showRightAxis = true;
+    var rightAxisTitle = "";
+
+    function chart(selection) {
+      selection.each(function (data) {
+        var xAxis = d3.svg.axis().orient("bottom");
+        var leftAxis = d3.svg.axis().orient("left");
+        var rightAxis = d3.svg.axis().orient("right");
+        var chartDraw = graph()
+          .transform(graphTransform)
+          .datum(graphData)
+          .draw(graphs);
+
+        var svg = d3.select(this).selectAll("svg")
+          .data([data])
+          .enter().append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom);
+
+        var g = svg.append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        if (typeof shapes === "function") { g.call(shapes); }
+        if (shapes instanceof Array) {
+          shapes.forEach(function (shape) {
+            if (typeof shape === "function") { g.call(shape); }
+          });
+        }
+
+        if (typeof graphs === "function") {
+          g.call(chartDraw);
+        }
+
+        //if (graphs instanceof Array) {
+        //  graphs.forEach(function (graph, i) {
+        //    g.datum(graphData[i]).call(chartDraw);
+        //  });
+        //}
+
+        if (showXAxis) {
+          g.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + leftScale.range()[0] + ")")
+            .call(xAxis.scale(xScale))
+            .append("text")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(xAxisTitle);
+        }
+
+        if (showLeftAxis) {
+          g.append("g")
+            .attr("class", "left axis")
+            .call(leftAxis.scale(leftScale))
+            .append("text")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(leftAxisTitle);
+        }
+
+        if (showRightAxis) {
+          g.append("g")
+            .attr("class", "right axis")
+            .attr("transform", "translate(" + xScale.range()[1] + "," + "0)")
+            .call(rightAxis.scale(rightScale))
+            .append("text")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text(rightAxisTitle);
+        }
+      });
+    }
+
+    chart.margin = function (_) {
+      if (!arguments.length) { return margin; }
+      margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
+      margin.right = typeof _.right !== "undefined" ? _.right : margin.right;
+      margin.bottom = typeof _.bottom !== "undefined" ? _.bottom : margin.bottom;
+      margin.left = typeof _.left !== "undefined" ? _.left : margin.left;
+      return chart;
+    };
+
+    chart.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return chart;
+    };
+
+    chart.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return chart;
+    };
+
+    chart.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale = _;
+      return chart;
+    };
+
+    chart.leftScale = function (_) {
+      if (!arguments.length) { return leftScale; }
+      leftScale = _;
+      return chart;
+    };
+
+    chart.rightScale = function (_) {
+      if (!arguments.length) { return rightScale; }
+      rightScale = _;
+      return chart;
+    };
+
+    chart.shapes = function (_) {
+      if (!arguments.length) { return shapes; }
+      shapes = _;
+      return chart;
+    };
+
+    chart.graphs = function (_) {
+      if (!arguments.length) { return graphs; }
+      graphs = _;
+      return chart;
+    };
+
+    chart.graphData = function (_) {
+      if (!arguments.length) { return graphData; }
+      graphData = _;
+      return chart;
+    };
+
+    chart.graphTransform = function (_) {
+      if (!arguments.length) { return graphTransform; }
+      graphTransform = _;
+      return chart;
+    };
+
+    chart.showXAxis = function (_) {
+      if (!arguments.length) { return showXAxis; }
+      showXAxis = _;
+      return chart;
+    };
+
+    chart.showLeftAxis = function (_) {
+      if (!arguments.length) { return showLeftAxis; }
+      showLeftAxis = _;
+      return chart;
+    };
+
+    chart.showRightAxis = function (_) {
+      if (!arguments.length) { return showRightAxis; }
+      showRightAxis = _;
+      return chart;
+    };
+
+    chart.xAxisTitle = function (_) {
+      if (!arguments.length) { return xAxisTitle; }
+      xAxisTitle = _;
+      return chart;
+    };
+
+    chart.leftAxisTitle = function (_) {
+      if (!arguments.length) { return leftAxisTitle; }
+      leftAxisTitle = _;
+      return chart;
+    };
+
+    chart.rightAxisTitle = function (_) {
+      if (!arguments.length) { return rightAxisTitle; }
+      rightAxisTitle = _;
+      return chart;
+    };
+
+    d3.rebind(chart, dispatch, "on");
+    return chart;
+  };
+});
 define('src/modules/layout/grid',['require','d3'],function (require) {
   var d3 = require("d3");
 
@@ -11722,28 +11959,42 @@ define('src/modules/layout/split',['require','d3'],function (require) {
 define('src/modules/component/axis/axis',['require','d3'],function (require) {
   var d3 = require("d3");
 
-  return function axis() {
+  return function axes() {
     var transform = "translate(0,0)";
-    var scale = null;
+    var axis = null;
 
-    var text = "";
-    var textY = 6;
-    var textDY = ".71em";
-    var textAnchor = "end";
+    var gClass = "axis";
+    var title = "";
+    var titleY = 6;
+    var titleDY = ".71em";
+    var titleAnchor = "end";
 
     function component(selection) {
       selection.each(function () {
-        var g = d3.select(this).select("axis")
+        var g = d3.select(this).append("g")
+          .attr("class", gClass)
           .attr("transform", transform)
-          .call(scale);
+          .call(axis);
 
         g.append("text")
-          .attr("y", textY)
-          .attr("dy", textDY)
-          .style("text-anchor", textAnchor)
-          .text(text);
+          .attr("y", titleY)
+          .attr("dy", titleDY)
+          .style("title-anchor", titleAnchor)
+          .text(title);
       });
     }
+
+    component.axis= function (_) {
+      if (!arguments.length) { return axis; }
+      axis = _;
+      return component;
+    };
+
+    component.gClass = function (_) {
+      if (!arguments.length) { return gClass; }
+      gClass = _;
+      return component;
+    };
 
     component.transform = function (_) {
       if (!arguments.length) { return transform; }
@@ -11751,46 +12002,41 @@ define('src/modules/component/axis/axis',['require','d3'],function (require) {
       return component;
     };
 
-    component.scale = function (_) {
-      if (!arguments.length) { return scale; }
-      scale = _;
+    component.title = function (_) {
+      if (!arguments.length) { return title; }
+      title = _;
       return component;
     };
 
-    component.text = function (_) {
-      if (!arguments.length) { return text; }
-      text = _;
+    component.titleY = function (_) {
+      if (!arguments.length) { return titleY; }
+      titleY = _;
       return component;
     };
 
-    component.textY = function (_) {
-      if (!arguments.length) { return textY; }
-      textY = _;
+    component.titleDY = function (_) {
+      if (!arguments.length) { return titleDY; }
+      titleDY = _;
       return component;
     };
 
-    component.textDY = function (_) {
-      if (!arguments.length) { return textDY; }
-      textDY = _;
-      return component;
-    };
-
-    component.textAnchor = function (_) {
-      if (!arguments.length) { return textAnchor; }
-      textAnchor = _;
+    component.titleAnchor = function (_) {
+      if (!arguments.length) { return titleAnchor; }
+      titleAnchor = _;
       return component;
     };
 
     return component;
   };
 });
+
 define('src/modules/component/clipPath/clipPath',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function clipPath() {
     var id = uniqueID();
-    var x = null;
-    var y = null;
+    var x = 0;
+    var y = 0;
     var width = 50;
     var height = 50;
 
@@ -11846,7 +12092,8 @@ define('src/modules/component/clipPath/clipPath',['require','d3'],function (requ
     return component;
   };
 });
-define('src/modules/component/shape/rect',['require','d3'],function (require) {
+
+define('src/modules/shape/rect',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function rect() {
@@ -11854,27 +12101,23 @@ define('src/modules/component/shape/rect',['require','d3'],function (require) {
     var y = function (d) { return d.y; };
     var rx = 0;
     var ry = 0;
-    var height;
-    var width;
+    var width = function () { return 10; };
+    var height = function () { return height; };
     var color = d3.scale.category10();
-    var xScale;
-    var yScale;
 
     // Options
-    var groupClass = "layer";
-    var groupTransform = "translate(0,0)";
+    var gClass = "layer";
     var rectClass = "bar";
     var fill = function (d, i) { return color(i); };
     var stroke;
     var strokeWidth;
 
     function shape(selection) {
-      selection.each(function (data, i) {
+      selection.each(function () {
         var layer = d3.select(this).selectAll("layer")
           .data(function (d) { return d; })
           .enter().append("g")
-          .attr("class", groupClass)
-          .attr("transform", groupTransform);
+          .attr("class", gClass);
 
         var bars = layer.selectAll("rect")
           .data(function (d) { return d; });
@@ -11889,21 +12132,13 @@ define('src/modules/component/shape/rect',['require','d3'],function (require) {
           .attr("strokeWidth", strokeWidth);
 
         bars
-          .attr("x", X)
-          .attr("y", Y)
+          .attr("x", x)
+          .attr("y", y)
           .attr("rx", rx)
           .attr("ry", ry)
           .attr("height", height)
           .attr("width", width);
       });
-    }
-
-    function X(d, i) {
-      return xScale(x.call(this, d, i));
-    }
-
-    function Y(d, i) {
-      return yScale(y.call(this, d, i));
     }
 
     shape.x = function (_) {
@@ -11942,7 +12177,7 @@ define('src/modules/component/shape/rect',['require','d3'],function (require) {
       return shape;
     };
 
-    shape.groupClass = function (_) {
+    shape.gClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
       return shape;
@@ -11978,15 +12213,87 @@ define('src/modules/component/shape/rect',['require','d3'],function (require) {
       return shape;
     };
 
-    shape.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
+    return shape;
+  };
+});
+
+define('src/modules/shape/path',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function path() {
+    var pathGenerator = null;
+    var color = d3.scale.category10();
+
+    // Options
+    var gClass = "layer";
+    var pathClass = "path";
+    var transform = "translate(0,0)";
+    var fill = "none";
+    var stroke = function (d, i) { return color(i); };
+    var strokeWidth = 1;
+
+    function shape(selection) {
+      selection.each(function () {
+        var layer = d3.select(this).selectAll("pathG")
+          .data(function (d) { return d; })
+          .enter().append("g")
+          .attr("class", gClass);
+
+        layer.append("path")
+          .attr("transform", transform)
+          .attr("class", pathClass)
+          .attr("fill", fill)
+          .attr("stroke", stroke)
+          .attr("stroke-width", strokeWidth)
+          .attr("d", pathGenerator);
+      });
+    }
+
+    shape.pathGenerator = function (_) {
+      if (!arguments.length) { return pathGenerator; }
+      pathGenerator = _;
       return shape;
     };
 
-    shape.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
+    shape.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return shape;
+    };
+
+    shape.gClass = function (_) {
+      if (!arguments.length) { return gClass; }
+      gClass = _;
+      return shape;
+    };
+
+    shape.pathClass = function (_) {
+      if (!arguments.length) { return pathClass; }
+      pathClass = _;
+      return shape;
+    };
+
+    shape.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
+      return shape;
+    };
+
+    shape.fill = function (_) {
+      if (!arguments.length) { return fill; }
+      fill = _;
+      return shape;
+    };
+
+    shape.stroke = function (_) {
+      if (!arguments.length) { return stroke; }
+      stroke = _;
+      return shape;
+    };
+
+    shape.strokeWidth = function (_) {
+      if (!arguments.length) { return strokeWidth; }
+      strokeWidth = _;
       return shape;
     };
 
@@ -11994,7 +12301,94 @@ define('src/modules/component/shape/rect',['require','d3'],function (require) {
   };
 });
 
-define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/clipPath/clipPath','src/modules/component/shape/circle','src/modules/component/shape/rect'],function (require) {
+define('src/modules/shape/line',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function line() {
+    var x1 = null;
+    var x2 = null;
+    var y1 = null;
+    var y2 = null;
+    var gClass;
+    var lineClass;
+    var stroke;
+    var strokeWidth;
+
+    function shape(selection) {
+      selection.each(function () {
+        var layer = d3.select(this).selectAll("lineG")
+          .data(function (d) { return d; })
+          .enter().append("g")
+          .attr("class", gClass);
+
+        var lines = layer.selectAll("lines")
+          .data(function (d) { return d; });
+
+        // Exit
+        lines.exit().remove();
+
+        // Enter
+        lines
+          .enter().append("line")
+          .attr("class", lineClass);
+
+        // Update
+        lines
+          .attr("x1", x1)
+          .attr("x2", x2)
+          .attr("y1", y1)
+          .attr("y2", y2)
+          .attr("stroke", stroke)
+          .attr("stroke-width", strokeWidth);
+      });
+    }
+
+    shape.x1 = function (_) {
+      if (!arguments.length) { return x1; }
+      x1 = _;
+      return shape;
+    };
+
+    shape.x2 = function (_) {
+      if (!arguments.length) { return x2; }
+      x2 = _;
+      return shape;
+    };
+
+    shape.y1 = function (_) {
+      if (!arguments.length) { return y1; }
+      y1 = _;
+      return shape;
+    };
+
+    shape.y2 = function (_) {
+      if (!arguments.length) { return y2; }
+      y2 = _;
+      return shape;
+    };
+
+    shape.lineClass = function (_) {
+      if (!arguments.length) { return lineClass; }
+      lineClass = _;
+      return shape;
+    };
+
+    shape.stroke = function (_) {
+      if (!arguments.length) { return stroke; }
+      stroke = _;
+      return shape;
+    };
+
+    shape.strokeWidth = function (_) {
+      if (!arguments.length) { return strokeWidth; }
+      strokeWidth = _;
+      return shape;
+    };
+
+    return shape;
+  };
+});
+define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/chart/xyzplot','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/clipPath/clipPath','src/modules/component/chart/chart','src/modules/shape/circle','src/modules/shape/rect','src/modules/shape/path','src/modules/shape/line'],function (require) {
   return {
     version: "0.1.0",
     chart: {
@@ -12005,7 +12399,8 @@ define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','s
       sunburst: require("src/modules/chart/sunburst"),
       dendrogram: require("src/modules/chart/dendrogram"),
       treemap: require("src/modules/chart/treemap"),
-      histogram: require("src/modules/chart/histogram")
+      histogram: require("src/modules/chart/histogram"),
+      xyzplot: require("src/modules/chart/xyzplot")
     },
     map: {},
     layout: {
@@ -12015,11 +12410,13 @@ define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','s
     component: {
       axis: require("src/modules/component/axis/axis"),
       clipPath: require("src/modules/component/clipPath/clipPath"),
-      legend: {},
-      shape: {
-        circle: require("src/modules/component/shape/circle"),
-        rect: require("src/modules/component/shape/rect")
-      }
+      chart: require("src/modules/component/chart/chart"),
+    },
+    shape: {
+      circle: require("src/modules/shape/circle"),
+      rect: require("src/modules/shape/rect"),
+      path: require("src/modules/shape/path"),
+      line: require("src/modules/shape/line")
     }
   };
 });
