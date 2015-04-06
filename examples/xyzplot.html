@@ -32,11 +32,6 @@
 <script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
 <script>
   require(["index"], function (jubilee) {
-    var xyzPlot = jubilee.chart.xyzplot;
-    var rect = jubilee.shape.rect;
-    var circle = jubilee.shape.circle;
-    var path = jubilee.shape.path;
-    var pie = jubilee.chart.pie;
     var data = {
       series: [
         [
@@ -96,13 +91,13 @@
     var leftScale = d3.scale.linear().domain([0, 41]).range([height, 0]);
     var rightScale = d3.scale.linear().domain([0, 0.9]).range([height, 0]);
 
-    var bars = rect()
+    var bars = jubilee.shape.rect()
       .x(function (d) { return xScale(d.x); })
       .y(function (d) { return leftScale(d.y); })
       .width(10)
       .height(function (d) { return height - leftScale(d.y); });
 
-    var circles = circle()
+    var circles = jubilee.shape.circle()
       .cx(function (d) { return xScale(d.x); })
       .cy(function (d) { return rightScale(d.z); })
       .radius(5)
@@ -111,27 +106,33 @@
 
     var line = d3.svg.line()
       .x(function (d) { return xScale(d.x); })
-      .y(function (d) { return rightScale(d.z); })
+      .y(function (d) { return leftScale(d.y); })
       .interpolate("linear");
 
     var area = d3.svg.area()
       .x(function (d) { return xScale(d.x); })
       .y(function (d) { return rightScale(d.z); })
       .y0(function () { return rightScale(0); })
-      .interpolate("cardinal")
+      .interpolate("cardinal");
 
-    var lines = path().pathGenerator(line).pathClass("line");
-    var areas = path().pathGenerator(area).pathClass("area").fill("green");
+    var lines = jubilee.shape.path()
+      .pathGenerator(line)
+      .pathClass("line");
+
+    var areas = jubilee.shape.path()
+      .pathGenerator(area)
+      .pathClass("area")
+      .fill("green");
+
     var pieWidth = 50;
     var pieHeight = 50;
-
-    var pieChart = pie()
+    var pieChart = jubilee.chart.pie()
       .width(pieWidth)
       .height(pieHeight)
       .value(function (d) { return d.val; })
       .label(function (d) { return d.label; });
 
-    var chart = xyzPlot()
+    var chart = jubilee.chart.xyzplot()
       .margin({top: 50, right: 50})
       .width(width)
       .height(height)
@@ -143,7 +144,10 @@
         return "translate(" + (xScale(d.x) - (pieWidth / 2)) + "," + (leftScale(d.y) - (pieHeight / 2)) + ")";
       })
       .graphData(function (d) { return d.pie; })
-      .graphs(pieChart);
+      .graphs(pieChart)
+      .on("hover", function (d, i) {
+        console.log(d, i);
+      });
 
     d3.select("#chart")
       .datum(data.series)
