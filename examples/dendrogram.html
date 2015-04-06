@@ -24,11 +24,6 @@
 <script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
 <script>
     require(["index"], function (jubilee) {
-        var dendrogram = jubilee.chart.dendrogram()
-            .width(300)
-            .height(500)
-            .nodeRadius(3);
-
         var dendrogramData = {
             children: [
                 {
@@ -49,7 +44,14 @@
             ]
         };
 
-        d3.select("#chart").datum(dendrogramData).call(dendrogram);
+        var dendrogram = jubilee.chart.dendrogram()
+            .width(300)
+            .height(500)
+            .nodeRadius(3);
+
+        d3.select("#chart")
+          .datum(dendrogramData)
+          .call(dendrogram);
     });
 </script>
 </body>

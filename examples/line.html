@@ -28,7 +28,6 @@
   <script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
   <script>
     require(["index"], function (jubilee) {
-      var lineChart = jubilee.chart.line;
       var data = {
         series: [
           [
@@ -62,7 +61,7 @@
         ]
       };
 
-      var myChart = lineChart()
+      var myChart = jubilee.chart.line()
         .width(700)
         .height(700)
         .x(function (d) { return d.x; })

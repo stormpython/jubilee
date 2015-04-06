@@ -22,7 +22,6 @@
 <script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
 <script>
     require(["index"], function (jubilee) {
-        var scatterPlot = jubilee.chart.scatter();
         var data = {
             series: [
                 [
@@ -34,6 +33,8 @@
                 ]
             ]
         };
+
+        var scatterPlot = jubilee.chart.scatter();
 
         d3.select("#chart")
             .datum(data.series)

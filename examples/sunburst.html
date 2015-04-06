@@ -19,10 +19,7 @@
   <script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
   <script>
     require(["index"], function (jubilee) {
-      var sunburst = jubilee.chart.sunburst;
-      var sunburstChart = sunburst().width(800).height(500);
-
-      var sunburstData = {
+      var data = {
         children: [
           {
             size: 20
@@ -40,7 +37,14 @@
         ]
       };
 
-      d3.select("#chart").datum(sunburstData).call(sunburstChart);
+      var sunburst = jubilee.chart.sunburst()
+        .width(800)
+        .height(500);
+
+
+      d3.select("#chart")
+        .datum(data)
+        .call(sunburst);
     });
   </script>
 </body>

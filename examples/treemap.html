@@ -27,9 +27,7 @@
 <script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
 <script>
     require(["index"], function (jubilee) {
-        var treemap = jubilee.chart.treemap();
-
-        var treemapData = {
+        var data = {
             children: [
                 {
                     size: 20
@@ -63,7 +61,11 @@
             ]
         };
 
-        d3.select("#chart").datum(treemapData).call(treemap);
+        var treemap = jubilee.chart.treemap();
+
+        d3.select("#chart")
+          .datum(data)
+          .call(treemap);
     });
 </script>
 </body>

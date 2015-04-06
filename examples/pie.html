@@ -20,7 +20,6 @@
 <script data-main="../src/require.config.js" src="../node_modules/requirejs/require.js"></script>
 <script>
   require(["index"], function (jubilee) {
-    var pieChart = jubilee.chart.pie;
     var data = {
       series: [
         { x: 1411761450000, y: 41, label: "band"},
@@ -31,7 +30,7 @@
       ]
     };
 
-    var myChart = pieChart()
+    var myChart = jubilee.chart.pie()
         .width(500)
         .height(500)
         .value(function (d) { return d.y; })
