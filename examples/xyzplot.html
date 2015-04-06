@@ -35,7 +35,9 @@
     var data = {
       series: [
         [
-          { x: 16, y: 22, z: 0.2,
+          { x: 16,
+            y: 22,
+            z: 0.2,
             sunburst: {
               children: [
                 {
@@ -54,7 +56,9 @@
               ]
             }
           },
-          { x: 20, y: 41, z: 0.5,
+          { x: 20,
+            y: 41,
+            z: 0.5,
             sunburst: {
               children: [
                 {
@@ -73,7 +77,9 @@
               ]
             }
           },
-          { x: 25, y: 18, z: 0.6,
+          { x: 25,
+            y: 18,
+            z: 0.6,
             sunburst: {
               children: [
                 {
@@ -92,7 +98,9 @@
               ]
             }
           },
-          { x: 45, y: 17, z: 0.9,
+          { x: 45,
+            y: 17,
+            z: 0.9,
             sunburst: {
               children: [
                 {
@@ -111,7 +119,9 @@
               ]
             }
           },
-          { x: 96, y: 17, z: 0.3,
+          { x: 96,
+            y: 17,
+            z: 0.3,
             sunburst: {
               children: [
                 {
@@ -138,31 +148,31 @@
     var height = 400;
     var color = d3.scale.category10();
     var xScale = d3.scale.linear().domain([0, 100]).range([0, width]);
-    var leftScale = d3.scale.linear().domain([0, 41]).range([height, 0]);
-    var rightScale = d3.scale.linear().domain([0, 0.9]).range([height, 0]);
+    var yScale = d3.scale.linear().domain([0, 41]).range([height, 0]);
+    var zScale = d3.scale.linear().domain([0, 0.9]).range([height, 0]);
 
     var bars = jubilee.shape.rect()
       .x(function (d) { return xScale(d.x); })
-      .y(function (d) { return leftScale(d.y); })
+      .y(function (d) { return yScale(d.y); })
       .width(10)
-      .height(function (d) { return height - leftScale(d.y); });
+      .height(function (d) { return height - yScale(d.y); });
 
     var circles = jubilee.shape.circle()
       .cx(function (d) { return xScale(d.x); })
-      .cy(function (d) { return rightScale(d.z); })
+      .cy(function (d) { return zScale(d.z); })
       .radius(5)
       .stroke(function (d, i) { return color(i); })
       .fill(function (d, i) { return color(i); });
 
     var line = d3.svg.line()
       .x(function (d) { return xScale(d.x); })
-      .y(function (d) { return leftScale(d.y); })
+      .y(function (d) { return yScale(d.y); })
       .interpolate("linear");
 
     var area = d3.svg.area()
       .x(function (d) { return xScale(d.x); })
-      .y(function (d) { return rightScale(d.z); })
-      .y0(function () { return rightScale(0); })
+      .y(function (d) { return zScale(d.z); })
+      .y0(function () { return zScale(0); })
       .interpolate("cardinal");
 
     var lines = jubilee.shape.path()
@@ -185,11 +195,11 @@
       .width(width)
       .height(height)
       .xScale(xScale)
-      .leftScale(leftScale)
-      .rightScale(rightScale)
-      .shapes([areas, bars, lines, circles])
+      .yScale(yScale)
+      .zScale(zScale)
+      .shapes([areas, lines, bars, circles])
       .graphTransform(function (d) {
-        return "translate(" + (xScale(d.x) - (pieWidth / 2)) + "," + (rightScale(d.z) - (pieHeight / 2)) + ")";
+        return "translate(" + (xScale(d.x) - (pieWidth / 2)) + "," + (zScale(d.z) - (pieHeight / 2)) + ")";
       })
       .graphData(function (d) { return d.sunburst; })
       .graphs(sunburst);

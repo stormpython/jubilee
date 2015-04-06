@@ -7,8 +7,8 @@ define(function (require) {
     var width = 760 - margin.left - margin.right;
     var height = 120 - margin.top - margin.bottom;
     var xScale = null;
-    var leftScale = null;
-    var rightScale = null;
+    var yScale = null;
+    var zScale = null;
     var shapes = null;
     var graphData = null;
     var graphTransform = null;
@@ -18,16 +18,16 @@ define(function (require) {
     // Axis options
     var showXAxis = true;
     var xAxisTitle = "";
-    var showLeftAxis = true;
-    var leftAxisTitle = "";
-    var showRightAxis = true;
-    var rightAxisTitle = "";
+    var showYAxis = true;
+    var yAxisTitle = "";
+    var showZAxis = true;
+    var zAxisTitle = "";
 
     function chart(selection) {
       selection.each(function (data) {
         var xAxis = d3.svg.axis().orient("bottom");
-        var leftAxis = d3.svg.axis().orient("left");
-        var rightAxis = d3.svg.axis().orient("right");
+        var yAxis = d3.svg.axis().orient("left");
+        var zAxis = d3.svg.axis().orient("right");
 
         var svg = d3.select(this).selectAll("svg")
           .data([data])
@@ -52,7 +52,7 @@ define(function (require) {
         if (showXAxis) {
           g.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0," + leftScale.range()[0] + ")")
+            .attr("transform", "translate(0," + yScale.range()[0] + ")")
             .call(xAxis.scale(xScale))
             .append("text")
             .attr("y", 6)
@@ -61,27 +61,27 @@ define(function (require) {
             .text(xAxisTitle);
         }
 
-        if (showLeftAxis) {
+        if (showYAxis) {
           g.append("g")
             .attr("class", "left axis")
-            .call(leftAxis.scale(leftScale))
+            .call(yAxis.scale(yScale))
             .append("text")
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text(leftAxisTitle);
+            .text(yAxisTitle);
         }
 
-        if (showRightAxis) {
+        if (showZAxis) {
           g.append("g")
             .attr("class", "right axis")
             .attr("transform", "translate(" + xScale.range()[1] + "," + "0)")
-            .call(rightAxis.scale(rightScale))
+            .call(zAxis.scale(zScale))
             .append("text")
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text(rightAxisTitle);
+            .text(zAxisTitle);
         }
       });
     }
@@ -113,15 +113,15 @@ define(function (require) {
       return chart;
     };
 
-    chart.leftScale = function (_) {
-      if (!arguments.length) { return leftScale; }
-      leftScale = _;
+    chart.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale = _;
       return chart;
     };
 
-    chart.rightScale = function (_) {
-      if (!arguments.length) { return rightScale; }
-      rightScale = _;
+    chart.zScale = function (_) {
+      if (!arguments.length) { return zScale; }
+      zScale = _;
       return chart;
     };
 
@@ -155,15 +155,15 @@ define(function (require) {
       return chart;
     };
 
-    chart.showLeftAxis = function (_) {
-      if (!arguments.length) { return showLeftAxis; }
-      showLeftAxis = _;
+    chart.showYAxis = function (_) {
+      if (!arguments.length) { return showYAxis; }
+      showYAxis = _;
       return chart;
     };
 
-    chart.showRightAxis = function (_) {
-      if (!arguments.length) { return showRightAxis; }
-      showRightAxis = _;
+    chart.showZAxis = function (_) {
+      if (!arguments.length) { return showZAxis; }
+      showZAxis = _;
       return chart;
     };
 
@@ -173,15 +173,15 @@ define(function (require) {
       return chart;
     };
 
-    chart.leftAxisTitle = function (_) {
-      if (!arguments.length) { return leftAxisTitle; }
-      leftAxisTitle = _;
+    chart.yAxisTitle = function (_) {
+      if (!arguments.length) { return yAxisTitle; }
+      yAxisTitle = _;
       return chart;
     };
 
-    chart.rightAxisTitle = function (_) {
-      if (!arguments.length) { return rightAxisTitle; }
-      rightAxisTitle = _;
+    chart.zAxisTitle = function (_) {
+      if (!arguments.length) { return zAxisTitle; }
+      zAxisTitle = _;
       return chart;
     };
 
