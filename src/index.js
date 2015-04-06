@@ -20,13 +20,13 @@ define(function (require) {
     component: {
       axis: require("src/modules/component/axis/axis"),
       clipPath: require("src/modules/component/clipPath/clipPath"),
-      legend: {}
+      chart: require("src/modules/component/chart/chart"),
     },
     shape: {
-      circle: require("src/modules/component/shape/circle"),
-      rect: require("src/modules/component/shape/rect"),
-      path: require("src/modules/component/shape/path"),
-      line: require("src/modules/component/shape/line")
+      circle: require("src/modules/shape/circle"),
+      rect: require("src/modules/shape/rect"),
+      path: require("src/modules/shape/path"),
+      line: require("src/modules/shape/line")
     }
   };
 });

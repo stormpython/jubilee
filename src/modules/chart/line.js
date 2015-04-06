@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var circle = require("src/modules/component/shape/circle");
+  var circle = require("src/modules/shape/circle");
 
   return function lineChart() {
     // Chart options
