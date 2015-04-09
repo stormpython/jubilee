@@ -11,7 +11,7 @@ define(function (require) {
     var stroke;
     var strokeWidth;
 
-    function shape(selection) {
+    function element(selection) {
       selection.each(function () {
         var layer = d3.select(this).selectAll("lineG")
           .data(function (d) { return d; })
@@ -40,48 +40,48 @@ define(function (require) {
       });
     }
 
-    shape.x1 = function (_) {
+    element.x1 = function (_) {
       if (!arguments.length) { return x1; }
       x1 = _;
-      return shape;
+      return element;
     };
 
-    shape.x2 = function (_) {
+    element.x2 = function (_) {
       if (!arguments.length) { return x2; }
       x2 = _;
-      return shape;
+      return element;
     };
 
-    shape.y1 = function (_) {
+    element.y1 = function (_) {
       if (!arguments.length) { return y1; }
       y1 = _;
-      return shape;
+      return element;
     };
 
-    shape.y2 = function (_) {
+    element.y2 = function (_) {
       if (!arguments.length) { return y2; }
       y2 = _;
-      return shape;
+      return element;
     };
 
-    shape.lineClass = function (_) {
+    element.lineClass = function (_) {
       if (!arguments.length) { return lineClass; }
       lineClass = _;
-      return shape;
+      return element;
     };
 
-    shape.stroke = function (_) {
+    element.stroke = function (_) {
       if (!arguments.length) { return stroke; }
       stroke = _;
-      return shape;
+      return element;
     };
 
-    shape.strokeWidth = function (_) {
+    element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return shape;
+      return element;
     };
 
-    return shape;
+    return element;
   };
 });

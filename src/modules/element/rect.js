@@ -17,7 +17,7 @@ define(function (require) {
     var stroke;
     var strokeWidth;
 
-    function shape(selection) {
+    function element(selection) {
       selection.each(function () {
         var layer = d3.select(this).selectAll("layer")
           .data(function (d) { return d; })
@@ -46,78 +46,78 @@ define(function (require) {
       });
     }
 
-    shape.x = function (_) {
+    element.x = function (_) {
       if (!arguments.length) { return x; }
       x = _;
-      return shape;
+      return element;
     };
 
-    shape.y = function (_) {
+    element.y = function (_) {
       if (!arguments.length) { return y; }
       y = _;
-      return shape;
+      return element;
     };
 
-    shape.rx = function (_) {
+    element.rx = function (_) {
       if (!arguments.length) { return rx; }
       rx = _;
-      return shape;
+      return element;
     };
 
-    shape.ry = function (_) {
+    element.ry = function (_) {
       if (!arguments.length) { return ry; }
       ry = _;
-      return shape;
+      return element;
     };
 
-    shape.width = function (_) {
+    element.width = function (_) {
       if (!arguments.length) { return width; }
       width = _;
-      return shape;
+      return element;
     };
 
-    shape.height = function (_) {
+    element.height = function (_) {
       if (!arguments.length) { return height; }
       height = _;
-      return shape;
+      return element;
     };
 
-    shape.gClass = function (_) {
+    element.gClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
-      return shape;
+      return element;
     };
 
-    shape.rectClass= function (_) {
+    element.rectClass= function (_) {
       if (!arguments.length) { return rectClass; }
       rectClass = _;
-      return shape;
+      return element;
     };
 
-    shape.fill = function (_) {
+    element.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
-      return shape;
+      return element;
     };
 
-    shape.color = function (_) {
+    element.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return shape;
+      return element;
     };
 
-    shape.stroke = function (_) {
+    element.stroke = function (_) {
       if (!arguments.length) { return stroke; }
       stroke = _;
-      return shape;
+      return element;
     };
 
-    shape.strokeWidth = function (_) {
+    element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return shape;
+      return element;
     };
 
-    return shape;
+    return element;
   };
 });

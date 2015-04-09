@@ -13,7 +13,7 @@ define(function (require) {
     var stroke = function (d, i) { return color(i); };
     var strokeWidth = 1;
 
-    function shape(selection) {
+    function element(selection) {
       selection.each(function () {
         var layer = d3.select(this).selectAll("pathG")
           .data(function (d) { return d; })
@@ -30,54 +30,54 @@ define(function (require) {
       });
     }
 
-    shape.pathGenerator = function (_) {
+    element.pathGenerator = function (_) {
       if (!arguments.length) { return pathGenerator; }
       pathGenerator = _;
-      return shape;
+      return element;
     };
 
-    shape.color = function (_) {
+    element.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return shape;
+      return element;
     };
 
-    shape.gClass = function (_) {
+    element.gClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
-      return shape;
+      return element;
     };
 
-    shape.pathClass = function (_) {
+    element.pathClass = function (_) {
       if (!arguments.length) { return pathClass; }
       pathClass = _;
-      return shape;
+      return element;
     };
 
-    shape.transform = function (_) {
+    element.transform = function (_) {
       if (!arguments.length) { return transform; }
       transform = _;
-      return shape;
+      return element;
     };
 
-    shape.fill = function (_) {
+    element.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
-      return shape;
+      return element;
     };
 
-    shape.stroke = function (_) {
+    element.stroke = function (_) {
       if (!arguments.length) { return stroke; }
       stroke = _;
-      return shape;
+      return element;
     };
 
-    shape.strokeWidth = function (_) {
+    element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return shape;
+      return element;
     };
 
-    return shape;
+    return element;
   };
 });

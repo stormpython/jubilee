@@ -1,45 +1,47 @@
 define(function (require) {
   var d3 = require("d3");
 
-  return function circle() {
+  return function ellipse() {
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
-    var radius = 5;
+    var rx = 0;
+    var ry = 0;
     var color = d3.scale.category20c();
 
     // Options
     var gClass = "layer";
-    var circleClass = "circles";
+    var ellipseClass = "ellipses";
     var fill = function (d, i, j) { return color(j); };
     var stroke = function (d, i, j) { return color(j); };
     var strokeWidth = 3;
 
     function element(selection) {
       selection.each(function () {
-        var layer = d3.select(this).selectAll("circleG")
+        var layer = d3.select(this).selectAll("ellipseG")
           .data(function (d) { return d; })
           .enter().append("g")
           .attr("class", gClass);
 
-        var circles = layer.selectAll("circlePoints")
+        var ellipses = layer.selectAll("ellipsePoints")
           .data(function (d) { return d; });
 
         // Exit
-        circles.exit().remove();
+        ellipses.exit().remove();
 
         // Enter
-        circles
-          .enter().append("circle")
-          .attr("class", circleClass);
+        ellipses
+          .enter().append("ellipse")
+          .attr("class", ellipseClass);
 
         // Update
-        circles
+        ellipses
           .attr("fill", fill)
           .attr("stroke", stroke)
           .attr("stroke-width", strokeWidth)
-          .attr("r", radius)
           .attr("cx", cx)
-          .attr("cy", cy);
+          .attr("cy", cy)
+          .attr("rx", rx)
+          .attr("ry", ry);
       });
     }
 
@@ -55,9 +57,15 @@ define(function (require) {
       return element;
     };
 
-    element.radius = function (_) {
-      if (!arguments.length) { return radius; }
-      radius = _;
+    element.rx = function (_) {
+      if (!arguments.length) { return rx; }
+      rx = _;
+      return element;
+    };
+
+    element.ry = function (_) {
+      if (!arguments.length) { return ry; }
+      ry = _;
       return element;
     };
 
@@ -67,9 +75,9 @@ define(function (require) {
       return element;
     };
 
-    element.circleClass = function (_) {
-      if (!arguments.length) { return circleClass; }
-      circleClass = _;
+    element.ellipseClass = function (_) {
+      if (!arguments.length) { return ellipseClass; }
+      ellipseClass = _;
       return element;
     };
 
