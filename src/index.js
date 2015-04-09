@@ -23,10 +23,10 @@ define(function (require) {
       chart: require("src/modules/component/chart/chart"),
     },
     shape: {
-      circle: require("src/modules/shape/circle"),
-      rect: require("src/modules/shape/rect"),
-      path: require("src/modules/shape/path"),
-      line: require("src/modules/shape/line")
+      circle: require("src/modules/element/circle"),
+      rect: require("src/modules/element/rect"),
+      path: require("src/modules/element/path"),
+      line: require("src/modules/element/line")
     }
   };
 });

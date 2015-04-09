@@ -9954,7 +9954,7 @@ define("src/require.config", function(){});
   if (typeof define === "function" && define.amd) define('d3',d3); else if (typeof module === "object" && module.exports) module.exports = d3;
   this.d3 = d3;
 }();
-define('src/modules/shape/circle',['require','d3'],function (require) {
+define('src/modules/element/circle',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function circle() {
@@ -10057,9 +10057,9 @@ define('src/modules/shape/circle',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/chart/line',['require','d3','src/modules/shape/circle'],function (require) {
+define('src/modules/chart/line',['require','d3','src/modules/element/circle'],function (require) {
   var d3 = require("d3");
-  var circle = require("src/modules/shape/circle");
+  var circle = require("src/modules/element/circle");
 
   return function lineChart() {
     // Chart options
@@ -10800,9 +10800,9 @@ define('src/modules/chart/pie',['require','d3'],function (require) {
     return chart;
   };
 });
-define('src/modules/chart/scatterplot',['require','d3','src/modules/shape/circle'],function (require) {
+define('src/modules/chart/scatterplot',['require','d3','src/modules/element/circle'],function (require) {
   var d3 = require("d3");
-  var circle = require("src/modules/shape/circle");
+  var circle = require("src/modules/element/circle");
 
   return function scatterPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
@@ -12093,7 +12093,7 @@ define('src/modules/component/clipPath/clipPath',['require','d3'],function (requ
   };
 });
 
-define('src/modules/shape/rect',['require','d3'],function (require) {
+define('src/modules/element/rect',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function rect() {
@@ -12217,7 +12217,7 @@ define('src/modules/shape/rect',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/shape/path',['require','d3'],function (require) {
+define('src/modules/element/path',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function path() {
@@ -12301,7 +12301,7 @@ define('src/modules/shape/path',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/shape/line',['require','d3'],function (require) {
+define('src/modules/element/line',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function line() {
@@ -12388,7 +12388,7 @@ define('src/modules/shape/line',['require','d3'],function (require) {
     return shape;
   };
 });
-define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/chart/xyzplot','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/clipPath/clipPath','src/modules/component/chart/chart','src/modules/shape/circle','src/modules/shape/rect','src/modules/shape/path','src/modules/shape/line'],function (require) {
+define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/chart/xyzplot','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/clipPath/clipPath','src/modules/component/chart/chart','src/modules/element/circle','src/modules/element/rect','src/modules/element/path','src/modules/element/line'],function (require) {
   return {
     version: "0.1.0",
     chart: {
@@ -12413,10 +12413,10 @@ define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','s
       chart: require("src/modules/component/chart/chart"),
     },
     shape: {
-      circle: require("src/modules/shape/circle"),
-      rect: require("src/modules/shape/rect"),
-      path: require("src/modules/shape/path"),
-      line: require("src/modules/shape/line")
+      circle: require("src/modules/element/circle"),
+      rect: require("src/modules/element/rect"),
+      path: require("src/modules/element/path"),
+      line: require("src/modules/element/line")
     }
   };
 });

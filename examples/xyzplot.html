@@ -13,7 +13,7 @@
   .axis line {
     fill: none;
     stroke: #000;
-    shape-rendering: crispEdges;
+   .element-rendering: crispEdges;
   }
 
   .line {
@@ -151,13 +151,13 @@
     var yScale = d3.scale.linear().domain([0, 41]).range([height, 0]);
     var zScale = d3.scale.linear().domain([0, 0.9]).range([height, 0]);
 
-    var bars = jubilee.shape.rect()
+    var bars = jubilee.element.rect()
       .x(function (d) { return xScale(d.x); })
       .y(function (d) { return yScale(d.y); })
       .width(10)
       .height(function (d) { return height - yScale(d.y); });
 
-    var circles = jubilee.shape.circle()
+    var circles = jubilee.element.circle()
       .cx(function (d) { return xScale(d.x); })
       .cy(function (d) { return zScale(d.z); })
       .radius(5)
@@ -175,11 +175,11 @@
       .y0(function () { return zScale(0); })
       .interpolate("cardinal");
 
-    var lines = jubilee.shape.path()
+    var lines = jubilee.element.path()
       .pathGenerator(line)
       .pathClass("line");
 
-    var areas = jubilee.shape.path()
+    var areas = jubilee.element.path()
       .pathGenerator(area)
       .pathClass("area")
       .fill("green");
@@ -197,7 +197,7 @@
       .xScale(xScale)
       .yScale(yScale)
       .zScale(zScale)
-      .shapes([areas, lines, bars, circles])
+      .elements([areas, lines, bars, circles])
       .graphTransform(function (d) {
         return "translate(" + (xScale(d.x) - (pieWidth / 2)) + "," + (zScale(d.z) - (pieHeight / 2)) + ")";
       })
