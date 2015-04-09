@@ -90,10 +90,8 @@ define(function (require) {
         }
 
         var points = circle()
-          .xScale(xScale)
-          .yScale(yScale)
-          .cx(xValue)
-          .cy(yValue)
+          .cx(X)
+          .cy(Y)
           .color(color)
           .radius(circleRadius)
           .circleClass(circleClass)
@@ -109,6 +107,14 @@ define(function (require) {
       return data.reduce(function (a, b) {
         return a.concat(b);
       });
+    }
+
+    function X(d, i) {
+      return xScale(xValue.call(null, d, i));
+    }
+
+    function Y(d, i) {
+      return yScale(yValue.call(null, d, i));
     }
 
     d3.rebind(chart, dispatch, "on");

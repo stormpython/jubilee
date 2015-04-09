@@ -9970,7 +9970,7 @@ define('src/modules/element/circle',['require','d3'],function (require) {
     var stroke = function (d, i, j) { return color(j); };
     var strokeWidth = 3;
 
-    function shape(selection) {
+    function element(selection) {
       selection.each(function () {
         var layer = d3.select(this).selectAll("circleG")
           .data(function (d) { return d; })
@@ -9999,61 +9999,61 @@ define('src/modules/element/circle',['require','d3'],function (require) {
       });
     }
 
-    shape.cx = function (_) {
+    element.cx = function (_) {
       if (!arguments.length) { return cx; }
       cx = _;
-      return shape;
+      return element;
     };
 
-    shape.cy = function (_) {
+    element.cy = function (_) {
       if (!arguments.length) { return cy; }
       cy = _;
-      return shape;
+      return element;
     };
 
-    shape.radius = function (_) {
+    element.radius = function (_) {
       if (!arguments.length) { return radius; }
       radius = _;
-      return shape;
+      return element;
     };
 
-    shape.gClass = function (_) {
+    element.gClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
-      return shape;
+      return element;
     };
 
-    shape.circleClass = function (_) {
+    element.circleClass = function (_) {
       if (!arguments.length) { return circleClass; }
       circleClass = _;
-      return shape;
+      return element;
     };
 
-    shape.color = function (_) {
+    element.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return shape;
+      return element;
     };
 
-    shape.fill = function (_) {
+    element.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
-      return shape;
+      return element;
     };
 
-    shape.stroke = function (_) {
+    element.stroke = function (_) {
       if (!arguments.length) { return stroke; }
       stroke = _;
-      return shape;
+      return element;
     };
 
-    shape.strokeWidth = function (_) {
+    element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return shape;
+      return element;
     };
 
-    return shape;
+    return element;
   };
 });
 
@@ -11664,38 +11664,34 @@ define('src/modules/component/chart/chart',['require','d3'],function (require) {
 });
 define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/chart'],function (require) {
   var d3 = require("d3");
-  var graph = require("src/modules/component/chart/chart");
+  var graphFunc = require("src/modules/component/chart/chart");
 
   return function xzyPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
     var width = 760 - margin.left - margin.right;
     var height = 120 - margin.top - margin.bottom;
     var xScale = null;
-    var leftScale = null;
-    var rightScale = null;
-    var shapes = null;
-    var graphData = null;
-    var graphTransform = null;
-    var graphs = null;
+    var yScale = null;
+    var zScale = null;
+    var elements = null;
+    var chartData = null;
+    var chartTransform = null;
+    var charts = null;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
     var showXAxis = true;
     var xAxisTitle = "";
-    var showLeftAxis = true;
-    var leftAxisTitle = "";
-    var showRightAxis = true;
-    var rightAxisTitle = "";
+    var showYAxis = true;
+    var yAxisTitle = "";
+    var showZAxis = true;
+    var zAxisTitle = "";
 
     function chart(selection) {
       selection.each(function (data) {
         var xAxis = d3.svg.axis().orient("bottom");
-        var leftAxis = d3.svg.axis().orient("left");
-        var rightAxis = d3.svg.axis().orient("right");
-        var chartDraw = graph()
-          .transform(graphTransform)
-          .datum(graphData)
-          .draw(graphs);
+        var yAxis = d3.svg.axis().orient("left");
+        var zAxis = d3.svg.axis().orient("right");
 
         var svg = d3.select(this).selectAll("svg")
           .data([data])
@@ -11706,27 +11702,21 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        if (typeof shapes === "function") { g.call(shapes); }
-        if (shapes instanceof Array) {
-          shapes.forEach(function (shape) {
+        if (typeof elements === "function") { g.call(elements); }
+        if (elements instanceof Array) {
+          elements.forEach(function (shape) {
             if (typeof shape === "function") { g.call(shape); }
           });
         }
 
-        if (typeof graphs === "function") {
-          g.call(chartDraw);
+        if (typeof charts === "function") {
+          g.call(graphFunc().transform(chartTransform).datum(chartData).draw(charts));
         }
-
-        //if (graphs instanceof Array) {
-        //  graphs.forEach(function (graph, i) {
-        //    g.datum(graphData[i]).call(chartDraw);
-        //  });
-        //}
 
         if (showXAxis) {
           g.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0," + leftScale.range()[0] + ")")
+            .attr("transform", "translate(0," + yScale.range()[0] + ")")
             .call(xAxis.scale(xScale))
             .append("text")
             .attr("y", 6)
@@ -11735,27 +11725,27 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/
             .text(xAxisTitle);
         }
 
-        if (showLeftAxis) {
+        if (showYAxis) {
           g.append("g")
             .attr("class", "left axis")
-            .call(leftAxis.scale(leftScale))
+            .call(yAxis.scale(yScale))
             .append("text")
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text(leftAxisTitle);
+            .text(yAxisTitle);
         }
 
-        if (showRightAxis) {
+        if (showZAxis) {
           g.append("g")
             .attr("class", "right axis")
             .attr("transform", "translate(" + xScale.range()[1] + "," + "0)")
-            .call(rightAxis.scale(rightScale))
+            .call(zAxis.scale(zScale))
             .append("text")
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text(rightAxisTitle);
+            .text(zAxisTitle);
         }
       });
     }
@@ -11787,39 +11777,39 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/
       return chart;
     };
 
-    chart.leftScale = function (_) {
-      if (!arguments.length) { return leftScale; }
-      leftScale = _;
+    chart.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale = _;
       return chart;
     };
 
-    chart.rightScale = function (_) {
-      if (!arguments.length) { return rightScale; }
-      rightScale = _;
+    chart.zScale = function (_) {
+      if (!arguments.length) { return zScale; }
+      zScale = _;
       return chart;
     };
 
-    chart.shapes = function (_) {
-      if (!arguments.length) { return shapes; }
-      shapes = _;
+    chart.elements = function (_) {
+      if (!arguments.length) { return elements; }
+      elements = _;
       return chart;
     };
 
-    chart.graphs = function (_) {
-      if (!arguments.length) { return graphs; }
-      graphs = _;
+    chart.charts = function (_) {
+      if (!arguments.length) { return charts; }
+      charts = _;
       return chart;
     };
 
-    chart.graphData = function (_) {
-      if (!arguments.length) { return graphData; }
-      graphData = _;
+    chart.chartData = function (_) {
+      if (!arguments.length) { return chartData; }
+      chartData = _;
       return chart;
     };
 
-    chart.graphTransform = function (_) {
-      if (!arguments.length) { return graphTransform; }
-      graphTransform = _;
+    chart.chartTransform = function (_) {
+      if (!arguments.length) { return chartTransform; }
+      chartTransform = _;
       return chart;
     };
 
@@ -11829,15 +11819,15 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/
       return chart;
     };
 
-    chart.showLeftAxis = function (_) {
-      if (!arguments.length) { return showLeftAxis; }
-      showLeftAxis = _;
+    chart.showYAxis = function (_) {
+      if (!arguments.length) { return showYAxis; }
+      showYAxis = _;
       return chart;
     };
 
-    chart.showRightAxis = function (_) {
-      if (!arguments.length) { return showRightAxis; }
-      showRightAxis = _;
+    chart.showZAxis = function (_) {
+      if (!arguments.length) { return showZAxis; }
+      showZAxis = _;
       return chart;
     };
 
@@ -11847,15 +11837,15 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/
       return chart;
     };
 
-    chart.leftAxisTitle = function (_) {
-      if (!arguments.length) { return leftAxisTitle; }
-      leftAxisTitle = _;
+    chart.yAxisTitle = function (_) {
+      if (!arguments.length) { return yAxisTitle; }
+      yAxisTitle = _;
       return chart;
     };
 
-    chart.rightAxisTitle = function (_) {
-      if (!arguments.length) { return rightAxisTitle; }
-      rightAxisTitle = _;
+    chart.zAxisTitle = function (_) {
+      if (!arguments.length) { return zAxisTitle; }
+      zAxisTitle = _;
       return chart;
     };
 
@@ -12112,7 +12102,7 @@ define('src/modules/element/rect',['require','d3'],function (require) {
     var stroke;
     var strokeWidth;
 
-    function shape(selection) {
+    function element(selection) {
       selection.each(function () {
         var layer = d3.select(this).selectAll("layer")
           .data(function (d) { return d; })
@@ -12141,79 +12131,79 @@ define('src/modules/element/rect',['require','d3'],function (require) {
       });
     }
 
-    shape.x = function (_) {
+    element.x = function (_) {
       if (!arguments.length) { return x; }
       x = _;
-      return shape;
+      return element;
     };
 
-    shape.y = function (_) {
+    element.y = function (_) {
       if (!arguments.length) { return y; }
       y = _;
-      return shape;
+      return element;
     };
 
-    shape.rx = function (_) {
+    element.rx = function (_) {
       if (!arguments.length) { return rx; }
       rx = _;
-      return shape;
+      return element;
     };
 
-    shape.ry = function (_) {
+    element.ry = function (_) {
       if (!arguments.length) { return ry; }
       ry = _;
-      return shape;
+      return element;
     };
 
-    shape.width = function (_) {
+    element.width = function (_) {
       if (!arguments.length) { return width; }
       width = _;
-      return shape;
+      return element;
     };
 
-    shape.height = function (_) {
+    element.height = function (_) {
       if (!arguments.length) { return height; }
       height = _;
-      return shape;
+      return element;
     };
 
-    shape.gClass = function (_) {
+    element.gClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
-      return shape;
+      return element;
     };
 
-    shape.rectClass= function (_) {
+    element.rectClass= function (_) {
       if (!arguments.length) { return rectClass; }
       rectClass = _;
-      return shape;
+      return element;
     };
 
-    shape.fill = function (_) {
+    element.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
-      return shape;
+      return element;
     };
 
-    shape.color = function (_) {
+    element.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return shape;
+      return element;
     };
 
-    shape.stroke = function (_) {
+    element.stroke = function (_) {
       if (!arguments.length) { return stroke; }
       stroke = _;
-      return shape;
+      return element;
     };
 
-    shape.strokeWidth = function (_) {
+    element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return shape;
+      return element;
     };
 
-    return shape;
+    return element;
   };
 });
 
@@ -12232,7 +12222,7 @@ define('src/modules/element/path',['require','d3'],function (require) {
     var stroke = function (d, i) { return color(i); };
     var strokeWidth = 1;
 
-    function shape(selection) {
+    function element(selection) {
       selection.each(function () {
         var layer = d3.select(this).selectAll("pathG")
           .data(function (d) { return d; })
@@ -12249,55 +12239,55 @@ define('src/modules/element/path',['require','d3'],function (require) {
       });
     }
 
-    shape.pathGenerator = function (_) {
+    element.pathGenerator = function (_) {
       if (!arguments.length) { return pathGenerator; }
       pathGenerator = _;
-      return shape;
+      return element;
     };
 
-    shape.color = function (_) {
+    element.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return shape;
+      return element;
     };
 
-    shape.gClass = function (_) {
+    element.gClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
-      return shape;
+      return element;
     };
 
-    shape.pathClass = function (_) {
+    element.pathClass = function (_) {
       if (!arguments.length) { return pathClass; }
       pathClass = _;
-      return shape;
+      return element;
     };
 
-    shape.transform = function (_) {
+    element.transform = function (_) {
       if (!arguments.length) { return transform; }
       transform = _;
-      return shape;
+      return element;
     };
 
-    shape.fill = function (_) {
+    element.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
-      return shape;
+      return element;
     };
 
-    shape.stroke = function (_) {
+    element.stroke = function (_) {
       if (!arguments.length) { return stroke; }
       stroke = _;
-      return shape;
+      return element;
     };
 
-    shape.strokeWidth = function (_) {
+    element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return shape;
+      return element;
     };
 
-    return shape;
+    return element;
   };
 });
 
@@ -12314,7 +12304,7 @@ define('src/modules/element/line',['require','d3'],function (require) {
     var stroke;
     var strokeWidth;
 
-    function shape(selection) {
+    function element(selection) {
       selection.each(function () {
         var layer = d3.select(this).selectAll("lineG")
           .data(function (d) { return d; })
@@ -12343,49 +12333,49 @@ define('src/modules/element/line',['require','d3'],function (require) {
       });
     }
 
-    shape.x1 = function (_) {
+    element.x1 = function (_) {
       if (!arguments.length) { return x1; }
       x1 = _;
-      return shape;
+      return element;
     };
 
-    shape.x2 = function (_) {
+    element.x2 = function (_) {
       if (!arguments.length) { return x2; }
       x2 = _;
-      return shape;
+      return element;
     };
 
-    shape.y1 = function (_) {
+    element.y1 = function (_) {
       if (!arguments.length) { return y1; }
       y1 = _;
-      return shape;
+      return element;
     };
 
-    shape.y2 = function (_) {
+    element.y2 = function (_) {
       if (!arguments.length) { return y2; }
       y2 = _;
-      return shape;
+      return element;
     };
 
-    shape.lineClass = function (_) {
+    element.lineClass = function (_) {
       if (!arguments.length) { return lineClass; }
       lineClass = _;
-      return shape;
+      return element;
     };
 
-    shape.stroke = function (_) {
+    element.stroke = function (_) {
       if (!arguments.length) { return stroke; }
       stroke = _;
-      return shape;
+      return element;
     };
 
-    shape.strokeWidth = function (_) {
+    element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return shape;
+      return element;
     };
 
-    return shape;
+    return element;
   };
 });
 define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/chart/xyzplot','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/clipPath/clipPath','src/modules/component/chart/chart','src/modules/element/circle','src/modules/element/rect','src/modules/element/path','src/modules/element/line'],function (require) {

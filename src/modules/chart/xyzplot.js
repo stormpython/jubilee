@@ -9,10 +9,10 @@ define(function (require) {
     var xScale = null;
     var yScale = null;
     var zScale = null;
-    var shapes = null;
-    var graphData = null;
-    var graphTransform = null;
-    var graphs = null;
+    var elements = null;
+    var chartData = null;
+    var chartTransform = null;
+    var charts = null;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -38,15 +38,15 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        if (typeof shapes === "function") { g.call(shapes); }
-        if (shapes instanceof Array) {
-          shapes.forEach(function (shape) {
+        if (typeof elements === "function") { g.call(elements); }
+        if (elements instanceof Array) {
+          elements.forEach(function (shape) {
             if (typeof shape === "function") { g.call(shape); }
           });
         }
 
-        if (typeof graphs === "function") {
-          g.call(graphFunc().transform(graphTransform).datum(graphData).draw(graphs));
+        if (typeof charts === "function") {
+          g.call(graphFunc().transform(chartTransform).datum(chartData).draw(charts));
         }
 
         if (showXAxis) {
@@ -125,27 +125,27 @@ define(function (require) {
       return chart;
     };
 
-    chart.shapes = function (_) {
-      if (!arguments.length) { return shapes; }
-      shapes = _;
+    chart.elements = function (_) {
+      if (!arguments.length) { return elements; }
+      elements = _;
       return chart;
     };
 
-    chart.graphs = function (_) {
-      if (!arguments.length) { return graphs; }
-      graphs = _;
+    chart.charts = function (_) {
+      if (!arguments.length) { return charts; }
+      charts = _;
       return chart;
     };
 
-    chart.graphData = function (_) {
-      if (!arguments.length) { return graphData; }
-      graphData = _;
+    chart.chartData = function (_) {
+      if (!arguments.length) { return chartData; }
+      chartData = _;
       return chart;
     };
 
-    chart.graphTransform = function (_) {
-      if (!arguments.length) { return graphTransform; }
-      graphTransform = _;
+    chart.chartTransform = function (_) {
+      if (!arguments.length) { return chartTransform; }
+      chartTransform = _;
       return chart;
     };
 

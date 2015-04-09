@@ -198,11 +198,11 @@
       .yScale(yScale)
       .zScale(zScale)
       .elements([areas, lines, bars, circles])
-      .graphTransform(function (d) {
+      .chartTransform(function (d) {
         return "translate(" + (xScale(d.x) - (pieWidth / 2)) + "," + (zScale(d.z) - (pieHeight / 2)) + ")";
       })
-      .graphData(function (d) { return d.sunburst; })
-      .graphs(sunburst);
+      .chartData(function (d) { return d.sunburst; })
+      .charts(sunburst);
 
     d3.select("#chart")
       .datum(data.series)

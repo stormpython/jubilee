@@ -22,7 +22,7 @@ define(function (require) {
       clipPath: require("src/modules/component/clipPath/clipPath"),
       chart: require("src/modules/component/chart/chart"),
     },
-    shape: {
+   element: {
       circle: require("src/modules/element/circle"),
       rect: require("src/modules/element/rect"),
       path: require("src/modules/element/path"),
