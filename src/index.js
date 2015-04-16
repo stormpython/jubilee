@@ -19,14 +19,14 @@ define(function (require) {
     },
     component: {
       axis: require("src/modules/component/axis/axis"),
-      clipPath: require("src/modules/component/clipPath/clipPath"),
       chart: require("src/modules/component/chart/chart"),
     },
    element: {
       circle: require("src/modules/element/circle"),
       rect: require("src/modules/element/rect"),
       path: require("src/modules/element/path"),
-      line: require("src/modules/element/line")
+      line: require("src/modules/element/line"),
+      clipPath: require("src/modules/element/clipPath")
     }
   };
 });
