@@ -2,9 +2,17 @@ define(function (require) {
   var d3 = require("d3");
 
   return function axes() {
-    var transform = "translate(0,0)";
-    var axis = null;
+    var scale = d3.scale.linear();
+    var orient = "bottom";
+    var ticks = 10;
+    var tickValues = null;
+    var tickSize = [6, 6];
+    var innerTickSize = 6;
+    var outerTickSize = 6;
+    var tickPadding = 3;
+    var tickFormat = null;
 
+    var transform = "translate(0,0)";
     var gClass = "axis";
     var title = "";
     var titleY = 6;
@@ -13,6 +21,17 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function () {
+        var axis = d3.svg.axis()
+          .scale(scale)
+          .orient(orient)
+          .ticks(ticks)
+          .tickValues(tickValues)
+          .tickSize(tickSize)
+          .innerTickSize(innerTickSize)
+          .outerTickSize(outerTickSize)
+          .tickPadding(tickPadding)
+          .tickFormat(tickFormat);
+
         var g = d3.select(this).append("g")
           .attr("class", gClass)
           .attr("transform", transform)
@@ -26,9 +45,57 @@ define(function (require) {
       });
     }
 
-    component.axis= function (_) {
-      if (!arguments.length) { return axis; }
-      axis = _;
+    component.scale = function (_) {
+      if (!arguments.length) { return scale; }
+      scale = _;
+      return component;
+    };
+
+    component.orient = function (_) {
+      if (!arguments.length) { return orient; }
+      orient = _;
+      return component;
+    };
+
+    component.ticks = function (_) {
+      if (!arguments.length) { return ticks; }
+      ticks = _;
+      return component;
+    };
+
+    component.tickValues = function (_) {
+      if (!arguments.length) { return tickValues; }
+      tickValues = _;
+      return component;
+    };
+
+    component.tickSize = function (_) {
+      if (!arguments.length) { return tickSize; }
+      tickSize = _;
+      return component;
+    };
+
+    component.innerTickSize = function (_) {
+      if (!arguments.length) { return innerTickSize; }
+      innerTickSize = _;
+      return component;
+    };
+
+    component.outerTickSize = function (_) {
+      if (!arguments.length) { return outerTickSize; }
+      outerTickSize = _;
+      return component;
+    };
+
+    component.tickPadding = function (_) {
+      if (!arguments.length) { return tickPadding; }
+      tickPadding = _;
+      return component;
+    };
+
+    component.tickFormat = function (_) {
+      if (!arguments.length) { return tickFormat; }
+      tickFormat = _;
       return component;
     };
 

@@ -45,21 +45,23 @@
       var yScale2 = d3.scale.linear().domain([0.1, 0.9]).range([height - margin.top - margin.bottom, 0]);
 
       var xAxis = jubilee.component.axis()
-        .axis(d3.svg.axis().scale(xScale).orient("bottom"))
+        .scale(xScale)
         .gClass("x axis")
         .transform(function () {
           return "translate(" + xMargin.left + "," + (xHeight - xMargin.top) + ")";
         });
 
       var yAxis = jubilee.component.axis()
-        .axis(d3.svg.axis().scale(yScale).orient("left"))
+        .scale(yScale)
+        .orient("left")
         .gClass("y axis")
         .transform(function () {
           return "translate(" + margin.left + "," + margin.top + ")";
         });
 
       var yAxis2 = jubilee.component.axis()
-        .axis(d3.svg.axis().scale(yScale2).orient("right"))
+        .scale(yScale2)
+        .orient("right")
         .gClass("y axis")
         .transform(function () {
           return "translate(" + (width - margin.right) + "," + margin.top + ")";
