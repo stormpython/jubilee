@@ -8,8 +8,8 @@ define(function (require) {
     var width = 50;
     var height = 50;
 
-    function component(selection) {
-      selection.each(function () {
+    function element(selection) {
+      selection.each(function (data, i) {
         return d3.select("this")
           .attr("clip-path", "url(#" + id + ")")
           .append("clipPath")
@@ -27,36 +27,36 @@ define(function (require) {
       return "uniqueId_" + randomNumber;
     }
 
-    component.id = function (_) {
+    element.id = function (_) {
       if (!arguments.length) { return id; }
       id = _;
-      return component;
+      return element;
     };
 
-    component.x = function (_) {
+    element.x = function (_) {
       if (!arguments.length) { return x; }
       x = _;
-      return component;
+      return element;
     };
 
-    component.y = function (_) {
+    element.y = function (_) {
       if (!arguments.length) { return y; }
       y = _;
-      return component;
+      return element;
     };
 
-    component.width = function (_) {
+    element.width = function (_) {
       if (!arguments.length) { return width; }
       width = _;
-      return component;
+      return element;
     };
 
-    component.height = function (_) {
+    element.height = function (_) {
       if (!arguments.length) { return height; }
       height = _;
-      return component;
+      return element;
     };
 
-    return component;
+    return element;
   };
 });
