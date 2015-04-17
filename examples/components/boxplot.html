@@ -39,7 +39,6 @@
 
         var boxplot = jubilee.component.boxplot()
           .gTransform(function (d) {
-            console.log(d);
             return "translate(" + xScale(d.x) + "," + yScale(d.median) + ")";
           })
           .boxWidth(50)
