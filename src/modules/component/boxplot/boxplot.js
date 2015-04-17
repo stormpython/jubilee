@@ -33,7 +33,7 @@ define(function (require) {
     // Min
     var minY1 = null;
     var minY2 = null;
-    var minClass = "max";
+    var minClass = "min";
     var minStroke = "black";
     var minStrokeWidth = "4px";
 
