@@ -20,6 +20,7 @@ define(function (require) {
     component: {
       axis: require("src/modules/component/axis/axis"),
       chart: require("src/modules/component/chart/chart"),
+      boxplot: require("src/modules/component/boxplot/boxplot")
     },
    element: {
       circle: require("src/modules/element/circle"),
