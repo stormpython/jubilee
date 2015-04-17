@@ -8,7 +8,6 @@ define(function (require) {
     // Box
     var boxWidth = 20;
     var boxHeight = null;
-    var boxX = null;
     var boxY = null;
     var boxClass = "range";
     var boxFill = "white";
@@ -25,8 +24,6 @@ define(function (require) {
     var rangeStrokeWidth = "4px";
 
     // Max
-    var maxX1 = - (boxWidth / 2);
-    var maxX2 = boxWidth / 2;
     var maxY1 = null;
     var maxY2 = null;
     var maxClass = "max";
@@ -34,8 +31,6 @@ define(function (require) {
     var maxStrokeWidth = "4px";
 
     // Min
-    var minX1 = - (boxWidth / 2);
-    var minX2 = boxWidth / 2;
     var minY1 = null;
     var minY2 = null;
     var minClass = "max";
@@ -43,8 +38,6 @@ define(function (require) {
     var minStrokeWidth = "4px";
 
     // Median
-    var medianX1 = - (boxWidth / 2);
-    var medianX2 = boxWidth / 2;
     var medianY1 = 0;
     var medianY2 = 0;
     var medianClass = "median";
@@ -53,6 +46,14 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function () {
+        var boxX = - (boxWidth / 2);
+        var maxX1 = - (boxWidth / 2);
+        var maxX2 = boxWidth / 2;
+        var minX1 = - (boxWidth / 2);
+        var minX2 = boxWidth / 2;
+        var medianX1 = - (boxWidth / 2);
+        var medianX2 = boxWidth / 2;
+
         var g = d3.select(this).selectAll("g.box")
           .data(function (d) { return d; })
           .enter().append("g")
@@ -93,7 +94,7 @@ define(function (require) {
               .attr("class", boxClass)
               .attr("x", boxX)
               .attr("y", boxY)
-              .attr("boxWidth", boxWidth)
+              .attr("width", boxWidth)
               .attr("height", boxHeight)
               .style("fill", boxFill)
               .style("stroke", boxStroke)
@@ -132,12 +133,6 @@ define(function (require) {
     component.boxHeight = function (_) {
       if (!arguments.length) { return boxHeight; }
       boxHeight = _;
-      return component;
-    };
-
-    component.boxX = function (_) {
-      if (!arguments.length) { return boxX; }
-      boxX = _;
       return component;
     };
 
@@ -213,18 +208,6 @@ define(function (require) {
       return component;
     };
 
-    component.maxX1 = function (_) {
-      if (!arguments.length) { return maxX1; }
-      maxX1 = _;
-      return component;
-    };
-
-    component.maxX2 = function (_) {
-      if (!arguments.length) { return maxX2; }
-      maxX2 = _;
-      return component;
-    };
-
     component.maxY1 = function (_) {
       if (!arguments.length) { return maxY1; }
       maxY1 = _;
@@ -255,18 +238,6 @@ define(function (require) {
       return component;
     };
 
-    component.minX1 = function (_) {
-      if (!arguments.length) { return minX1; }
-      minX1 = _;
-      return component;
-    };
-
-    component.minX2 = function (_) {
-      if (!arguments.length) { return minX2; }
-      minX2 = _;
-      return component;
-    };
-
     component.minY1 = function (_) {
       if (!arguments.length) { return minY1; }
       minY1 = _;
@@ -294,18 +265,6 @@ define(function (require) {
     component.minStrokeWidth = function (_) {
       if (!arguments.length) { return minStrokeWidth; }
       minStrokeWidth = _;
-      return component;
-    };
-
-    component.medianX1 = function (_) {
-      if (!arguments.length) { return medianX1; }
-      medianX1 = _;
-      return component;
-    };
-
-    component.medianX2 = function (_) {
-      if (!arguments.length) { return medianX2; }
-      medianX2 = _;
       return component;
     };
 
