@@ -6,7 +6,7 @@ define(function (require) {
     var orient = "bottom";
     var ticks = 10;
     var tickValues = null;
-    var tickSize = [6, 6];
+    var tickSize = 6;
     var innerTickSize = 6;
     var outerTickSize = 6;
     var tickPadding = 3;
@@ -15,6 +15,8 @@ define(function (require) {
     var transform = "translate(0,0)";
     var gClass = "axis";
     var title = "";
+    var titleClass = "axis title";
+    var titleX = 6;
     var titleY = 6;
     var titleDY = ".71em";
     var titleAnchor = "end";
@@ -38,6 +40,8 @@ define(function (require) {
           .call(axis);
 
         g.append("text")
+          .attr("class", titleClass)
+          .attr("x", titleX)
           .attr("y", titleY)
           .attr("dy", titleDY)
           .style("title-anchor", titleAnchor)
@@ -117,6 +121,17 @@ define(function (require) {
       return component;
     };
 
+    component.titleClass = function (_) {
+      if (!arguments.length) { return titleClass; }
+      titleClass = _;
+      return component;
+    };
+
+    component.titleX = function (_) {
+      if (!arguments.length) { return titleX; }
+      titleX = _;
+      return component;
+    };
     component.titleY = function (_) {
       if (!arguments.length) { return titleY; }
       titleY = _;

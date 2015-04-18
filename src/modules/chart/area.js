@@ -1,5 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
+  var path = require("src/modules/element/path");
+  var axis = require("src/modules/component/axis/axis");
 
   return function areaChart() {
     // Chart options
@@ -11,8 +13,6 @@ define(function (require) {
     var offset = "zero";
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
-    var xAxis = d3.svg.axis().orient("bottom").ticks(5);
-    var yAxis = d3.svg.axis().orient("left");
     var xScale = d3.time.scale.utc().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]).nice();
     var xDomain = function (domainData) {
@@ -61,51 +61,50 @@ define(function (require) {
         var area = d3.svg.area().x(areaX).y0(Y0).y1(Y1).interpolate(interpolate);
         var line = d3.svg.line().x(lineX).y(Y1).interpolate(interpolate);
 
+        var areaPath = path()
+          .pathGenerator(area)
+          .pathClass(areaClass)
+          .stroke(areaStroke)
+          .fill(areaFill);
+
         xScale.domain(xDomain.call(this, mapDomain(layers)));
         yScale.domain(yDomain.call(this, mapDomain(layers)));
 
-        g.selectAll("area")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .append("path")
-          .attr("class", areaClass)
-          .attr("stroke", areaStroke)
-          .attr("fill", areaFill)
-          .attr("d", area);
+        g.call(areaPath);
 
         if (addLines) {
-          g.selectAll("lines")
-            .data(function (d) { return d; })
-            .enter().append("g")
-            .append("path")
-            .attr("class", lineClass)
-            .attr("stroke", lineStroke)
-            .attr("d", line);
+          var linePath = path()
+            .pathGenerator(line)
+            .pathClass(lineClass)
+            .stroke(lineStroke);
+
+          g.call(linePath);
         }
 
-        g.append("g").attr("class", "x axis");
-        g.append("g").attr("class", "y axis");
-
         if (showXAxis) {
-          g.select(".x.axis")
-            .attr("transform", "translate(0," + yScale.range()[0] + ")")
-            .call(xAxis.scale(xScale))
-            .append("text")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(xAxisTitle);
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass("x axis")
+            .transform("translate(0," + yScale.range()[0] + ")")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(xAxisTitle);
+
+          g.call(xAxis);
         }
 
         if (showYAxis) {
-          g.select(".y.axis")
-            .call(yAxis.scale(yScale))
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(yAxisTitle);
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass("y axis")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(yAxisTitle);
+
+          g.call(yAxis);
         }
       });
     }
@@ -171,18 +170,6 @@ define(function (require) {
     chart.y = function (_) {
       if (!arguments.length) { return yValue; }
       yValue = _;
-      return chart;
-    };
-
-    chart.xAxis = function (_) {
-      if (!arguments.length) { return xAxis; }
-      xAxis = _;
-      return chart;
-    };
-
-    chart.yAxis = function (_) {
-      if (!arguments.length) { return yAxis; }
-      yAxis = _;
       return chart;
     };
 

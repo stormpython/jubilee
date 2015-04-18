@@ -4,6 +4,7 @@ define(function (require) {
   return function path() {
     var pathGenerator = null;
     var color = d3.scale.category10();
+    var accessor = function (d) { return d; };
 
     // Options
     var gClass = "layer";
@@ -16,7 +17,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data, i) {
         var layer = d3.select(this).selectAll("pathG")
-          .data(function (d) { return d; })
+          .data(accessor)
           .enter().append("g")
           .attr("class", gClass);
 
@@ -33,6 +34,12 @@ define(function (require) {
     element.pathGenerator = function (_) {
       if (!arguments.length) { return pathGenerator; }
       pathGenerator = _;
+      return element;
+    };
+
+    element.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
       return element;
     };
 

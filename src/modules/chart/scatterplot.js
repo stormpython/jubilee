@@ -1,6 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
   var circle = require("src/modules/element/circle");
+  var axis = require("src/modules/component/axis/axis");
 
   return function scatterPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
@@ -12,8 +13,6 @@ define(function (require) {
     var zValue = function (d) { return d.z; };
     var xScale = d3.scale.linear().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]);
-    var xAxis = d3.svg.axis().orient("bottom");
-    var yAxis = d3.svg.axis().orient("left");
     var xDomain = function (domainData) {
       return d3.extent(domainData, xValue);
     };
@@ -62,31 +61,31 @@ define(function (require) {
         yScale.domain(yDomain.call(this, mapDomain(data)));
 
         if (showXAxis) {
-          g.append("g")
-            .attr("class", xAxisClass)
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis.scale(xScale))
-            .append("text")
-              .attr("class", xAxisTextClass)
-              .attr("x", xAxisTextX)
-              .attr("y", xAxisTextY)
-              .attr("dy", xAxisTextDY)
-              .style("text-anchor", xAxisTextAnchor)
-              .text(xAxisText);
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass(xAxisClass)
+            .transform("translate(0," + yScale.range()[0] + ")")
+            .titleX(xAxisTextX)
+            .titleY(xAxisTextY)
+            .titleDY(xAxisTextDY)
+            .titleAnchor(xAxisTextAnchor)
+            .title(xAxisText);
+
+          g.call(xAxis);
         }
 
         if (showYAxis) {
-          g.append("g")
-            .attr("class", yAxisClass)
-            .call(yAxis.scale(yScale))
-            .append("text")
-              .attr("class", yAxisTextClass)
-              .attr("transform", yAxisTextTransform)
-              .attr("y", yAxisTextY)
-              .attr("x", yAxisTextX)
-              .attr("dy", yAxisTextDY)
-              .style("text-anchor", yAxisTextAnchor)
-              .text(yAxisText);
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass(yAxisClass)
+            .titleX(yAxisTextX)
+            .titleY(yAxisTextY)
+            .titleDY(yAxisTextDY)
+            .titleAnchor(yAxisTextAnchor)
+            .title(yAxisText);
+
+          g.call(yAxis);
         }
 
         var points = circle()

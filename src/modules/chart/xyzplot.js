@@ -1,5 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
+  var axis = require("src/modules/component/axis/axis");
   var graphFunc = require("src/modules/component/chart/chart");
 
   return function xzyPlot() {
@@ -25,10 +26,6 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data) {
-        var xAxis = d3.svg.axis().orient("bottom");
-        var yAxis = d3.svg.axis().orient("left");
-        var zAxis = d3.svg.axis().orient("right");
-
         var svg = d3.select(this).selectAll("svg")
           .data([data])
           .enter().append("svg")
@@ -50,38 +47,43 @@ define(function (require) {
         }
 
         if (showXAxis) {
-          g.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + yScale.range()[0] + ")")
-            .call(xAxis.scale(xScale))
-            .append("text")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(xAxisTitle);
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass("x axis")
+            .transform("translate(0," + yScale.range()[0] + ")")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(xAxisTitle);
+
+          g.call(xAxis);
         }
 
         if (showYAxis) {
-          g.append("g")
-            .attr("class", "left axis")
-            .call(yAxis.scale(yScale))
-            .append("text")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(yAxisTitle);
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass("y axis")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(yAxisTitle);
+
+          g.call(yAxis);
         }
 
         if (showZAxis) {
-          g.append("g")
-            .attr("class", "right axis")
-            .attr("transform", "translate(" + xScale.range()[1] + "," + "0)")
-            .call(zAxis.scale(zScale))
-            .append("text")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(zAxisTitle);
+          var zAxis = axis()
+            .scale(zScale)
+            .orient("right")
+            .gClass("z axis")
+            .transform("translate(" + xScale.range()[1] + "," + "0)")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(zAxisTitle);
+
+          g.call(zAxis);
         }
       });
     }

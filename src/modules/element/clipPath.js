@@ -3,6 +3,7 @@ define(function (require) {
 
   return function clipPath() {
     var id = uniqueID();
+    var transform = "translate(0,0)";
     var x = 0;
     var y = 0;
     var width = 50;
@@ -10,11 +11,12 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, i) {
-        return d3.select("this")
-          .attr("clip-path", "url(#" + id + ")")
+        d3.select("this")
           .append("clipPath")
           .attr("id", id)
+          .attr("transform", transform)
           .append("rect")
+          .attr("clip-path", "url(#" + id + ")")
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)
@@ -30,6 +32,12 @@ define(function (require) {
     element.id = function (_) {
       if (!arguments.length) { return id; }
       id = _;
+      return element;
+    };
+
+    element.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
       return element;
     };
 

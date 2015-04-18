@@ -1,5 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
+  var path = require("src/modules/element/path");
 
   return function sunburst() {
     // Chart options
@@ -41,23 +42,23 @@ define(function (require) {
           .attr("height", height)
           .append("g")
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-        var arc = d3.svg.arc();
 
         yScale.range([0, radius]);
 
-        arc
+        var arc = d3.svg.arc()
           .startAngle(startAngle)
           .endAngle(endAngle)
           .innerRadius(innerRadius)
           .outerRadius(outerRadius);
 
-        svg.datum(data).selectAll("path")
-          .data(partition.nodes)
-          .enter().append("path")
-          .attr("d", arc)
-          .attr("class", pieClass)
-          .style("stroke", pieStroke)
-          .style("fill", pieFill);
+        var arcPath = path()
+          .pathGenerator(arc)
+          .accessor(partition.nodes)
+          .pathClass(pieClass)
+          .stroke(pieStroke)
+          .fill(pieFill);
+
+        svg.datum(data).call(arcPath);
       });
     }
 
