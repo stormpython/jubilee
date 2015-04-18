@@ -85,14 +85,14 @@
         var areaX = function (d) { return xScale(d.x) + xScale.rangeBand() / 2; };
 
         var myChart = jubilee.chart.area()
-            .width(width)
-            .height(height)
-            .addLines(true)
+          .width(width)
+          .height(height)
+          .addLines(true)
 //            .xScale(xScale)
 //            .xDomain(xDomain)
 //            .areaX(areaX)
 //            .lineX(areaX)
-            .interpolate("cardinal");
+          .interpolate("cardinal");
 
         d3.select("#chart")
             .datum(data.series)
