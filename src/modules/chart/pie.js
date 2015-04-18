@@ -1,5 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
+  var path = require("src/modules/element/path");
 
   return function pieChart() {
     var width = 300;
@@ -33,20 +34,20 @@ define(function (require) {
           .append("g")
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-        var g = svg.selectAll(".arc")
-          .data(pie(data))
-          .enter()
-          .append("g")
-          .attr("class", "arc");
-
         arc.outerRadius(outerRadius || radius).innerRadius(innerRadius);
 
-        g.append("path")
-          .attr("d", arc)
-          .attr("class", pieClass)
-          .style("fill", pieFill);
+        var piePath = path()
+          .pathGenerator(arc)
+          .accessor(pie(data))
+          .gClass("arc")
+          .pathClass(pieClass)
+          .fill(pieFill);
 
-        g.append("text")
+        svg.call(piePath);
+
+        svg.selectAll("g.arc")
+          .data(pie(data))
+          .append("text")
           .attr("transform", textTransform)
           .attr("dy", textDY)
           .style("text-anchor", textAnchor)
