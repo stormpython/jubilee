@@ -6,7 +6,7 @@ define(function (require) {
     var chartClass = "chart";
     var transform = null;
     var datum = null;
-    var draw = null;
+    var call = null;
 
     function component(selection) {
       selection.each(function (data, i) {
@@ -21,7 +21,7 @@ define(function (require) {
           .attr("class", chartClass)
           .attr("transform", transform)
           .datum(datum)
-          .call(draw);
+          .call(call);
       });
     }
 
@@ -49,9 +49,9 @@ define(function (require) {
       return component;
     };
 
-    component.draw = function (_) {
-      if (!arguments.length) { return draw; }
-      draw = _;
+    component.call = function (_) {
+      if (!arguments.length) { return call; }
+      call = _;
       return component;
     };
 

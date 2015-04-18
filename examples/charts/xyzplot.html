@@ -190,6 +190,13 @@
       .width(pieWidth)
       .height(pieHeight);
 
+    var elementizedChart = jubilee.component.chart()
+      .transform(function (d) {
+        return "translate(" + (xScale(d.x) - (pieWidth / 2)) + "," + (zScale(d.z) - (pieHeight / 2)) + ")";
+      })
+      .datum(function (d) { return d.sunburst; })
+      .call(sunburst);
+
     var chart = jubilee.chart.xyzplot()
       .margin({top: 50, right: 50})
       .width(width)
@@ -197,12 +204,7 @@
       .xScale(xScale)
       .yScale(yScale)
       .zScale(zScale)
-      .elements([areas, lines, bars, circles])
-      .chartTransform(function (d) {
-        return "translate(" + (xScale(d.x) - (pieWidth / 2)) + "," + (zScale(d.z) - (pieHeight / 2)) + ")";
-      })
-      .chartData(function (d) { return d.sunburst; })
-      .charts(sunburst);
+      .elements([areas, lines, bars, circles, elementizedChart]);
 
     d3.select("#chart")
       .datum(data.series)

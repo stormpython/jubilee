@@ -11,9 +11,6 @@ define(function (require) {
     var yScale = null;
     var zScale = null;
     var elements = null;
-    var chartData = null;
-    var chartTransform = null;
-    var charts = null;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -37,13 +34,9 @@ define(function (require) {
 
         if (typeof elements === "function") { g.call(elements); }
         if (elements instanceof Array) {
-          elements.forEach(function (shape) {
-            if (typeof shape === "function") { g.call(shape); }
+          elements.forEach(function (element) {
+            if (typeof element === "function") { g.call(element); }
           });
-        }
-
-        if (typeof charts === "function") {
-          g.call(graphFunc().transform(chartTransform).datum(chartData).draw(charts));
         }
 
         if (showXAxis) {
@@ -130,24 +123,6 @@ define(function (require) {
     chart.elements = function (_) {
       if (!arguments.length) { return elements; }
       elements = _;
-      return chart;
-    };
-
-    chart.charts = function (_) {
-      if (!arguments.length) { return charts; }
-      charts = _;
-      return chart;
-    };
-
-    chart.chartData = function (_) {
-      if (!arguments.length) { return chartData; }
-      chartData = _;
-      return chart;
-    };
-
-    chart.chartTransform = function (_) {
-      if (!arguments.length) { return chartTransform; }
-      chartTransform = _;
       return chart;
     };
 
