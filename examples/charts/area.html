@@ -36,25 +36,25 @@
         var data = {
             series: [
                 [
-                    { x: 1411761450000, z: 41, label: "band"},
-                    { x: 1411761480000, z: 18, label: "band"},
-                    { x: 1411761510000, z: 22, label: "band"},
-                    { x: 1411761540000, z: 17, label: "band"},
-                    { x: 1411761570000, z: 17, label: "band"}
+                    { x: 1411761450000, y: 41, label: "band"},
+                    { x: 1411761480000, y: 18, label: "band"},
+                    { x: 1411761510000, y: 22, label: "band"},
+                    { x: 1411761540000, y: 17, label: "band"},
+                    { x: 1411761570000, y: 17, label: "band"}
                 ],
                 [
-                    { x: 1411761450000, z: 91, label: "of"},
-                    { x: 1411761480000, z: 88, label: "of"},
-                    { x: 1411761510000, z: 32, label: "of"},
-                    { x: 1411761540000, z: 47, label: "of"},
-                    { x: 1411761570000, z: 57, label: "of"}
+                    { x: 1411761450000, y: 91, label: "of"},
+                    { x: 1411761480000, y: 88, label: "of"},
+                    { x: 1411761510000, y: 32, label: "of"},
+                    { x: 1411761540000, y: 47, label: "of"},
+                    { x: 1411761570000, y: 57, label: "of"}
                 ],
                 [
-                    { x: 1411761450000, z: 191, label: "brothers"},
-                    { x: 1411761480000, z: 188, label: "brothers"},
-                    { x: 1411761510000, z: 132, label: "brothers"},
-                    { x: 1411761540000, z: 147, label: "brothers"},
-                    { x: 1411761570000, z: 157, label: "brothers"}
+                    { x: 1411761450000, y: 191, label: "brothers"},
+                    { x: 1411761480000, y: 188, label: "brothers"},
+                    { x: 1411761510000, y: 132, label: "brothers"},
+                    { x: 1411761540000, y: 147, label: "brothers"},
+                    { x: 1411761570000, y: 157, label: "brothers"}
                 ]
             ]
         };
@@ -88,11 +88,10 @@
           .width(width)
           .height(height)
           .addLines(true)
-          .y(function (d) { return d.z; })
-//            .xScale(xScale)
-//            .xDomain(xDomain)
-//            .areaX(areaX)
-//            .lineX(areaX)
+//          .xScale(xScale)
+//          .xDomain(xDomain)
+//          .areaX(areaX)
+//          .lineX(areaX)
           .interpolate("cardinal");
 
         d3.select("#chart")
