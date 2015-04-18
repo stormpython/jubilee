@@ -113,9 +113,9 @@ define(function (require) {
       return xScale(xValue.call(null, d, i));
     }
 
-    function Y(d) {
+    function Y(d, i) {
       if (offset === "overlap") { return d.y; }
-      return d.y0 + d.y;
+      return d.y0 + yValue.call(null, d, i);
     }
 
     function Y0(d) {
@@ -123,9 +123,9 @@ define(function (require) {
       return yScale(d.y0);
     }
 
-    function Y1(d) {
+    function Y1(d, i) {
       if (offset === "overlap") { return yScale(d.y); }
-      return yScale(d.y0 + d.y);
+      return yScale(d.y0 + yValue.call(null, d, i));
     }
 
     function mapDomain (data) {
