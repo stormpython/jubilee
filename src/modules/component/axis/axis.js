@@ -18,6 +18,7 @@ define(function (require) {
     var titleClass = "axis title";
     var titleX = 6;
     var titleY = 6;
+    var titleDX = "";
     var titleDY = ".71em";
     var titleAnchor = "end";
 
@@ -43,6 +44,7 @@ define(function (require) {
           .attr("class", titleClass)
           .attr("x", titleX)
           .attr("y", titleY)
+          .attr("dx", titleDX)
           .attr("dy", titleDY)
           .style("title-anchor", titleAnchor)
           .text(title);
@@ -135,6 +137,12 @@ define(function (require) {
     component.titleY = function (_) {
       if (!arguments.length) { return titleY; }
       titleY = _;
+      return component;
+    };
+
+    component.titleDX = function (_) {
+      if (!arguments.length) { return titleDX; }
+      titleDX = _;
       return component;
     };
 

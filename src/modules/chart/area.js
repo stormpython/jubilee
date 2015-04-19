@@ -24,8 +24,6 @@ define(function (require) {
         Math.max(0, d3.max(domainData, Y))
       ];
     };
-    var areaX = X;
-    var lineX = X;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -58,8 +56,8 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var area = d3.svg.area().x(areaX).y0(Y0).y1(Y1).interpolate(interpolate);
-        var line = d3.svg.line().x(lineX).y(Y1).interpolate(interpolate);
+        var area = d3.svg.area().x(X).y0(Y0).y1(Y1).interpolate(interpolate);
+        var line = d3.svg.line().x(X).y(Y1).interpolate(interpolate);
 
         var areaPath = path()
           .pathGenerator(area)
@@ -67,8 +65,8 @@ define(function (require) {
           .stroke(areaStroke)
           .fill(areaFill);
 
-        xScale.domain(xDomain.call(this, mapDomain(layers)));
-        yScale.domain(yDomain.call(this, mapDomain(layers)));
+        xScale.domain(xDomain && xDomain.call(this, mapDomain(layers)));
+        yScale.domain(yDomain && yDomain.call(this, mapDomain(layers)));
 
         g.call(areaPath);
 
@@ -197,18 +195,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.areaX = function (_) {
-      if (!arguments.length) { return areaX; }
-      areaX = _;
-      return chart;
-    };
-
-    chart.lineX = function (_) {
-      if (!arguments.length) { return lineX; }
-      lineX = _;
-      return chart;
-    };
-
     chart.dispatch = function (_) {
       if (!arguments.length) { return dispatch; }
       dispatch = _;
@@ -248,6 +234,24 @@ define(function (require) {
     chart.offset = function (_) {
       if (!arguments.length) { return offset; }
       offset = _;
+      return chart;
+    };
+
+    chart.areaClass = function (_) {
+      if (!arguments.length) { return areaClass; }
+      areaClass = _;
+      return chart;
+    };
+
+    chart.areaStroke = function (_) {
+      if (!arguments.length) { return areaStroke; }
+      areaStroke = _;
+      return chart;
+    };
+
+    chart.areaFill = function (_) {
+      if (!arguments.length) { return areaFill; }
+      areaFill = _;
       return chart;
     };
 

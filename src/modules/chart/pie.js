@@ -14,6 +14,7 @@ define(function (require) {
     var arc = d3.svg.arc();
     var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
+    var pathGroupClass = "arc";
     var pieFill = function (d, i) { return color(i); };
     var pieClass = "pie";
 
@@ -39,7 +40,7 @@ define(function (require) {
         var piePath = path()
           .pathGenerator(arc)
           .accessor(pie(data))
-          .gClass("arc")
+          .gClass(pathGroupClass)
           .pathClass(pieClass)
           .fill(pieFill);
 
@@ -106,12 +107,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.arc = function (_) {
-      if (!arguments.length) { return arc; }
-      arc = _;
-      return chart;
-    };
-
     chart.dispatch = function (_) {
       if (!arguments.length) { return dispatch; }
       dispatch = _;
@@ -121,6 +116,12 @@ define(function (require) {
     chart.pieFill = function (_) {
       if (!arguments.length) { return pieFill; }
       pieFill = _;
+      return chart;
+    };
+
+    chart.pathGroupClass = function (_) {
+      if (!arguments.length) { return pathGroupClass; }
+      pathGroupClass = _;
       return chart;
     };
 

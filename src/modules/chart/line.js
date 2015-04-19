@@ -14,8 +14,6 @@ define(function (require) {
     var interpolate = "linear";
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
-    var xAxis = d3.svg.axis().orient("bottom").ticks(5);
-    var yAxis = d3.svg.axis().orient("left");
     var xScale = d3.time.scale.utc().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]).nice();
     var xDomain = function (data) {
@@ -27,7 +25,6 @@ define(function (require) {
         Math.max(0, d3.max(data, yValue))
       ];
     };
-    var lineX = X;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -42,6 +39,7 @@ define(function (require) {
 
     // Circle Options
     var addCircles = true;
+    var circleGroupClass = "circle layer";
     var circleClass = "circle";
     var circleFill = function (d, i, j) { return color(j); };
     var circleStroke = function (d, i, j) { return color(j); };
@@ -59,7 +57,7 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var line = d3.svg.line().x(lineX).y(Y).interpolate(interpolate);
+        var line = d3.svg.line().x(X).y(Y).interpolate(interpolate);
 
         var clippath = clipPath().width(width).height(height);
 
@@ -106,7 +104,7 @@ define(function (require) {
             .cy(Y)
             .color(color)
             .radius(circleRadius)
-            .gClass("circle layer")
+            .gClass(circleGroupClass)
             .circleClass(circleClass)
             .fill(circleFill)
             .stroke(circleStroke)
@@ -167,18 +165,6 @@ define(function (require) {
     chart.y = function (_) {
       if (!arguments.length) { return yValue; }
       yValue = _;
-      return chart;
-    };
-
-    chart.xAxis = function (_) {
-      if (!arguments.length) { return xAxis; }
-      xAxis = _;
-      return chart;
-    };
-
-    chart.yAxis = function (_) {
-      if (!arguments.length) { return yAxis; }
-      yAxis = _;
       return chart;
     };
 
@@ -263,6 +249,12 @@ define(function (require) {
     chart.addCircles = function (_) {
       if (!arguments.length) { return addCircles; }
       addCircles = _;
+      return chart;
+    };
+
+    chart.circleGroupClass = function (_) {
+      if (!arguments.length) { return circleGroupClass; }
+      circleGroupClass = _;
       return chart;
     };
 

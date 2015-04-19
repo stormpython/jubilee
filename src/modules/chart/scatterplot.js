@@ -60,6 +60,18 @@ define(function (require) {
         xScale.domain(xDomain.call(this, mapDomain(data)));
         yScale.domain(yDomain.call(this, mapDomain(data)));
 
+        var points = circle()
+          .cx(X)
+          .cy(Y)
+          .color(color)
+          .radius(circleRadius)
+          .circleClass(circleClass)
+          .fill(circleFill)
+          .stroke(circleStroke)
+          .strokeWidth(circleStrokeWidth);
+
+        g.call(points);
+
         if (showXAxis) {
           var xAxis = axis()
             .scale(xScale)
@@ -87,18 +99,6 @@ define(function (require) {
 
           g.call(yAxis);
         }
-
-        var points = circle()
-          .cx(X)
-          .cy(Y)
-          .color(color)
-          .radius(circleRadius)
-          .circleClass(circleClass)
-          .fill(circleFill)
-          .stroke(circleStroke)
-          .strokeWidth(circleStrokeWidth);
-
-        g.call(points);
       });
     }
 
