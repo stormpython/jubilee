@@ -15,6 +15,7 @@ define(function (require) {
     },
     map: {},
     layout: {
+      box: require("src/modules/layout/box"),
       grid: require("src/modules/layout/grid"),
       split: require("src/modules/layout/split")
     },
