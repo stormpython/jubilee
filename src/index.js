@@ -4,6 +4,7 @@ define(function (require) {
     chart: {
       line: require("src/modules/chart/line"),
       area: require("src/modules/chart/area"),
+      boxplot: require("src/modules/chart/boxplot"),
       pie: require("src/modules/chart/pie"),
       scatter : require("src/modules/chart/scatterplot"),
       sunburst: require("src/modules/chart/sunburst"),

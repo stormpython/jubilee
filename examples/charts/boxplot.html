@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BoxPlot</title>
+</head>
+<body>
+<style>
+  body {
+    font: 10px sans-serif;
+  }
+
+  svg {
+    background-color: #f3f3f3;
+  }
+
+  .axis path, .axis line {
+    fill: none;
+    stroke: #000;
+  .element-rendering: crispEdges;
+  }
+</style>
+
+<div id="chart"></div>
+<script data-main="../../src/require.config.js" src="../../../node_modules/requirejs/require.js"></script>
+<script>
+  require(["../../src/index"], function (jubilee) {
+    var data = {
+      series: [
+        [
+          { x: 1411761450000, values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+          { x: 1411761480000, values: [2, 2, 2, 2, 3, 4, 5, 6, 8, 9, 9]},
+          { x: 1411761510000, values: [3, 6, 6, 6, 8, 9, 6, 9, 10, 12]},
+          { x: 1411761540000, values: [13, 14, 14, 14, 15, 17, 20, 22]},
+          { x: 1411761570000, values: [4, 5, 6, 7, 7, 7, 7, 7, 8, 9,10]}
+        ]
+      ]
+    };
+
+    var boxplot = jubilee.chart.boxplot();
+
+    d3.select("#chart")
+      .data(data.series)
+      .call(boxplot);
+  });
+</script>
+</body>
+</html>

@@ -47,7 +47,7 @@ define(function (require) {
     var circleStrokeWidth = 3;
 
     function chart(selection) {
-      selection.each(function (data) {
+      selection.each(function (data, i) {
 
         var svg = d3.select(this).append("svg")
           .data([data])
