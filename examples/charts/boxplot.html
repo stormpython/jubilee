@@ -46,6 +46,7 @@
       .height(height)
       .x(function (d) { return d.label; })
       .xScale(xScale)
+      .yScale(yScale)
       .xDomain(function () { return xScale.domain() })
       .gTransform(function (d) {
         return "translate(" + (xScale(d.label) + (xScale.rangeBand() / 2)) + "," + yScale(d.median) + ")";
