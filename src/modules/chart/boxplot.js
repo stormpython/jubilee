@@ -13,6 +13,18 @@ define(function (require) {
     var accessor = function (d) { return d; };
     var xScale = d3.time.scale().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]);
+    var xDomain = function (domainData) {
+      return d3.extent(domainData, xValue);
+    };
+    var yDomain = function (domainData) {
+      return [
+        Math.min(0, d3.min(domainData)),
+        Math.max(0, d3.max(domainData))
+      ];
+    };
+    var gTransform = function transform(d, i) {
+      return "translate(" + xScale(xValue.call(this, d, i)) + "," + yScale(d.median) + ")";
+    };
     var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
     // X Axis
@@ -40,28 +52,19 @@ define(function (require) {
       selection.each(function (data) {
         var boxData = box().values(values).accessor(accessor);
 
-        data = boxData(data);
-
         var svg = d3.select(this).append("svg")
-          .data([data])
+          .datum(boxData(data))
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom);
 
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var mapData = mapDomain(data);
-        var xDomain = d3.extent(data, xValue);
-        var yDomain = [
-          d3.min(mapData),
-          d3.max(mapData)
-        ];
-
-        xScale.domain(xDomain);
-        yScale.domain(yDomain);
+        xScale.domain(xDomain && xDomain.call(this, data));
+        yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
 
         var boxPlotFunc = boxPlot()
-          .gTransform(transform)
+          .gTransform(gTransform)
           .boxWidth(boxWidth)
           .boxHeight(boxHeight)
           .boxY(boxY)
@@ -102,10 +105,6 @@ define(function (require) {
           g.call(yAxis);
         }
       });
-    }
-
-    function transform(d, i) {
-      return "translate(" + xScale(xValue.call(this, d, i)) + "," + yScale(d.median) + ")";
     }
 
     function boxHeight(d) {
@@ -180,6 +179,24 @@ define(function (require) {
     chart.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale = _;
+      return chart;
+    };
+
+    chart.xDomain = function (_) {
+      if (!arguments.length) { return xDomain; }
+      xDomain = _;
+      return chart;
+    };
+
+    chart.yDomain = function (_) {
+      if (!arguments.length) { return yDomain; }
+      yDomain = _;
+      return chart;
+    };
+
+    chart.gTransform = function (_) {
+      if (!arguments.length) { return gTransform; }
+      gTransform = _;
       return chart;
     };
 

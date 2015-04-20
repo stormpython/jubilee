@@ -26,20 +26,33 @@
   require(["../../src/index"], function (jubilee) {
     var data = {
       series: [
-        [
-          { x: 1411761450000, values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
-          { x: 1411761480000, values: [2, 2, 2, 2, 3, 4, 5, 6, 8, 9, 9]},
-          { x: 1411761510000, values: [3, 6, 6, 6, 8, 9, 6, 9, 10, 12]},
-          { x: 1411761540000, values: [13, 14, 14, 14, 15, 17, 20, 22]},
-          { x: 1411761570000, values: [4, 5, 6, 7, 7, 7, 7, 7, 8, 9,10]}
-        ]
+        { label: "busch", values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]},
+        { label: "coors", values: [2, 2, 2, 2, 3, 4, 5, 6, 8, 9, 9]},
+        { label: "miller", values: [3, 6, 6, 6, 8, 9, 6, 9, 10, 12]},
+        { label: "guinness", values: [13, 14, 14, 14, 15, 17, 20, 22]},
+        { label: "adams", values: [4, 5, 6, 7, 7, 7, 7, 7, 8, 9,10]}
       ]
     };
 
-    var boxplot = jubilee.chart.boxplot();
+    var width = 760;
+    var height = 400;
+    var xScale = d3.scale.ordinal()
+      .domain(["busch", "coors", "miller", "guinness", "adams"])
+      .rangeBands([0, width], 0.1);
+    var yScale = d3.scale.linear().domain([0, 22]).range([height, 0]);
+
+    var boxplot = jubilee.chart.boxplot()
+      .width(width)
+      .height(height)
+      .x(function (d) { return d.label; })
+      .xScale(xScale)
+      .xDomain(function () { return xScale.domain() })
+      .gTransform(function (d) {
+        return "translate(" + (xScale(d.label) + (xScale.rangeBand() / 2)) + "," + yScale(d.median) + ")";
+      });
 
     d3.select("#chart")
-      .data(data.series)
+      .datum(data.series)
       .call(boxplot);
   });
 </script>
