@@ -12802,7 +12802,8 @@ define('src/modules/map/tile',['require','d3'],function (require) {
   return function tile() {
     var width = 500;
     var height = 500;
-    var projection = null;
+    var projection = d3.geo.mercator();
+    var projectionScale = 120;
     var center = [12, 42];
     var tileLink = function (d) {
       return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] +
@@ -12814,7 +12815,7 @@ define('src/modules/map/tile',['require','d3'],function (require) {
         var tile = d3.geo.tile()
           .size([width, height]);
 
-        projection = projection || d3.geo.mercator().scale(120).translate([width / 2, height / 2]);
+        projection.scale(projectionScale).translate([width / 2, height / 2]);
 
         var cntr = projection(center);
 
@@ -12870,6 +12871,12 @@ define('src/modules/map/tile',['require','d3'],function (require) {
     map.projection = function (_) {
       if (!arguments.length) { return projection; }
       projection = _;
+      return map;
+    };
+
+    map.projectionScale = function (_) {
+      if (!arguments.length) { return projectionScale; }
+      projectionScale = _;
       return map;
     };
 

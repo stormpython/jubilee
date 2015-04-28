@@ -12,6 +12,7 @@
       var tile = jubilee.map.tile()
         .width(800)
         .height(800)
+        .center([0, 0])
         .tileLink(function (d) {
           return "https://a.tile.openstreetmap.org/" + d[2] + "/" + d[0] + "/" + d[1] + ".png";
         });
