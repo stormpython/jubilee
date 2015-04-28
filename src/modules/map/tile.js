@@ -20,9 +20,6 @@ define(function (require) {
 
         var cntr = projection(center);
 
-        var path = d3.geo.path()
-          .projection(projection);
-
         var zoom = d3.behavior.zoom()
           .scale(projection.scale() * 2 * Math.PI)
           .translate([width - cntr[0], height - cntr[1]])
