@@ -10,9 +10,6 @@
   <script>
     require(["../../src/index"], function (jubilee) {
       var tile = jubilee.map.tile()
-        .width(800)
-        .height(800)
-        .center([0, 0])
         .tileLink(function (d) {
           return "http://otile1.mqcdn.com/tiles/1.0.0/map/" + d[2] + "/" + d[0] + "/" + d[1] + ".jpg";
         });

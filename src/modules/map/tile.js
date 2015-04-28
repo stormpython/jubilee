@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function tile() {
-    var width = 500;
+    var width = 960;
     var height = 500;
     var projection = d3.geo.mercator();
     var projectionScale = 120;
