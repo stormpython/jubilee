@@ -2,8 +2,7 @@ require.config({
   baseUrl: "/",
   paths: {
     jubilee: "src/index",
-    d3: "lib/d3/d3",
-    geo: "lib/d3-plugins/geo/tile/tile"
+    d3: "build/d3"
   },
   shim: {},
   packages: []

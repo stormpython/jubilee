@@ -22,13 +22,22 @@ module.exports = function(grunt) {
         }
       }
     },
+    concat: {
+      options: {
+        separator: ";"
+      },
+      dist: {
+        src: ["lib/d3/d3.js", "lib/d3-plugins/geo/tile/tile.js"],
+        dest: "build/d3.js"
+      }
+    },
     requirejs: {
       compile: {
         options: {
           baseUrl: ".",
           mainConfigFile: "src/require.config.js",
           name: "node_modules/almond/almond",
-          include: ["src/require.config", "jubilee", "geo"],
+          include: ["src/require.config", "jubilee"],
           optimize: "none",
           out: "build/jubilee.js",
           wrap: {
@@ -89,7 +98,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-connect");
   grunt.loadNpmTasks("grunt-mocha");
 
-  grunt.registerTask("default", ["copy", "connect", "watch"]);
+  grunt.registerTask("default", ["copy", "connect", "concat", "watch"]);
   grunt.registerTask("production", ["requirejs", "uglify", "copy", "cssmin"]);
   grunt.registerTask("release", ["production"]);
   grunt.registerTask("lint", ["jshint"]);
