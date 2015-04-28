@@ -4,10 +4,8 @@ define(function (require) {
   return function tile() {
     var width = 500;
     var height = 500;
-    var projection = d3.geo.mercator();
-    var scale = 120;
-    var translate = [width / 2, height / 2];
-    var centerProjection = [12, 42];
+    var projection = null;
+    var center = [12, 42];
     var tileLink = function (d) {
       return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] +
         ".tiles.mapbox.com/v3/examples.map-zgrqqx0w/" + d[2] + "/" + d[0] + "/" + d[1] + ".png";
@@ -18,16 +16,16 @@ define(function (require) {
         var tile = d3.geo.tile()
           .size([width, height]);
 
-        projection.scale(scale).translate(translate);
+        projection = projection || d3.geo.mercator().scale(120).translate([width / 2, height / 2]);
 
-        var center = projection(centerProjection);
+        var cntr = projection(center);
 
         var path = d3.geo.path()
           .projection(projection);
 
         var zoom = d3.behavior.zoom()
           .scale(projection.scale() * 2 * Math.PI)
-          .translate([width - center[0], height - center[1]])
+          .translate([width - cntr[0], height - cntr[1]])
           .on("zoom", redraw);
 
         var svg = d3.select(this).append("svg")
@@ -80,15 +78,9 @@ define(function (require) {
       return map;
     };
 
-    map.scale = function (_) {
-      if (!arguments.length) { return scale; }
-      scale = _;
-      return map;
-    };
-
-    map.centerProjection = function (_) {
-      if (!arguments.length) { return centerProjection; }
-      centerProjection = _;
+    map.center = function (_) {
+      if (!arguments.length) { return center; }
+      center = _;
       return map;
     };
 
