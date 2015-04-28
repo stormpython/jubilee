@@ -26,12 +26,13 @@ define(function (require) {
       chart: require("src/modules/component/chart/chart"),
       boxplot: require("src/modules/component/boxplot/boxplot")
     },
-   element: {
+    element: {
       circle: require("src/modules/element/circle"),
       rect: require("src/modules/element/rect"),
       path: require("src/modules/element/path"),
       line: require("src/modules/element/line"),
-      clipPath: require("src/modules/element/clipPath")
+      clipPath: require("src/modules/element/clipPath"),
+      image: require("src/modules/element/image")
     }
   };
 });

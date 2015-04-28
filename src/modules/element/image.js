@@ -10,17 +10,11 @@ define(function (require) {
     var preserveAspectRatio = null;
 
     // Options
-    var gClass = "layer";
     var imageClass = "image";
 
     function element(selection) {
       selection.each(function (data, i) {
-        var layer = d3.select(this).selectAll("layer")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .attr("class", gClass);
-
-        var images = layer.selectAll("image")
+        var images = d3.select(this).selectAll("image")
           .data(function (d) { return d; });
 
         images.exit().remove();
@@ -72,12 +66,6 @@ define(function (require) {
     element.preserveAspectRatio = function (_) {
       if (!arguments.length) { return preserveAspectRatio; }
       preserveAspectRatio = _;
-      return element;
-    };
-
-    element.gClass = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
       return element;
     };
 

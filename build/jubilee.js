@@ -12848,11 +12848,105 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/axis/a
     return chart;
   };
 });
-define('src/modules/map/tile',['require','d3'],function (require) {
+define('src/modules/element/image',['require','d3'],function (require) {
   var d3 = require("d3");
 
+  return function image() {
+    var x = function (d) { return d.x; };
+    var y = function (d) { return d.y; };
+    var width = function () { return 10; };
+    var height = function () { return height; };
+    var xlink = null;
+    var preserveAspectRatio = null;
+
+    // Options
+    var gClass = "layer";
+    var imageClass = "image";
+
+    function element(selection) {
+      selection.each(function (data, i) {
+        var layer = d3.select(this).selectAll("layer")
+          .data(function (d) { return d; })
+          .enter().append("g")
+          .attr("class", gClass);
+
+        var images = layer.selectAll("image")
+          .data(function (d) { return d; });
+
+        images.exit().remove();
+
+        images
+          .enter().append("image")
+          .attr("class", imageClass);
+
+        images
+          .attr("x", x)
+          .attr("y", y)
+          .attr("width", width)
+          .attr("height", height)
+          .attr("xlink:href", xlink)
+          .attr("preserveAspectRatio", preserveAspectRatio);
+      });
+    }
+
+    element.x = function (_) {
+      if (!arguments.length) { return x; }
+      x = _;
+      return element;
+    };
+
+    element.y = function (_) {
+      if (!arguments.length) { return y; }
+      y = _;
+      return element;
+    };
+
+    element.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return element;
+    };
+
+    element.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return element;
+    };
+
+    element.xlink = function (_) {
+      if (!arguments.length) { return xlink; }
+      xlink = _;
+      return element;
+    };
+
+    element.preserveAspectRatio = function (_) {
+      if (!arguments.length) { return preserveAspectRatio; }
+      preserveAspectRatio = _;
+      return element;
+    };
+
+    element.gClass = function (_) {
+      if (!arguments.length) { return gClass; }
+      gClass = _;
+      return element;
+    };
+
+    element.imageClass= function (_) {
+      if (!arguments.length) { return imageClass; }
+      imageClass = _;
+      return element;
+    };
+
+    return element;
+  };
+});
+
+define('src/modules/map/tile',['require','d3','src/modules/element/image'],function (require) {
+  var d3 = require("d3");
+  var image = require("src/modules/element/image");
+
   return function tile() {
-    var width = 500;
+    var width = 960;
     var height = 500;
     var projection = d3.geo.mercator();
     var projectionScale = 120;
@@ -12893,17 +12987,26 @@ define('src/modules/map/tile',['require','d3'],function (require) {
 
           g.attr("transform", "scale(" + tiles.scale + ") translate(" + tiles.translate + ")");
 
-          var image = g.selectAll("image")
-            .data(tiles, function (d) { return d; });
+          var images = image()
+            .xlink(tileLink)
+            .width(1)
+            .height(1)
+            .x(function (d) { console.log(d); return d[0]; })
+            .y(function (d) { return d[1]; });
 
-          image.exit().remove();
+          g.datum(tiles).call(images);
 
-          image.enter().append("image")
-            .attr("xlink:href", tileLink)
-            .attr("width", 1)
-            .attr("height", 1)
-            .attr("x", function (d) { return d[0]; })
-            .attr("y", function (d) { return d[1]; });
+          //  g.selectAll("image")
+          //  .data(tiles, function (d) { return d; });
+          //
+          //images.exit().remove();
+          //
+          //images.enter().append("image")
+          //  .attr("xlink:href", tileLink)
+          //  .attr("width", 1)
+          //  .attr("height", 1)
+          //  .attr("x", function (d) { return d[0]; })
+          //  .attr("y", function (d) { return d[1]; });
         }
       });
     }
@@ -13251,7 +13354,7 @@ define('src/modules/element/line',['require','d3'],function (require) {
     return element;
   };
 });
-define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/boxplot','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/chart/xyzplot','src/modules/map/tile','src/modules/layout/box','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/chart/chart','src/modules/component/boxplot/boxplot','src/modules/element/circle','src/modules/element/rect','src/modules/element/path','src/modules/element/line','src/modules/element/clipPath'],function (require) {
+define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/boxplot','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/chart/xyzplot','src/modules/map/tile','src/modules/layout/box','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/chart/chart','src/modules/component/boxplot/boxplot','src/modules/element/circle','src/modules/element/rect','src/modules/element/path','src/modules/element/line','src/modules/element/clipPath','src/modules/element/image'],function (require) {
   return {
     version: "0.1.0",
     chart: {
@@ -13279,12 +13382,13 @@ define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','s
       chart: require("src/modules/component/chart/chart"),
       boxplot: require("src/modules/component/boxplot/boxplot")
     },
-   element: {
+    element: {
       circle: require("src/modules/element/circle"),
       rect: require("src/modules/element/rect"),
       path: require("src/modules/element/path"),
       line: require("src/modules/element/line"),
-      clipPath: require("src/modules/element/clipPath")
+      clipPath: require("src/modules/element/clipPath"),
+      image: require("src/modules/element/image")
     }
   };
 });

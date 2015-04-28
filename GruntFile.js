@@ -99,6 +99,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-mocha");
 
   grunt.registerTask("default", ["copy", "connect", "concat", "watch"]);
+  grunt.registerTask("d3build", ["concat"]);
   grunt.registerTask("production", ["requirejs", "uglify", "copy", "cssmin"]);
   grunt.registerTask("release", ["production"]);
   grunt.registerTask("lint", ["jshint"]);

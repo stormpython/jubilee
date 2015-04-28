@@ -1,5 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
+  var image = require("src/modules/element/image");
 
   return function tile() {
     var width = 960;
@@ -43,17 +44,14 @@ define(function (require) {
 
           g.attr("transform", "scale(" + tiles.scale + ") translate(" + tiles.translate + ")");
 
-          var image = g.selectAll("image")
-            .data(tiles, function (d) { return d; });
+          var images = image()
+            .xlink(tileLink)
+            .width(1)
+            .height(1)
+            .x(function (d) { return d[0]; })
+            .y(function (d) { return d[1]; });
 
-          image.exit().remove();
-
-          image.enter().append("image")
-            .attr("xlink:href", tileLink)
-            .attr("width", 1)
-            .attr("height", 1)
-            .attr("x", function (d) { return d[0]; })
-            .attr("y", function (d) { return d[1]; });
+          g.datum(tiles).call(images);
         }
       });
     }

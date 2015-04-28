@@ -11,7 +11,7 @@
     require(["../../src/index"], function (jubilee) {
       var tile = jubilee.map.tile()
         .tileLink(function (d) {
-          return "http://otile1.mqcdn.com/tiles/1.0.0/map/" + d[2] + "/" + d[0] + "/" + d[1] + ".jpg";
+          return "https://otile1-s.mqcdn.com/tiles/1.0.0/map/" + d[2] + "/" + d[0] + "/" + d[1] + ".jpg";
         });
 
       d3.select("div#map").call(tile);
