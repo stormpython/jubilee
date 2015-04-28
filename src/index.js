@@ -13,7 +13,9 @@ define(function (require) {
       histogram: require("src/modules/chart/histogram"),
       xyzplot: require("src/modules/chart/xyzplot")
     },
-    map: {},
+    map: {
+      tile: require("src/modules/map/tile")
+    },
     layout: {
       box: require("src/modules/layout/box"),
       grid: require("src/modules/layout/grid"),

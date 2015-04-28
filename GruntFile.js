@@ -28,7 +28,7 @@ module.exports = function(grunt) {
           baseUrl: ".",
           mainConfigFile: "src/require.config.js",
           name: "node_modules/almond/almond",
-          include: ["src/require.config", "jubilee"],
+          include: ["src/require.config", "jubilee", "geo"],
           optimize: "none",
           out: "build/jubilee.js",
           wrap: {

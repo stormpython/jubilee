@@ -442,7 +442,8 @@ require.config({
   baseUrl: "/",
   paths: {
     jubilee: "src/index",
-    d3: "lib/d3/d3"
+    d3: "lib/d3/d3",
+    geo: "lib/d3-plugins/geo/tile/tile"
   },
   shim: {},
   packages: []
@@ -9971,7 +9972,7 @@ define('src/modules/element/circle',['require','d3'],function (require) {
     var strokeWidth = 3;
 
     function element(selection) {
-      selection.each(function () {
+      selection.each(function (data, i) {
         var layer = d3.select(this).selectAll("circleG")
           .data(function (d) { return d; })
           .enter().append("g")
@@ -10057,9 +10058,338 @@ define('src/modules/element/circle',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/chart/line',['require','d3','src/modules/element/circle'],function (require) {
+define('src/modules/element/path',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function path() {
+    var pathGenerator = null;
+    var color = d3.scale.category10();
+    var accessor = function (d) { return d; };
+
+    // Options
+    var gClass = "layer";
+    var pathClass = "path";
+    var transform = "translate(0,0)";
+    var fill = "none";
+    var stroke = function (d, i) { return color(i); };
+    var strokeWidth = 1;
+
+    function element(selection) {
+      selection.each(function (data, i) {
+        var layer = d3.select(this).selectAll("pathG")
+          .data(accessor)
+          .enter().append("g")
+          .attr("class", gClass);
+
+        layer.append("path")
+          .attr("transform", transform)
+          .attr("class", pathClass)
+          .attr("fill", fill)
+          .attr("stroke", stroke)
+          .attr("stroke-width", strokeWidth)
+          .attr("d", pathGenerator);
+      });
+    }
+
+    element.pathGenerator = function (_) {
+      if (!arguments.length) { return pathGenerator; }
+      pathGenerator = _;
+      return element;
+    };
+
+    element.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
+      return element;
+    };
+
+    element.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return element;
+    };
+
+    element.gClass = function (_) {
+      if (!arguments.length) { return gClass; }
+      gClass = _;
+      return element;
+    };
+
+    element.pathClass = function (_) {
+      if (!arguments.length) { return pathClass; }
+      pathClass = _;
+      return element;
+    };
+
+    element.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
+      return element;
+    };
+
+    element.fill = function (_) {
+      if (!arguments.length) { return fill; }
+      fill = _;
+      return element;
+    };
+
+    element.stroke = function (_) {
+      if (!arguments.length) { return stroke; }
+      stroke = _;
+      return element;
+    };
+
+    element.strokeWidth = function (_) {
+      if (!arguments.length) { return strokeWidth; }
+      strokeWidth = _;
+      return element;
+    };
+
+    return element;
+  };
+});
+
+define('src/modules/component/axis/axis',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function axes() {
+    var scale = d3.scale.linear();
+    var orient = "bottom";
+    var ticks = 10;
+    var tickValues = null;
+    var tickSize = 6;
+    var innerTickSize = 6;
+    var outerTickSize = 6;
+    var tickPadding = 3;
+    var tickFormat = null;
+
+    var transform = "translate(0,0)";
+    var gClass = "axis";
+    var title = "";
+    var titleClass = "axis title";
+    var titleX = 6;
+    var titleY = 6;
+    var titleDX = "";
+    var titleDY = ".71em";
+    var titleAnchor = "end";
+
+    function component(selection) {
+      selection.each(function () {
+        var axis = d3.svg.axis()
+          .scale(scale)
+          .orient(orient)
+          .ticks(ticks)
+          .tickValues(tickValues)
+          .tickSize(tickSize)
+          .innerTickSize(innerTickSize)
+          .outerTickSize(outerTickSize)
+          .tickPadding(tickPadding)
+          .tickFormat(tickFormat);
+
+        var g = d3.select(this).append("g")
+          .attr("class", gClass)
+          .attr("transform", transform)
+          .call(axis);
+
+        g.append("text")
+          .attr("class", titleClass)
+          .attr("x", titleX)
+          .attr("y", titleY)
+          .attr("dx", titleDX)
+          .attr("dy", titleDY)
+          .style("title-anchor", titleAnchor)
+          .text(title);
+      });
+    }
+
+    component.scale = function (_) {
+      if (!arguments.length) { return scale; }
+      scale = _;
+      return component;
+    };
+
+    component.orient = function (_) {
+      if (!arguments.length) { return orient; }
+      orient = _;
+      return component;
+    };
+
+    component.ticks = function (_) {
+      if (!arguments.length) { return ticks; }
+      ticks = _;
+      return component;
+    };
+
+    component.tickValues = function (_) {
+      if (!arguments.length) { return tickValues; }
+      tickValues = _;
+      return component;
+    };
+
+    component.tickSize = function (_) {
+      if (!arguments.length) { return tickSize; }
+      tickSize = _;
+      return component;
+    };
+
+    component.innerTickSize = function (_) {
+      if (!arguments.length) { return innerTickSize; }
+      innerTickSize = _;
+      return component;
+    };
+
+    component.outerTickSize = function (_) {
+      if (!arguments.length) { return outerTickSize; }
+      outerTickSize = _;
+      return component;
+    };
+
+    component.tickPadding = function (_) {
+      if (!arguments.length) { return tickPadding; }
+      tickPadding = _;
+      return component;
+    };
+
+    component.tickFormat = function (_) {
+      if (!arguments.length) { return tickFormat; }
+      tickFormat = _;
+      return component;
+    };
+
+    component.gClass = function (_) {
+      if (!arguments.length) { return gClass; }
+      gClass = _;
+      return component;
+    };
+
+    component.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
+      return component;
+    };
+
+    component.title = function (_) {
+      if (!arguments.length) { return title; }
+      title = _;
+      return component;
+    };
+
+    component.titleClass = function (_) {
+      if (!arguments.length) { return titleClass; }
+      titleClass = _;
+      return component;
+    };
+
+    component.titleX = function (_) {
+      if (!arguments.length) { return titleX; }
+      titleX = _;
+      return component;
+    };
+    component.titleY = function (_) {
+      if (!arguments.length) { return titleY; }
+      titleY = _;
+      return component;
+    };
+
+    component.titleDX = function (_) {
+      if (!arguments.length) { return titleDX; }
+      titleDX = _;
+      return component;
+    };
+
+    component.titleDY = function (_) {
+      if (!arguments.length) { return titleDY; }
+      titleDY = _;
+      return component;
+    };
+
+    component.titleAnchor = function (_) {
+      if (!arguments.length) { return titleAnchor; }
+      titleAnchor = _;
+      return component;
+    };
+
+    return component;
+  };
+});
+
+define('src/modules/element/clipPath',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function clipPath() {
+    var id = uniqueID();
+    var transform = "translate(0,0)";
+    var x = 0;
+    var y = 0;
+    var width = 50;
+    var height = 50;
+
+    function element(selection) {
+      selection.each(function (data, i) {
+        d3.select("this")
+          .append("clipPath")
+          .attr("id", id)
+          .attr("transform", transform)
+          .append("rect")
+          .attr("clip-path", "url(#" + id + ")")
+          .attr("x", x)
+          .attr("y", y)
+          .attr("width", width)
+          .attr("height", height);
+      });
+    }
+
+    function uniqueID() {
+      var randomNumber = Math.floor(Math.random * 100);
+      return "uniqueId_" + randomNumber;
+    }
+
+    element.id = function (_) {
+      if (!arguments.length) { return id; }
+      id = _;
+      return element;
+    };
+
+    element.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
+      return element;
+    };
+
+    element.x = function (_) {
+      if (!arguments.length) { return x; }
+      x = _;
+      return element;
+    };
+
+    element.y = function (_) {
+      if (!arguments.length) { return y; }
+      y = _;
+      return element;
+    };
+
+    element.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return element;
+    };
+
+    element.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return element;
+    };
+
+    return element;
+  };
+});
+
+define('src/modules/chart/line',['require','d3','src/modules/element/circle','src/modules/element/path','src/modules/component/axis/axis','src/modules/element/clipPath'],function (require) {
   var d3 = require("d3");
   var circle = require("src/modules/element/circle");
+  var path = require("src/modules/element/path");
+  var axis = require("src/modules/component/axis/axis");
+  var clipPath = require("src/modules/element/clipPath");
 
   return function lineChart() {
     // Chart options
@@ -10070,8 +10400,6 @@ define('src/modules/chart/line',['require','d3','src/modules/element/circle'],fu
     var interpolate = "linear";
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
-    var xAxis = d3.svg.axis().orient("bottom").ticks(5);
-    var yAxis = d3.svg.axis().orient("left");
     var xScale = d3.time.scale.utc().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]).nice();
     var xDomain = function (data) {
@@ -10083,7 +10411,6 @@ define('src/modules/chart/line',['require','d3','src/modules/element/circle'],fu
         Math.max(0, d3.max(data, yValue))
       ];
     };
-    var lineX = X;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -10098,6 +10425,7 @@ define('src/modules/chart/line',['require','d3','src/modules/element/circle'],fu
 
     // Circle Options
     var addCircles = true;
+    var circleGroupClass = "circle layer";
     var circleClass = "circle";
     var circleFill = function (d, i, j) { return color(j); };
     var circleStroke = function (d, i, j) { return color(j); };
@@ -10115,42 +10443,45 @@ define('src/modules/chart/line',['require','d3','src/modules/element/circle'],fu
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var line = d3.svg.line().x(lineX).y(Y).interpolate(interpolate);
+        var line = d3.svg.line().x(X).y(Y).interpolate(interpolate);
+
+        var clippath = clipPath().width(width).height(height);
+
+        var linePath = path()
+          .pathGenerator(line)
+          .pathClass(lineClass)
+          .stroke(lineStroke);
 
         xScale.domain(xDomain && xDomain.call(this, mapDomain(data)));
         yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
 
-        g.selectAll("g")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .append("path")
-          .attr("class", lineClass)
-          .attr("stroke", lineStroke)
-          .attr("d", line);
-
-        g.append("g").attr("class", "x axis");
-        g.append("g").attr("class", "y axis");
+        g.call(clippath);
+        g.call(linePath);
 
         if (showXAxis) {
-          g.select(".x.axis")
-            .attr("transform", "translate(0," + yScale.range()[0] + ")")
-            .call(xAxis.scale(xScale))
-            .append("text")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(xAxisTitle);
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass("x axis")
+            .transform("translate(0," + yScale.range()[0] + ")")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(xAxisTitle);
+
+          g.call(xAxis);
         }
 
         if (showYAxis) {
-          g.select(".y.axis")
-            .call(yAxis.scale(yScale))
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(yAxisTitle);
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass("y axis")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(yAxisTitle);
+
+          g.call(yAxis);
         }
 
         if (addCircles) {
@@ -10159,6 +10490,7 @@ define('src/modules/chart/line',['require','d3','src/modules/element/circle'],fu
             .cy(Y)
             .color(color)
             .radius(circleRadius)
+            .gClass(circleGroupClass)
             .circleClass(circleClass)
             .fill(circleFill)
             .stroke(circleStroke)
@@ -10219,18 +10551,6 @@ define('src/modules/chart/line',['require','d3','src/modules/element/circle'],fu
     chart.y = function (_) {
       if (!arguments.length) { return yValue; }
       yValue = _;
-      return chart;
-    };
-
-    chart.xAxis = function (_) {
-      if (!arguments.length) { return xAxis; }
-      xAxis = _;
-      return chart;
-    };
-
-    chart.yAxis = function (_) {
-      if (!arguments.length) { return yAxis; }
-      yAxis = _;
       return chart;
     };
 
@@ -10318,6 +10638,12 @@ define('src/modules/chart/line',['require','d3','src/modules/element/circle'],fu
       return chart;
     };
 
+    chart.circleGroupClass = function (_) {
+      if (!arguments.length) { return circleGroupClass; }
+      circleGroupClass = _;
+      return chart;
+    };
+
     chart.circleClass = function (_) {
       if (!arguments.length) { return circleClass; }
       circleClass = _;
@@ -10353,8 +10679,10 @@ define('src/modules/chart/line',['require','d3','src/modules/element/circle'],fu
   };
 });
 
-define('src/modules/chart/area',['require','d3'],function (require) {
+define('src/modules/chart/area',['require','d3','src/modules/element/path','src/modules/component/axis/axis'],function (require) {
   var d3 = require("d3");
+  var path = require("src/modules/element/path");
+  var axis = require("src/modules/component/axis/axis");
 
   return function areaChart() {
     // Chart options
@@ -10366,8 +10694,6 @@ define('src/modules/chart/area',['require','d3'],function (require) {
     var offset = "zero";
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
-    var xAxis = d3.svg.axis().orient("bottom").ticks(5);
-    var yAxis = d3.svg.axis().orient("left");
     var xScale = d3.time.scale.utc().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]).nice();
     var xDomain = function (domainData) {
@@ -10379,8 +10705,6 @@ define('src/modules/chart/area',['require','d3'],function (require) {
         Math.max(0, d3.max(domainData, Y))
       ];
     };
-    var areaX = X;
-    var lineX = X;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -10413,54 +10737,53 @@ define('src/modules/chart/area',['require','d3'],function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var area = d3.svg.area().x(areaX).y0(Y0).y1(Y1).interpolate(interpolate);
-        var line = d3.svg.line().x(lineX).y(Y1).interpolate(interpolate);
+        var area = d3.svg.area().x(X).y0(Y0).y1(Y1).interpolate(interpolate);
+        var line = d3.svg.line().x(X).y(Y1).interpolate(interpolate);
 
-        xScale.domain(xDomain.call(this, mapDomain(layers)));
-        yScale.domain(yDomain.call(this, mapDomain(layers)));
+        var areaPath = path()
+          .pathGenerator(area)
+          .pathClass(areaClass)
+          .stroke(areaStroke)
+          .fill(areaFill);
 
-        g.selectAll("area")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .append("path")
-          .attr("class", areaClass)
-          .attr("stroke", areaStroke)
-          .attr("fill", areaFill)
-          .attr("d", area);
+        xScale.domain(xDomain && xDomain.call(this, mapDomain(layers)));
+        yScale.domain(yDomain && yDomain.call(this, mapDomain(layers)));
+
+        g.call(areaPath);
 
         if (addLines) {
-          g.selectAll("lines")
-            .data(function (d) { return d; })
-            .enter().append("g")
-            .append("path")
-            .attr("class", lineClass)
-            .attr("stroke", lineStroke)
-            .attr("d", line);
+          var linePath = path()
+            .pathGenerator(line)
+            .pathClass(lineClass)
+            .stroke(lineStroke);
+
+          g.call(linePath);
         }
 
-        g.append("g").attr("class", "x axis");
-        g.append("g").attr("class", "y axis");
-
         if (showXAxis) {
-          g.select(".x.axis")
-            .attr("transform", "translate(0," + yScale.range()[0] + ")")
-            .call(xAxis.scale(xScale))
-            .append("text")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(xAxisTitle);
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass("x axis")
+            .transform("translate(0," + yScale.range()[0] + ")")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(xAxisTitle);
+
+          g.call(xAxis);
         }
 
         if (showYAxis) {
-          g.select(".y.axis")
-            .call(yAxis.scale(yScale))
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(yAxisTitle);
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass("y axis")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(yAxisTitle);
+
+          g.call(yAxis);
         }
       });
     }
@@ -10469,9 +10792,9 @@ define('src/modules/chart/area',['require','d3'],function (require) {
       return xScale(xValue.call(null, d, i));
     }
 
-    function Y(d) {
+    function Y(d, i) {
       if (offset === "overlap") { return d.y; }
-      return d.y0 + d.y;
+      return d.y0 + yValue.call(null, d, i);
     }
 
     function Y0(d) {
@@ -10479,9 +10802,9 @@ define('src/modules/chart/area',['require','d3'],function (require) {
       return yScale(d.y0);
     }
 
-    function Y1(d) {
+    function Y1(d, i) {
       if (offset === "overlap") { return yScale(d.y); }
-      return yScale(d.y0 + d.y);
+      return yScale(d.y0 + yValue.call(null, d, i));
     }
 
     function mapDomain (data) {
@@ -10529,18 +10852,6 @@ define('src/modules/chart/area',['require','d3'],function (require) {
       return chart;
     };
 
-    chart.xAxis = function (_) {
-      if (!arguments.length) { return xAxis; }
-      xAxis = _;
-      return chart;
-    };
-
-    chart.yAxis = function (_) {
-      if (!arguments.length) { return yAxis; }
-      yAxis = _;
-      return chart;
-    };
-
     chart.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale = _;
@@ -10562,18 +10873,6 @@ define('src/modules/chart/area',['require','d3'],function (require) {
     chart.yDomain = function (_) {
       if (!arguments.length) { return yDomain; }
       yDomain = _;
-      return chart;
-    };
-
-    chart.areaX = function (_) {
-      if (!arguments.length) { return areaX; }
-      areaX = _;
-      return chart;
-    };
-
-    chart.lineX = function (_) {
-      if (!arguments.length) { return lineX; }
-      lineX = _;
       return chart;
     };
 
@@ -10619,6 +10918,24 @@ define('src/modules/chart/area',['require','d3'],function (require) {
       return chart;
     };
 
+    chart.areaClass = function (_) {
+      if (!arguments.length) { return areaClass; }
+      areaClass = _;
+      return chart;
+    };
+
+    chart.areaStroke = function (_) {
+      if (!arguments.length) { return areaStroke; }
+      areaStroke = _;
+      return chart;
+    };
+
+    chart.areaFill = function (_) {
+      if (!arguments.length) { return areaFill; }
+      areaFill = _;
+      return chart;
+    };
+
     chart.addLines = function (_) {
       if (!arguments.length) { return addLines; }
       addLines = _;
@@ -10641,8 +10958,650 @@ define('src/modules/chart/area',['require','d3'],function (require) {
     return chart;
   };
 });
-define('src/modules/chart/pie',['require','d3'],function (require) {
+define('src/modules/layout/box',['require','d3'],function (require) {
   var d3 = require("d3");
+
+  return function box() {
+    var values = function (d) { return d.values; };
+    var accessor = function (d) { return d; };
+
+    function layout(data) {
+      data.forEach(function (d, i) {
+        var numbers = accessor.call(this, values.call(this, d, i));
+
+        d.median = d3.median(numbers);
+        d.q1 = d3.quantile(numbers, 0.25);
+        d.q3 = d3.quantile(numbers, 0.75);
+        d.max = d3.max(numbers);
+        d.min = d3.min(numbers);
+      });
+
+      return data;
+    }
+
+    layout.values = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return layout;
+    };
+
+    layout.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
+      return layout;
+    };
+
+    return layout;
+  };
+});
+define('src/modules/component/boxplot/boxplot',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function boxplot() {
+    var gClass = "box";
+    var gTransform = null;
+
+    // Box
+    var boxWidth = 20;
+    var boxHeight = null;
+    var boxY = null;
+    var boxClass = "range";
+    var boxFill = "white";
+    var boxStroke = "black";
+    var boxStrokeWidth = "2px";
+
+    // Range
+    var rangeX1 = 0;
+    var rangeX2 = 0;
+    var rangeY1 = null;
+    var rangeY2 = null;
+    var rangeClass = "range";
+    var rangeStroke = "black";
+    var rangeStrokeWidth = "4px";
+
+    // Max
+    var maxY1 = null;
+    var maxY2 = null;
+    var maxClass = "max";
+    var maxStroke = "black";
+    var maxStrokeWidth = "4px";
+
+    // Min
+    var minY1 = null;
+    var minY2 = null;
+    var minClass = "min";
+    var minStroke = "black";
+    var minStrokeWidth = "4px";
+
+    // Median
+    var medianY1 = 0;
+    var medianY2 = 0;
+    var medianClass = "median";
+    var medianStroke = "darkgrey";
+    var medianStrokeWidth = "4px";
+
+    function component(selection) {
+      selection.each(function () {
+        var boxX = - (boxWidth / 2);
+        var maxX1 = - (boxWidth / 2);
+        var maxX2 = boxWidth / 2;
+        var minX1 = - (boxWidth / 2);
+        var minX2 = boxWidth / 2;
+        var medianX1 = - (boxWidth / 2);
+        var medianX2 = boxWidth / 2;
+
+        var g = d3.select(this).selectAll("g.box")
+          .data(function (d) { return d; })
+          .enter().append("g")
+          .attr("class", gClass);
+
+        g.attr("transform", gTransform)
+          .each(function (d, i) {
+            var g = d3.select(this);
+
+            g.append("line")
+              .attr("class", rangeClass)
+              .attr("x1", rangeX1)
+              .attr("x2", rangeX2)
+              .attr("y1", rangeY1)
+              .attr("y2", rangeY2)
+              .style("stroke", rangeStroke)
+              .style("stroke-boxWidth", rangeStrokeWidth);
+
+            g.append("line")
+              .attr("class", maxClass)
+              .attr("x1", maxX1)
+              .attr("x2", maxX2)
+              .attr("y1", maxY1)
+              .attr("y2", maxY2)
+              .style("stroke", maxStroke)
+              .style("stroke-boxWidth", maxStrokeWidth);
+
+            g.append("line")
+              .attr("class", minClass)
+              .attr("x1", minX1)
+              .attr("x2", minX2)
+              .attr("y1", minY1)
+              .attr("y2", minY2)
+              .style("stroke", minStroke)
+              .style("stroke-boxWidth", minStrokeWidth);
+
+            g.append("rect")
+              .attr("class", boxClass)
+              .attr("x", boxX)
+              .attr("y", boxY)
+              .attr("width", boxWidth)
+              .attr("height", boxHeight)
+              .style("fill", boxFill)
+              .style("stroke", boxStroke)
+              .style("stroke-boxWidth", boxStrokeWidth);
+
+            g.append("line")
+              .attr("class", medianClass)
+              .attr("x1", medianX1)
+              .attr("x2", medianX2)
+              .attr("y1", medianY1)
+              .attr("y2", medianY2)
+              .style("stroke", medianStroke)
+              .style("stroke-boxWidth", medianStrokeWidth);
+          });
+      });
+    }
+
+    component.gClass = function (_) {
+      if (!arguments.length) { return gClass; }
+      gClass = _;
+      return component;
+    };
+
+    component.gTransform = function (_) {
+      if (!arguments.length) { return gTransform; }
+      gTransform = _;
+      return component;
+    };
+
+    component.boxWidth = function (_) {
+      if (!arguments.length) { return boxWidth; }
+      boxWidth = _;
+      return component;
+    };
+
+    component.boxHeight = function (_) {
+      if (!arguments.length) { return boxHeight; }
+      boxHeight = _;
+      return component;
+    };
+
+    component.boxY = function (_) {
+      if (!arguments.length) { return boxY; }
+      boxY = _;
+      return component;
+    };
+
+    component.boxClass = function (_) {
+      if (!arguments.length) { return boxClass; }
+      boxClass = _;
+      return component;
+    };
+
+    component.boxFill = function (_) {
+      if (!arguments.length) { return boxFill; }
+      boxFill = _;
+      return component;
+    };
+
+    component.boxStroke = function (_) {
+      if (!arguments.length) { return boxStroke; }
+      boxStroke = _;
+      return component;
+    };
+
+    component.boxStrokeWidth = function (_) {
+      if (!arguments.length) { return boxStrokeWidth; }
+      boxStrokeWidth = _;
+      return component;
+    };
+
+    component.rangeX1 = function (_) {
+      if (!arguments.length) { return rangeX1; }
+      rangeX1 = _;
+      return component;
+    };
+
+    component.rangeX2 = function (_) {
+      if (!arguments.length) { return rangeX2; }
+      rangeX2 = _;
+      return component;
+    };
+
+    component.rangeY1 = function (_) {
+      if (!arguments.length) { return rangeY1; }
+      rangeY1 = _;
+      return component;
+    };
+
+    component.rangeY2 = function (_) {
+      if (!arguments.length) { return rangeY2; }
+      rangeY2 = _;
+      return component;
+    };
+
+    component.rangeClass = function (_) {
+      if (!arguments.length) { return rangeClass; }
+      rangeClass = _;
+      return component;
+    };
+
+    component.rangeStroke = function (_) {
+      if (!arguments.length) { return rangeStroke; }
+      rangeStroke = _;
+      return component;
+    };
+
+    component.rangeStrokeWidth = function (_) {
+      if (!arguments.length) { return rangeStrokeWidth; }
+      rangeStrokeWidth = _;
+      return component;
+    };
+
+    component.maxY1 = function (_) {
+      if (!arguments.length) { return maxY1; }
+      maxY1 = _;
+      return component;
+    };
+
+    component.maxY2 = function (_) {
+      if (!arguments.length) { return maxY2; }
+      maxY2 = _;
+      return component;
+    };
+
+    component.maxClass = function (_) {
+      if (!arguments.length) { return maxClass; }
+      maxClass = _;
+      return component;
+    };
+
+    component.maxStroke = function (_) {
+      if (!arguments.length) { return maxStroke; }
+      maxStroke = _;
+      return component;
+    };
+
+    component.maxStrokeWidth = function (_) {
+      if (!arguments.length) { return maxStrokeWidth; }
+      maxStrokeWidth = _;
+      return component;
+    };
+
+    component.minY1 = function (_) {
+      if (!arguments.length) { return minY1; }
+      minY1 = _;
+      return component;
+    };
+
+    component.minY2 = function (_) {
+      if (!arguments.length) { return minY2; }
+      minY2 = _;
+      return component;
+    };
+
+    component.minClass = function (_) {
+      if (!arguments.length) { return minClass; }
+      minClass = _;
+      return component;
+    };
+
+    component.minStroke = function (_) {
+      if (!arguments.length) { return minStroke; }
+      minStroke = _;
+      return component;
+    };
+
+    component.minStrokeWidth = function (_) {
+      if (!arguments.length) { return minStrokeWidth; }
+      minStrokeWidth = _;
+      return component;
+    };
+
+    component.medianY1 = function (_) {
+      if (!arguments.length) { return medianY1; }
+      medianY1 = _;
+      return component;
+    };
+
+    component.medianY2 = function (_) {
+      if (!arguments.length) { return medianY2; }
+      medianY2 = _;
+      return component;
+    };
+
+    component.medianClass = function (_) {
+      if (!arguments.length) { return medianClass; }
+      medianClass = _;
+      return component;
+    };
+
+    component.medianStroke = function (_) {
+      if (!arguments.length) { return medianStroke; }
+      medianStroke = _;
+      return component;
+    };
+
+    component.medianStrokeWidth = function (_) {
+      if (!arguments.length) { return medianStrokeWidth; }
+      medianStrokeWidth = _;
+      return component;
+    };
+
+    return component;
+  };
+});
+define('src/modules/chart/boxplot',['require','d3','src/modules/layout/box','src/modules/component/boxplot/boxplot','src/modules/component/axis/axis'],function (require) {
+  var d3 = require("d3");
+  var box = require("src/modules/layout/box");
+  var boxPlot = require("src/modules/component/boxplot/boxplot");
+  var axis = require("src/modules/component/axis/axis");
+
+  return function boxplot() {
+    var margin = { top:20, right: 20, bottom: 50, left: 50 };
+    var width = 760;
+    var height = 400;
+    var xValue = function (d) { return d.x; };
+    var values = function (d) { return d.values; };
+    var accessor = function (d) { return d; };
+    var xScale = d3.time.scale().range([0, width]);
+    var yScale = d3.scale.linear().range([height, 0]);
+    var xDomain = function (domainData) {
+      return d3.extent(domainData, xValue);
+    };
+    var yDomain = function (domainData) {
+      return [
+        Math.min(0, d3.min(domainData)),
+        Math.max(0, d3.max(domainData))
+      ];
+    };
+    var gTransform = function transform(d, i) {
+      return "translate(" + xScale(xValue.call(this, d, i)) + "," + yScale(d.median) + ")";
+    };
+    var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
+
+    // X Axis
+    var showXAxis = true;
+    var xAxisClass = "x axis";
+    var xAxisTextX = function () { return width / 2; };
+    var xAxisTextY = 30;
+    var xAxisTextDY = ".71em";
+    var xAxisTextAnchor = "middle";
+    var xAxisTitle = "";
+
+    // Y Axis
+    var showYAxis = true;
+    var yAxisClass = "y axis";
+    var yAxisTextX = -height / 2;
+    var yAxisTextY = -60;
+    var yAxisTextDY = ".71em";
+    var yAxisTextAnchor = "middle";
+    var yAxisTitle = "";
+
+    // Box Options
+    var boxWidth = 20;
+
+    function chart(selection) {
+      selection.each(function (data) {
+        var boxData = box().values(values).accessor(accessor);
+
+        var svg = d3.select(this).append("svg")
+          .datum(boxData(data))
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom);
+
+        var g = svg.append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        xScale.domain(xDomain && xDomain.call(this, data));
+        yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
+
+        var boxPlotFunc = boxPlot()
+          .gTransform(gTransform)
+          .boxWidth(boxWidth)
+          .boxHeight(boxHeight)
+          .boxY(boxY)
+          .rangeY1(Y1)
+          .rangeY2(Y2)
+          .maxY1(Y1)
+          .maxY2(Y1)
+          .minY1(Y2)
+          .minY2(Y2);
+
+        g.call(boxPlotFunc);
+
+        if (showXAxis) {
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass(xAxisClass)
+            .transform("translate(0," + yScale.range()[0] + ")")
+            .titleX(xAxisTextX)
+            .titleY(xAxisTextY)
+            .titleDY(xAxisTextDY)
+            .titleAnchor(xAxisTextAnchor)
+            .title(xAxisTitle);
+
+          g.call(xAxis);
+        }
+
+        if (showYAxis) {
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass(yAxisClass)
+            .titleX(yAxisTextX)
+            .titleY(yAxisTextY)
+            .titleDY(yAxisTextDY)
+            .titleAnchor(yAxisTextAnchor)
+            .title(yAxisTitle);
+
+          g.call(yAxis);
+        }
+      });
+    }
+
+    function boxHeight(d) {
+      return yScale(d.q1) - yScale(d.q3);
+    }
+
+    function boxY(d) {
+      return yScale(d.q3) - yScale(d.median);
+    }
+
+    function Y1(d) {
+      return yScale(d.max) - yScale(d.median);
+    }
+
+    function Y2(d) {
+      return yScale(d.min) - yScale(d.median);
+    }
+
+    function mapDomain(data) {
+      return data.map(function (d, i) {
+        return accessor.call(this, values.call(this, d, i));
+      }).reduce(function (a, b) {
+        return a.concat(b);
+      });
+    }
+
+    chart.margin = function (_) {
+      if (!arguments.length) { return margin; }
+      margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
+      margin.right = typeof _.right !== "undefined" ? _.right : margin.right;
+      margin.bottom = typeof _.bottom !== "undefined" ? _.bottom : margin.bottom;
+      margin.left = typeof _.left !== "undefined" ? _.left : margin.left;
+      return chart;
+    };
+
+    chart.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return chart;
+    };
+
+    chart.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return chart;
+    };
+
+    chart.x = function (_) {
+      if (!arguments.length) { return xValue; }
+      xValue = _;
+      return chart;
+    };
+
+    chart.values = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return chart;
+    };
+
+    chart.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
+      return chart;
+    };
+
+    chart.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale = _;
+      return chart;
+    };
+
+    chart.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale = _;
+      return chart;
+    };
+
+    chart.xDomain = function (_) {
+      if (!arguments.length) { return xDomain; }
+      xDomain = _;
+      return chart;
+    };
+
+    chart.yDomain = function (_) {
+      if (!arguments.length) { return yDomain; }
+      yDomain = _;
+      return chart;
+    };
+
+    chart.gTransform = function (_) {
+      if (!arguments.length) { return gTransform; }
+      gTransform = _;
+      return chart;
+    };
+
+    chart.dispatch = function (_) {
+      if (!arguments.length) { return dispatch; }
+      dispatch = _;
+      return chart;
+    };
+
+    chart.showXAxis = function (_) {
+      if (!arguments.length) { return showXAxis; }
+      showXAxis = _;
+      return chart;
+    };
+
+    chart.showYAxis = function (_) {
+      if (!arguments.length) { return showYAxis; }
+      showYAxis = _;
+      return chart;
+    };
+
+    chart.xAxisTitle = function (_) {
+      if (!arguments.length) { return xAxisTitle; }
+      xAxisTitle = _;
+      return chart;
+    };
+
+    chart.yAxisTitle = function (_) {
+      if (!arguments.length) { return yAxisTitle; }
+      yAxisTitle = _;
+      return chart;
+    };
+
+    chart.xAxisClass = function (_) {
+      if (!arguments.length) { return xAxisClass; }
+      xAxisClass = _;
+      return chart;
+    };
+
+    chart.yAxisClass = function (_) {
+      if (!arguments.length) { return yAxisClass; }
+      yAxisClass = _;
+      return chart;
+    };
+
+    chart.xAxisTextX = function (_) {
+      if (!arguments.length) { return xAxisTextX; }
+      xAxisTextX = _;
+      return chart;
+    };
+
+    chart.yAxisTextX = function (_) {
+      if (!arguments.length) { return yAxisTextX; }
+      yAxisTextX = _;
+      return chart;
+    };
+
+    chart.xAxisTextY = function (_) {
+      if (!arguments.length) { return xAxisTextY; }
+      xAxisTextY = _;
+      return chart;
+    };
+
+    chart.yAxisTextY = function (_) {
+      if (!arguments.length) { return yAxisTextY; }
+      yAxisTextY = _;
+      return chart;
+    };
+
+    chart.xAxisTextDY = function (_) {
+      if (!arguments.length) { return xAxisTextDY; }
+      xAxisTextDY = _;
+      return chart;
+    };
+
+    chart.yAxisTextDY = function (_) {
+      if (!arguments.length) { return yAxisTextDY; }
+      yAxisTextDY = _;
+      return chart;
+    };
+
+    chart.xAxisTextAnchor = function (_) {
+      if (!arguments.length) { return xAxisTextAnchor; }
+      xAxisTextAnchor = _;
+      return chart;
+    };
+
+    chart.yAxisTextAnchor = function (_) {
+      if (!arguments.length) { return yAxisTextAnchor; }
+      yAxisTextAnchor = _;
+      return chart;
+    };
+
+    chart.boxWidth = function (_) {
+      if (!arguments.length) { return boxWidth; }
+      boxWidth = _;
+      return chart;
+    };
+
+    d3.rebind(chart, dispatch, "on");
+    return chart;
+  };
+});
+define('src/modules/chart/pie',['require','d3','src/modules/element/path'],function (require) {
+  var d3 = require("d3");
+  var path = require("src/modules/element/path");
 
   return function pieChart() {
     var width = 300;
@@ -10656,6 +11615,7 @@ define('src/modules/chart/pie',['require','d3'],function (require) {
     var arc = d3.svg.arc();
     var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
+    var pathGroupClass = "arc";
     var pieFill = function (d, i) { return color(i); };
     var pieClass = "pie";
 
@@ -10676,20 +11636,20 @@ define('src/modules/chart/pie',['require','d3'],function (require) {
           .append("g")
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-        var g = svg.selectAll(".arc")
-          .data(pie(data))
-          .enter()
-          .append("g")
-          .attr("class", "arc");
-
         arc.outerRadius(outerRadius || radius).innerRadius(innerRadius);
 
-        g.append("path")
-          .attr("d", arc)
-          .attr("class", pieClass)
-          .style("fill", pieFill);
+        var piePath = path()
+          .pathGenerator(arc)
+          .accessor(pie(data))
+          .gClass(pathGroupClass)
+          .pathClass(pieClass)
+          .fill(pieFill);
 
-        g.append("text")
+        svg.call(piePath);
+
+        svg.selectAll("g.arc")
+          .data(pie(data))
+          .append("text")
           .attr("transform", textTransform)
           .attr("dy", textDY)
           .style("text-anchor", textAnchor)
@@ -10748,12 +11708,6 @@ define('src/modules/chart/pie',['require','d3'],function (require) {
       return chart;
     };
 
-    chart.arc = function (_) {
-      if (!arguments.length) { return arc; }
-      arc = _;
-      return chart;
-    };
-
     chart.dispatch = function (_) {
       if (!arguments.length) { return dispatch; }
       dispatch = _;
@@ -10763,6 +11717,12 @@ define('src/modules/chart/pie',['require','d3'],function (require) {
     chart.pieFill = function (_) {
       if (!arguments.length) { return pieFill; }
       pieFill = _;
+      return chart;
+    };
+
+    chart.pathGroupClass = function (_) {
+      if (!arguments.length) { return pathGroupClass; }
+      pathGroupClass = _;
       return chart;
     };
 
@@ -10800,9 +11760,10 @@ define('src/modules/chart/pie',['require','d3'],function (require) {
     return chart;
   };
 });
-define('src/modules/chart/scatterplot',['require','d3','src/modules/element/circle'],function (require) {
+define('src/modules/chart/scatterplot',['require','d3','src/modules/element/circle','src/modules/component/axis/axis'],function (require) {
   var d3 = require("d3");
   var circle = require("src/modules/element/circle");
+  var axis = require("src/modules/component/axis/axis");
 
   return function scatterPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
@@ -10814,8 +11775,6 @@ define('src/modules/chart/scatterplot',['require','d3','src/modules/element/circ
     var zValue = function (d) { return d.z; };
     var xScale = d3.scale.linear().range([0, width]);
     var yScale = d3.scale.linear().range([height, 0]);
-    var xAxis = d3.svg.axis().orient("bottom");
-    var yAxis = d3.svg.axis().orient("left");
     var xDomain = function (domainData) {
       return d3.extent(domainData, xValue);
     };
@@ -10850,7 +11809,7 @@ define('src/modules/chart/scatterplot',['require','d3','src/modules/element/circ
     var circleStrokeWidth = 3;
 
     function chart(selection) {
-      selection.each(function (data) {
+      selection.each(function (data, i) {
 
         var svg = d3.select(this).append("svg")
           .data([data])
@@ -10863,39 +11822,9 @@ define('src/modules/chart/scatterplot',['require','d3','src/modules/element/circ
         xScale.domain(xDomain.call(this, mapDomain(data)));
         yScale.domain(yDomain.call(this, mapDomain(data)));
 
-        if (showXAxis) {
-          g.append("g")
-            .attr("class", xAxisClass)
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis.scale(xScale))
-            .append("text")
-              .attr("class", xAxisTextClass)
-              .attr("x", xAxisTextX)
-              .attr("y", xAxisTextY)
-              .attr("dy", xAxisTextDY)
-              .style("text-anchor", xAxisTextAnchor)
-              .text(xAxisText);
-        }
-
-        if (showYAxis) {
-          g.append("g")
-            .attr("class", yAxisClass)
-            .call(yAxis.scale(yScale))
-            .append("text")
-              .attr("class", yAxisTextClass)
-              .attr("transform", yAxisTextTransform)
-              .attr("y", yAxisTextY)
-              .attr("x", yAxisTextX)
-              .attr("dy", yAxisTextDY)
-              .style("text-anchor", yAxisTextAnchor)
-              .text(yAxisText);
-        }
-
         var points = circle()
-          .xScale(xScale)
-          .yScale(yScale)
-          .cx(xValue)
-          .cy(yValue)
+          .cx(X)
+          .cy(Y)
           .color(color)
           .radius(circleRadius)
           .circleClass(circleClass)
@@ -10904,6 +11833,34 @@ define('src/modules/chart/scatterplot',['require','d3','src/modules/element/circ
           .strokeWidth(circleStrokeWidth);
 
         g.call(points);
+
+        if (showXAxis) {
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass(xAxisClass)
+            .transform("translate(0," + yScale.range()[0] + ")")
+            .titleX(xAxisTextX)
+            .titleY(xAxisTextY)
+            .titleDY(xAxisTextDY)
+            .titleAnchor(xAxisTextAnchor)
+            .title(xAxisText);
+
+          g.call(xAxis);
+        }
+
+        if (showYAxis) {
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass(yAxisClass)
+            .titleX(yAxisTextX)
+            .titleY(yAxisTextY)
+            .titleDY(yAxisTextDY)
+            .titleAnchor(yAxisTextAnchor)
+            .title(yAxisText);
+
+          g.call(yAxis);
+        }
       });
     }
 
@@ -10913,13 +11870,22 @@ define('src/modules/chart/scatterplot',['require','d3','src/modules/element/circ
       });
     }
 
+    function X(d, i) {
+      return xScale(xValue.call(null, d, i));
+    }
+
+    function Y(d, i) {
+      return yScale(yValue.call(null, d, i));
+    }
+
     d3.rebind(chart, dispatch, "on");
     return chart;
   };
 });
 
-define('src/modules/chart/sunburst',['require','d3'],function (require) {
+define('src/modules/chart/sunburst',['require','d3','src/modules/element/path'],function (require) {
   var d3 = require("d3");
+  var path = require("src/modules/element/path");
 
   return function sunburst() {
     // Chart options
@@ -10961,23 +11927,23 @@ define('src/modules/chart/sunburst',['require','d3'],function (require) {
           .attr("height", height)
           .append("g")
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-        var arc = d3.svg.arc();
 
         yScale.range([0, radius]);
 
-        arc
+        var arc = d3.svg.arc()
           .startAngle(startAngle)
           .endAngle(endAngle)
           .innerRadius(innerRadius)
           .outerRadius(outerRadius);
 
-        svg.datum(data).selectAll("path")
-          .data(partition.nodes)
-          .enter().append("path")
-          .attr("d", arc)
-          .attr("class", pieClass)
-          .style("stroke", pieStroke)
-          .style("fill", pieFill);
+        var arcPath = path()
+          .pathGenerator(arc)
+          .accessor(partition.nodes)
+          .pathClass(pieClass)
+          .stroke(pieStroke)
+          .fill(pieFill);
+
+        svg.datum(data).call(arcPath);
       });
     }
 
@@ -11610,7 +12576,7 @@ define('src/modules/component/chart/chart',['require','d3'],function (require) {
     var chartClass = "chart";
     var transform = null;
     var datum = null;
-    var draw = null;
+    var call = null;
 
     function component(selection) {
       selection.each(function (data, i) {
@@ -11625,7 +12591,7 @@ define('src/modules/component/chart/chart',['require','d3'],function (require) {
           .attr("class", chartClass)
           .attr("transform", transform)
           .datum(datum)
-          .call(draw);
+          .call(call);
       });
     }
 
@@ -11653,17 +12619,18 @@ define('src/modules/component/chart/chart',['require','d3'],function (require) {
       return component;
     };
 
-    component.draw = function (_) {
-      if (!arguments.length) { return draw; }
-      draw = _;
+    component.call = function (_) {
+      if (!arguments.length) { return call; }
+      call = _;
       return component;
     };
 
     return component;
   };
 });
-define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/chart'],function (require) {
+define('src/modules/chart/xyzplot',['require','d3','src/modules/component/axis/axis','src/modules/component/chart/chart'],function (require) {
   var d3 = require("d3");
+  var axis = require("src/modules/component/axis/axis");
   var graphFunc = require("src/modules/component/chart/chart");
 
   return function xzyPlot() {
@@ -11674,9 +12641,6 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/
     var yScale = null;
     var zScale = null;
     var elements = null;
-    var chartData = null;
-    var chartTransform = null;
-    var charts = null;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -11689,10 +12653,6 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/
 
     function chart(selection) {
       selection.each(function (data) {
-        var xAxis = d3.svg.axis().orient("bottom");
-        var yAxis = d3.svg.axis().orient("left");
-        var zAxis = d3.svg.axis().orient("right");
-
         var svg = d3.select(this).selectAll("svg")
           .data([data])
           .enter().append("svg")
@@ -11704,48 +12664,49 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/
 
         if (typeof elements === "function") { g.call(elements); }
         if (elements instanceof Array) {
-          elements.forEach(function (shape) {
-            if (typeof shape === "function") { g.call(shape); }
+          elements.forEach(function (element) {
+            if (typeof element === "function") { g.call(element); }
           });
         }
 
-        if (typeof charts === "function") {
-          g.call(graphFunc().transform(chartTransform).datum(chartData).draw(charts));
-        }
-
         if (showXAxis) {
-          g.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + yScale.range()[0] + ")")
-            .call(xAxis.scale(xScale))
-            .append("text")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(xAxisTitle);
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass("x axis")
+            .transform("translate(0," + yScale.range()[0] + ")")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(xAxisTitle);
+
+          g.call(xAxis);
         }
 
         if (showYAxis) {
-          g.append("g")
-            .attr("class", "left axis")
-            .call(yAxis.scale(yScale))
-            .append("text")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(yAxisTitle);
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass("y axis")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(yAxisTitle);
+
+          g.call(yAxis);
         }
 
         if (showZAxis) {
-          g.append("g")
-            .attr("class", "right axis")
-            .attr("transform", "translate(" + xScale.range()[1] + "," + "0)")
-            .call(zAxis.scale(zScale))
-            .append("text")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(zAxisTitle);
+          var zAxis = axis()
+            .scale(zScale)
+            .orient("right")
+            .gClass("z axis")
+            .transform("translate(" + xScale.range()[1] + "," + "0)")
+            .titleY(6)
+            .titleDY(".71em")
+            .titleAnchor("end")
+            .title(zAxisTitle);
+
+          g.call(zAxis);
         }
       });
     }
@@ -11795,24 +12756,6 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/
       return chart;
     };
 
-    chart.charts = function (_) {
-      if (!arguments.length) { return charts; }
-      charts = _;
-      return chart;
-    };
-
-    chart.chartData = function (_) {
-      if (!arguments.length) { return chartData; }
-      chartData = _;
-      return chart;
-    };
-
-    chart.chartTransform = function (_) {
-      if (!arguments.length) { return chartTransform; }
-      chartTransform = _;
-      return chart;
-    };
-
     chart.showXAxis = function (_) {
       if (!arguments.length) { return showXAxis; }
       showXAxis = _;
@@ -11851,6 +12794,109 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/chart/
 
     d3.rebind(chart, dispatch, "on");
     return chart;
+  };
+});
+define('src/modules/map/tile',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function tile() {
+    var width = 500;
+    var height = 500;
+    var projection = d3.geo.mercator();
+    var scale = 120;
+    var translate = [width / 2, height / 2];
+    var centerProjection = [12, 42];
+    var tileLink = function (d) {
+      return "http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] +
+        ".tiles.mapbox.com/v3/examples.map-zgrqqx0w/" + d[2] + "/" + d[0] + "/" + d[1] + ".png";
+    };
+
+    function map(selection) {
+      selection.each(function (data, i) {
+        var tile = d3.geo.tile()
+          .size([width, height]);
+
+        projection.scale(scale).translate(translate);
+
+        var center = projection(centerProjection);
+
+        var path = d3.geo.path()
+          .projection(projection);
+
+        var zoom = d3.behavior.zoom()
+          .scale(projection.scale() * 2 * Math.PI)
+          .translate([width - center[0], height - center[1]])
+          .on("zoom", redraw);
+
+        var svg = d3.select(this).append("svg")
+          .attr("width", width)
+          .attr("height", height);
+
+        var g = svg.append("g")
+          .attr("id", "tiles");
+
+        svg.call(zoom);
+        redraw();
+
+        function redraw() {
+          var tiles = tile
+            .scale(zoom.scale())
+            .translate(zoom.translate())();
+
+          g.attr("transform", "scale(" + tiles.scale + ") translate(" + tiles.translate + ")");
+
+          var image = g.selectAll("image")
+            .data(tiles, function (d) { return d; });
+
+          image.exit().remove();
+
+          image.enter().append("image")
+            .attr("xlink:href", tileLink)
+            .attr("width", 1)
+            .attr("height", 1)
+            .attr("x", function (d) { return d[0]; })
+            .attr("y", function (d) { return d[1]; });
+        }
+      });
+    }
+
+    map.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return map;
+    };
+
+    map.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return map;
+    };
+
+    map.projection = function (_) {
+      if (!arguments.length) { return projection; }
+      projection = _;
+      return map;
+    };
+
+    map.scale = function (_) {
+      if (!arguments.length) { return scale; }
+      scale = _;
+      return map;
+    };
+
+    map.centerProjection = function (_) {
+      if (!arguments.length) { return centerProjection; }
+      centerProjection = _;
+      return map;
+    };
+
+    map.tileLink = function (_) {
+      if (!arguments.length) { return tileLink; }
+      tileLink = _;
+      return map;
+    };
+
+    return map;
   };
 });
 define('src/modules/layout/grid',['require','d3'],function (require) {
@@ -11946,143 +12992,6 @@ define('src/modules/layout/split',['require','d3'],function (require) {
     return layout;
   };
 });
-define('src/modules/component/axis/axis',['require','d3'],function (require) {
-  var d3 = require("d3");
-
-  return function axes() {
-    var transform = "translate(0,0)";
-    var axis = null;
-
-    var gClass = "axis";
-    var title = "";
-    var titleY = 6;
-    var titleDY = ".71em";
-    var titleAnchor = "end";
-
-    function component(selection) {
-      selection.each(function () {
-        var g = d3.select(this).append("g")
-          .attr("class", gClass)
-          .attr("transform", transform)
-          .call(axis);
-
-        g.append("text")
-          .attr("y", titleY)
-          .attr("dy", titleDY)
-          .style("title-anchor", titleAnchor)
-          .text(title);
-      });
-    }
-
-    component.axis= function (_) {
-      if (!arguments.length) { return axis; }
-      axis = _;
-      return component;
-    };
-
-    component.gClass = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
-      return component;
-    };
-
-    component.transform = function (_) {
-      if (!arguments.length) { return transform; }
-      transform = _;
-      return component;
-    };
-
-    component.title = function (_) {
-      if (!arguments.length) { return title; }
-      title = _;
-      return component;
-    };
-
-    component.titleY = function (_) {
-      if (!arguments.length) { return titleY; }
-      titleY = _;
-      return component;
-    };
-
-    component.titleDY = function (_) {
-      if (!arguments.length) { return titleDY; }
-      titleDY = _;
-      return component;
-    };
-
-    component.titleAnchor = function (_) {
-      if (!arguments.length) { return titleAnchor; }
-      titleAnchor = _;
-      return component;
-    };
-
-    return component;
-  };
-});
-
-define('src/modules/component/clipPath/clipPath',['require','d3'],function (require) {
-  var d3 = require("d3");
-
-  return function clipPath() {
-    var id = uniqueID();
-    var x = 0;
-    var y = 0;
-    var width = 50;
-    var height = 50;
-
-    function component(selection) {
-      selection.each(function () {
-        return d3.select("this")
-          .attr("clip-path", "url(#" + id + ")")
-          .append("clipPath")
-          .attr("id", id)
-          .append("rect")
-          .attr("x", x)
-          .attr("y", y)
-          .attr("width", width)
-          .attr("height", height);
-      });
-    }
-
-    function uniqueID() {
-      var randomNumber = Math.floor(Math.random * 100);
-      return "uniqueId_" + randomNumber;
-    }
-
-    component.id = function (_) {
-      if (!arguments.length) { return id; }
-      id = _;
-      return component;
-    };
-
-    component.x = function (_) {
-      if (!arguments.length) { return x; }
-      x = _;
-      return component;
-    };
-
-    component.y = function (_) {
-      if (!arguments.length) { return y; }
-      y = _;
-      return component;
-    };
-
-    component.width = function (_) {
-      if (!arguments.length) { return width; }
-      width = _;
-      return component;
-    };
-
-    component.height = function (_) {
-      if (!arguments.length) { return height; }
-      height = _;
-      return component;
-    };
-
-    return component;
-  };
-});
-
 define('src/modules/element/rect',['require','d3'],function (require) {
   var d3 = require("d3");
 
@@ -12103,7 +13012,7 @@ define('src/modules/element/rect',['require','d3'],function (require) {
     var strokeWidth;
 
     function element(selection) {
-      selection.each(function () {
+      selection.each(function (data, i) {
         var layer = d3.select(this).selectAll("layer")
           .data(function (d) { return d; })
           .enter().append("g")
@@ -12207,90 +13116,6 @@ define('src/modules/element/rect',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/element/path',['require','d3'],function (require) {
-  var d3 = require("d3");
-
-  return function path() {
-    var pathGenerator = null;
-    var color = d3.scale.category10();
-
-    // Options
-    var gClass = "layer";
-    var pathClass = "path";
-    var transform = "translate(0,0)";
-    var fill = "none";
-    var stroke = function (d, i) { return color(i); };
-    var strokeWidth = 1;
-
-    function element(selection) {
-      selection.each(function () {
-        var layer = d3.select(this).selectAll("pathG")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .attr("class", gClass);
-
-        layer.append("path")
-          .attr("transform", transform)
-          .attr("class", pathClass)
-          .attr("fill", fill)
-          .attr("stroke", stroke)
-          .attr("stroke-width", strokeWidth)
-          .attr("d", pathGenerator);
-      });
-    }
-
-    element.pathGenerator = function (_) {
-      if (!arguments.length) { return pathGenerator; }
-      pathGenerator = _;
-      return element;
-    };
-
-    element.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
-      return element;
-    };
-
-    element.gClass = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
-      return element;
-    };
-
-    element.pathClass = function (_) {
-      if (!arguments.length) { return pathClass; }
-      pathClass = _;
-      return element;
-    };
-
-    element.transform = function (_) {
-      if (!arguments.length) { return transform; }
-      transform = _;
-      return element;
-    };
-
-    element.fill = function (_) {
-      if (!arguments.length) { return fill; }
-      fill = _;
-      return element;
-    };
-
-    element.stroke = function (_) {
-      if (!arguments.length) { return stroke; }
-      stroke = _;
-      return element;
-    };
-
-    element.strokeWidth = function (_) {
-      if (!arguments.length) { return strokeWidth; }
-      strokeWidth = _;
-      return element;
-    };
-
-    return element;
-  };
-});
-
 define('src/modules/element/line',['require','d3'],function (require) {
   var d3 = require("d3");
 
@@ -12305,7 +13130,7 @@ define('src/modules/element/line',['require','d3'],function (require) {
     var strokeWidth;
 
     function element(selection) {
-      selection.each(function () {
+      selection.each(function (data, i) {
         var layer = d3.select(this).selectAll("lineG")
           .data(function (d) { return d; })
           .enter().append("g")
@@ -12378,12 +13203,13 @@ define('src/modules/element/line',['require','d3'],function (require) {
     return element;
   };
 });
-define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/chart/xyzplot','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/clipPath/clipPath','src/modules/component/chart/chart','src/modules/element/circle','src/modules/element/rect','src/modules/element/path','src/modules/element/line'],function (require) {
+define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/boxplot','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/chart/xyzplot','src/modules/map/tile','src/modules/layout/box','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/chart/chart','src/modules/component/boxplot/boxplot','src/modules/element/circle','src/modules/element/rect','src/modules/element/path','src/modules/element/line','src/modules/element/clipPath'],function (require) {
   return {
     version: "0.1.0",
     chart: {
       line: require("src/modules/chart/line"),
       area: require("src/modules/chart/area"),
+      boxplot: require("src/modules/chart/boxplot"),
       pie: require("src/modules/chart/pie"),
       scatter : require("src/modules/chart/scatterplot"),
       sunburst: require("src/modules/chart/sunburst"),
@@ -12392,24 +13218,84 @@ define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','s
       histogram: require("src/modules/chart/histogram"),
       xyzplot: require("src/modules/chart/xyzplot")
     },
-    map: {},
+    map: {
+      tile: require("src/modules/map/tile")
+    },
     layout: {
+      box: require("src/modules/layout/box"),
       grid: require("src/modules/layout/grid"),
       split: require("src/modules/layout/split")
     },
     component: {
       axis: require("src/modules/component/axis/axis"),
-      clipPath: require("src/modules/component/clipPath/clipPath"),
       chart: require("src/modules/component/chart/chart"),
+      boxplot: require("src/modules/component/boxplot/boxplot")
     },
-    shape: {
+   element: {
       circle: require("src/modules/element/circle"),
       rect: require("src/modules/element/rect"),
       path: require("src/modules/element/path"),
-      line: require("src/modules/element/line")
+      line: require("src/modules/element/line"),
+      clipPath: require("src/modules/element/clipPath")
     }
   };
 });
+
+d3.geo.tile = function() {
+  var size = [960, 500],
+      scale = 256,
+      translate = [size[0] / 2, size[1] / 2],
+      zoomDelta = 0;
+
+  function tile() {
+    var z = Math.max(Math.log(scale) / Math.LN2 - 8, 0),
+        z0 = Math.round(z + zoomDelta),
+        k = Math.pow(2, z - z0 + 8),
+        origin = [(translate[0] - scale / 2) / k, (translate[1] - scale / 2) / k],
+        tiles = [],
+        cols = d3.range(Math.max(0, Math.floor(-origin[0])), Math.max(0, Math.ceil(size[0] / k - origin[0]))),
+        rows = d3.range(Math.max(0, Math.floor(-origin[1])), Math.max(0, Math.ceil(size[1] / k - origin[1])));
+
+    rows.forEach(function(y) {
+      cols.forEach(function(x) {
+        tiles.push([x, y, z0]);
+      });
+    });
+
+    tiles.translate = origin;
+    tiles.scale = k;
+
+    return tiles;
+  }
+
+  tile.size = function(_) {
+    if (!arguments.length) return size;
+    size = _;
+    return tile;
+  };
+
+  tile.scale = function(_) {
+    if (!arguments.length) return scale;
+    scale = _;
+    return tile;
+  };
+
+  tile.translate = function(_) {
+    if (!arguments.length) return translate;
+    translate = _;
+    return tile;
+  };
+
+  tile.zoomDelta = function(_) {
+    if (!arguments.length) return zoomDelta;
+    zoomDelta = +_;
+    return tile;
+  };
+
+  return tile;
+};
+
+define("geo", function(){});
 
   return require('jubilee');
 }));
