@@ -8,7 +8,6 @@ define(function (require) {
     var color = d3.scale.category20c();
 
     // Options
-    var gClass = "layer";
     var circleClass = "circles";
     var fill = function (d, i, j) { return color(j); };
     var stroke = function (d, i, j) { return color(j); };
@@ -16,13 +15,8 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, i) {
-        var layer = d3.select(this).selectAll("circleG")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .attr("class", gClass);
-
-        var circles = layer.selectAll("circlePoints")
-          .data(function (d) { return d; });
+        var circles = d3.select(this).selectAll("circle")
+          .data(data);
 
         // Exit
         circles.exit().remove();
@@ -58,12 +52,6 @@ define(function (require) {
     element.radius = function (_) {
       if (!arguments.length) { return radius; }
       radius = _;
-      return element;
-    };
-
-    element.gClass = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
       return element;
     };
 

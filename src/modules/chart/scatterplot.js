@@ -57,8 +57,8 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        xScale.domain(xDomain.call(this, mapDomain(data)));
-        yScale.domain(yDomain.call(this, mapDomain(data)));
+        xScale.domain(xDomain.call(this, data));
+        yScale.domain(yDomain.call(this, data));
 
         var points = circle()
           .cx(X)
@@ -99,12 +99,6 @@ define(function (require) {
 
           g.call(yAxis);
         }
-      });
-    }
-
-    function mapDomain (data) {
-      return data.reduce(function (a, b) {
-        return a.concat(b);
       });
     }
 
