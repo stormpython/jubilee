@@ -6,20 +6,14 @@ define(function (require) {
     var x2 = null;
     var y1 = null;
     var y2 = null;
-    var gClass;
-    var lineClass;
-    var stroke;
-    var strokeWidth;
+    var lineClass = "line";
+    var stroke = "black";
+    var strokeWidth = 2;
 
     function element(selection) {
       selection.each(function (data, i) {
-        var layer = d3.select(this).selectAll("lineG")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .attr("class", gClass);
-
-        var lines = layer.selectAll("lines")
-          .data(function (d) { return d; });
+        var lines = d3.select(this).selectAll("lines")
+          .data(data);
 
         // Exit
         lines.exit().remove();

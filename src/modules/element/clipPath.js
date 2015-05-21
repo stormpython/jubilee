@@ -11,12 +11,11 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, i) {
-        d3.select("this")
+        d3.select(this)
           .append("clipPath")
           .attr("id", id)
           .attr("transform", transform)
           .append("rect")
-          .attr("clip-path", "url(#" + id + ")")
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)
@@ -25,7 +24,7 @@ define(function (require) {
     }
 
     function uniqueID() {
-      var randomNumber = Math.floor(Math.random * 100);
+      var randomNumber = Math.floor(Math.random() * 100);
       return "uniqueId_" + randomNumber;
     }
 

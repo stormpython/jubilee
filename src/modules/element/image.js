@@ -15,7 +15,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data, i) {
         var images = d3.select(this).selectAll("image")
-          .data(function (d) { return d; });
+          .data(data);
 
         images.exit().remove();
 

@@ -52,23 +52,21 @@
             { x: 1411761570000, y: 157, label: "brothers"}
           ],
           [
-            { x: 1411761450000, y: 201, label: "brothers"},
-            { x: 1411761480000, y: 198, label: "brothers"},
-            { x: 1411761510000, y: 232, label: "brothers"},
-            { x: 1411761540000, y: 547, label: "brothers"},
-            { x: 1411761570000, y: 357, label: "brothers"}
+            { x: 1411761450000, y: 201, label: "yes"},
+            { x: 1411761480000, y: 198, label: "yes"},
+            { x: 1411761510000, y: 232, label: "yes"},
+            { x: 1411761540000, y: 547, label: "yes"},
+            { x: 1411761570000, y: 357, label: "yes"}
           ]
         ]
       };
 
+      var color = d3.scale.category10(["band", "of", "brothers", "yes"]);
       var myChart = jubilee.chart.line()
-        .width(700)
-        .height(700)
-        .x(function (d) { return d.x; })
-        .y(function (d) { return d.y; })
+        .lineStroke(function (d) { return color(d[0].label); })
+        .circleFill(function (d) { return color(d.label); })
         .interpolate("cardinal")
-        .addCircles(true)
-        .circleRadius(3);
+        .addCircles(true);
 
       d3.select("#chart")
         .datum(data.series)

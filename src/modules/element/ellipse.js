@@ -9,7 +9,6 @@ define(function (require) {
     var color = d3.scale.category20c();
 
     // Options
-    var gClass = "layer";
     var ellipseClass = "ellipses";
     var fill = function (d, i, j) { return color(j); };
     var stroke = function (d, i, j) { return color(j); };
@@ -17,13 +16,8 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, i) {
-        var layer = d3.select(this).selectAll("ellipseG")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .attr("class", gClass);
-
-        var ellipses = layer.selectAll("ellipsePoints")
-          .data(function (d) { return d; });
+        var ellipses = d3.select(this).selectAll("ellipsePoints")
+          .data(data);
 
         // Exit
         ellipses.exit().remove();
@@ -66,12 +60,6 @@ define(function (require) {
     element.ry = function (_) {
       if (!arguments.length) { return ry; }
       ry = _;
-      return element;
-    };
-
-    element.gClass = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
       return element;
     };
 

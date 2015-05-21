@@ -7,7 +7,6 @@ define(function (require) {
     var accessor = function (d) { return d; };
 
     // Options
-    var gClass = "layer";
     var pathClass = "path";
     var transform = "translate(0,0)";
     var fill = "none";
@@ -16,12 +15,9 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, i) {
-        var layer = d3.select(this).selectAll("pathG")
+        d3.select(this).selectAll("path")
           .data(accessor)
-          .enter().append("g")
-          .attr("class", gClass);
-
-        layer.append("path")
+          .enter().append("path")
           .attr("transform", transform)
           .attr("class", pathClass)
           .attr("fill", fill)
@@ -46,12 +42,6 @@ define(function (require) {
     element.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
-      return element;
-    };
-
-    element.gClass = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
       return element;
     };
 

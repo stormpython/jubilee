@@ -1,30 +1,21 @@
 define(function (require) {
   var d3 = require("d3");
-  var circle = require("src/modules/element/circle");
-  var path = require("src/modules/element/path");
   var axis = require("src/modules/component/axis/axis");
+  var path = require("src/modules/element/path");
   var clipPath = require("src/modules/element/clipPath");
+  var circle = require("src/modules/element/circle");
 
   return function lineChart() {
     // Chart options
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760 - margin.left - margin.right;
-    var height = 120 - margin.top - margin.bottom;
+    var width = 760;
+    var height = 120;
     var color = d3.scale.category20c();
     var interpolate = "linear";
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
-    var xScale = d3.time.scale.utc().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]).nice();
-    var xDomain = function (data) {
-      return d3.extent(data, xValue);
-    };
-    var yDomain = function (data) {
-      return [
-        Math.min(0, d3.min(data, yValue)),
-        Math.max(0, d3.max(data, yValue))
-      ];
-    };
+    var xScale = null;
+    var yScale = null;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -34,20 +25,28 @@ define(function (require) {
     var yAxisTitle = "";
 
     // Line Options
+    var pathGroupClass = "paths";
     var lineClass = "line";
     var lineStroke = function (d, i) { return color(i); };
+
+    // ClipPath Options
+    var clipPathWidth = null;
+    var clipPathHeight = null;
 
     // Circle Options
     var addCircles = true;
     var circleGroupClass = "circle layer";
     var circleClass = "circle";
     var circleFill = function (d, i, j) { return color(j); };
-    var circleStroke = function (d, i, j) { return color(j); };
+    var circleStroke = null;
     var circleRadius = 5;
     var circleStrokeWidth = 3;
 
     function chart(selection) {
       selection.each(function (data) {
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
+
         var svg = d3.select(this).selectAll("svg")
           .data([data])
           .enter().append("svg")
@@ -59,18 +58,26 @@ define(function (require) {
 
         var line = d3.svg.line().x(X).y(Y).interpolate(interpolate);
 
-        var clippath = clipPath().width(width).height(height);
-
         var linePath = path()
           .pathGenerator(line)
           .pathClass(lineClass)
           .stroke(lineStroke);
 
-        xScale.domain(xDomain && xDomain.call(this, mapDomain(data)));
-        yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
+        xScale = xScale ? xScale : d3.time.scale.utc()
+          .domain(d3.extent(mapDomain(data), xValue))
+          .range([0, width]);
 
-        g.call(clippath);
-        g.call(linePath);
+        yScale = yScale ? yScale : d3.scale.linear()
+          .domain([
+            Math.min(0, d3.min(mapDomain(data), yValue)),
+            Math.max(0, d3.max(mapDomain(data), yValue))
+          ])
+          .range([height, 0])
+          .nice();
+
+        g.append("g")
+          .attr("class", pathGroupClass)
+          .call(linePath);
 
         if (showXAxis) {
           var xAxis = axis()
@@ -99,18 +106,29 @@ define(function (require) {
         }
 
         if (addCircles) {
+          var clippath = clipPath()
+            .width(clipPathWidth ? clipPathWidth : width)
+            .height(clipPathHeight ? clipPathHeight : height);
+
           var points = circle()
             .cx(X)
             .cy(Y)
             .color(color)
             .radius(circleRadius)
-            .gClass(circleGroupClass)
             .circleClass(circleClass)
             .fill(circleFill)
-            .stroke(circleStroke)
+            .stroke(circleStroke ? circleStroke : circleFill)
             .strokeWidth(circleStrokeWidth);
 
-          g.call(points);
+          g.call(clippath);
+          g.append("g")
+            .attr("clip-path", "url(#" + clippath.id() + ")")
+            .selectAll("gCircles")
+            .data(function (d) { return d; })
+            .enter().append("g")
+            .attr("class", circleGroupClass)
+            .datum(function (d) { return d; })
+            .call(points);
         }
       });
     }
@@ -180,18 +198,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.xDomain = function (_) {
-      if (!arguments.length) { return xDomain; }
-      xDomain = _;
-      return chart;
-    };
-
-    chart.yDomain = function (_) {
-      if (!arguments.length) { return yDomain; }
-      yDomain = _;
-      return chart;
-    };
-
     chart.lineX = function (_) {
       if (!arguments.length) { return lineX; }
       lineX = _;
@@ -243,6 +249,18 @@ define(function (require) {
     chart.lineClass = function (_) {
       if (!arguments.length) { return lineClass; }
       lineClass = _;
+      return chart;
+    };
+
+    chart.clipPathWidth = function (_) {
+      if (!arguments.length) { return clipPathWidth; }
+      clipPathWidth = _;
+      return chart;
+    };
+
+    chart.clipPathHeight = function (_) {
+      if (!arguments.length) { return clipPathHeight; }
+      clipPathHeight = _;
       return chart;
     };
 
