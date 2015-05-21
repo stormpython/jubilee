@@ -10,8 +10,8 @@ define(function (require) {
 
     // Options
     var ellipseClass = "ellipses";
-    var fill = function (d, i, j) { return color(j); };
-    var stroke = function (d, i, j) { return color(j); };
+    var fill = function (d, i) { return color(i); };
+    var stroke = function (d, i) { return color(i); };
     var strokeWidth = 3;
 
     function element(selection) {
