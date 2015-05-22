@@ -28,11 +28,12 @@ define(function (require) {
     },
     element: {
       circle: require("src/modules/element/circle"),
-      rect: require("src/modules/element/rect"),
-      path: require("src/modules/element/path"),
-      line: require("src/modules/element/line"),
       clipPath: require("src/modules/element/clipPath"),
-      image: require("src/modules/element/image")
+      ellipse: require("src/modules/element/ellipse"),
+      image: require("src/modules/element/image"),
+      line: require("src/modules/element/line"),
+      path: require("src/modules/element/path"),
+      rect: require("src/modules/element/rect")
     }
   };
 });

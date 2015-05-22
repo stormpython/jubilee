@@ -5,13 +5,13 @@ define(function (require) {
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
     var radius = 5;
-    var color = d3.scale.category20c();
+    var color = d3.scale.category10();
 
     // Options
     var circleClass = "circles";
-    var fill = function (d, i, j) { return color(j); };
-    var stroke = function (d, i, j) { return color(j); };
-    var strokeWidth = 3;
+    var fill = function (d, i) { return color(i); };
+    var stroke = null;
+    var strokeWidth = 0;
 
     function element(selection) {
       selection.each(function (data, i) {
@@ -29,7 +29,7 @@ define(function (require) {
         // Update
         circles
           .attr("fill", fill)
-          .attr("stroke", stroke)
+          .attr("stroke", stroke ? stroke : fill)
           .attr("stroke-width", strokeWidth)
           .attr("r", radius)
           .attr("cx", cx)

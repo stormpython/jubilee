@@ -4,8 +4,8 @@ define(function (require) {
   return function image() {
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
-    var width = function () { return 10; };
-    var height = function () { return height; };
+    var width = 10;
+    var height = 10;
     var xlink = null;
     var preserveAspectRatio = null;
 

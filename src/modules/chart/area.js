@@ -6,24 +6,15 @@ define(function (require) {
   return function areaChart() {
     // Chart options
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760 - margin.left - margin.right;
-    var height = 120 - margin.top - margin.bottom;
+    var width = 760;
+    var height = 120;
     var color = d3.scale.category20c();
     var interpolate = "linear";
     var offset = "zero";
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
-    var xScale = d3.time.scale.utc().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]).nice();
-    var xDomain = function (domainData) {
-      return d3.extent(domainData, xValue);
-    };
-    var yDomain = function (domainData) {
-      return [
-        Math.min(0, d3.min(domainData, Y)),
-        Math.max(0, d3.max(domainData, Y))
-      ];
-    };
+    var xScale = null;
+    var yScale = null;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
@@ -44,6 +35,9 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data) {
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
+
         var stack = d3.layout.stack().x(xValue).y(yValue).offset(offset);
         var layers = stack(data);
 
@@ -65,8 +59,17 @@ define(function (require) {
           .stroke(areaStroke)
           .fill(areaFill);
 
-        xScale.domain(xDomain && xDomain.call(this, mapDomain(layers)));
-        yScale.domain(yDomain && yDomain.call(this, mapDomain(layers)));
+        xScale = xScale ? xScale : d3.time.scale.utc()
+          .domain(d3.extent(mapDomain(data), xValue))
+          .range([0, width]);
+
+        yScale = yScale ? yScale : d3.scale.linear()
+          .domain([
+            Math.min(0, d3.min(mapDomain(data), Y)),
+            Math.max(0, d3.max(mapDomain(data), Y))
+          ])
+          .range([height, 0])
+          .nice();
 
         g.call(areaPath);
 
@@ -180,18 +183,6 @@ define(function (require) {
     chart.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale = _;
-      return chart;
-    };
-
-    chart.xDomain = function (_) {
-      if (!arguments.length) { return xDomain; }
-      xDomain = _;
-      return chart;
-    };
-
-    chart.yDomain = function (_) {
-      if (!arguments.length) { return yDomain; }
-      yDomain = _;
       return chart;
     };
 

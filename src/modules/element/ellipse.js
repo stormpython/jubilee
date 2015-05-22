@@ -4,15 +4,15 @@ define(function (require) {
   return function ellipse() {
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
-    var rx = 0;
-    var ry = 0;
+    var rx = 20;
+    var ry = 20;
     var color = d3.scale.category20c();
 
     // Options
     var ellipseClass = "ellipses";
     var fill = function (d, i) { return color(i); };
-    var stroke = function (d, i) { return color(i); };
-    var strokeWidth = 3;
+    var stroke = null;
+    var strokeWidth = 0;
 
     function element(selection) {
       selection.each(function (data, i) {
@@ -30,7 +30,7 @@ define(function (require) {
         // Update
         ellipses
           .attr("fill", fill)
-          .attr("stroke", stroke)
+          .attr("stroke", stroke ? stroke : fill)
           .attr("stroke-width", strokeWidth)
           .attr("cx", cx)
           .attr("cy", cy)
