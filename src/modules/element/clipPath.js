@@ -10,7 +10,7 @@ define(function (require) {
     var height = 50;
 
     function element(selection) {
-      selection.each(function (data, i) {
+      selection.each(function () {
         d3.select(this)
           .append("clipPath")
           .attr("id", id)

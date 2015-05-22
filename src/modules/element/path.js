@@ -12,6 +12,7 @@ define(function (require) {
     var fill = "none";
     var stroke = function (d, i) { return color(i); };
     var strokeWidth = 1;
+    var opacity = 1;
 
     function element(selection) {
       selection.each(function (data, i) {
@@ -23,7 +24,8 @@ define(function (require) {
           .attr("fill", fill)
           .attr("stroke", stroke)
           .attr("stroke-width", strokeWidth)
-          .attr("d", pathGenerator);
+          .attr("d", pathGenerator)
+          .style("opacity", opacity);
       });
     }
 
@@ -60,6 +62,12 @@ define(function (require) {
     element.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
+      return element;
+    };
+
+    element.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
       return element;
     };
 

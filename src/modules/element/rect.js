@@ -6,15 +6,16 @@ define(function (require) {
     var y = function (d) { return d.y; };
     var rx = 0;
     var ry = 0;
-    var width = function () { return 10; };
-    var height = function () { return height; };
-    var color = d3.scale.category10();
+    var width = null;
+    var height = null;
 
     // Options
+    var color = d3.scale.category10();
     var rectClass = "bar";
-    var fill = function (d, i) { return color(i); };
-    var stroke;
-    var strokeWidth;
+    var fill = null;
+    var stroke = null;
+    var strokeWidth = 0;
+    var opacity = 1;
 
     function element(selection) {
       selection.each(function (data, i) {
@@ -26,18 +27,23 @@ define(function (require) {
         bars
           .enter().append("rect")
           .attr("class", rectClass)
-          .attr("fill", fill)
-          .attr("stroke", stroke)
-          .attr("strokeWidth", strokeWidth);
+          .attr("fill", fill ? fill : colorFill)
+          .attr("stroke", stroke ? stroke : colorFill)
+          .attr("strokeWidth", strokeWidth)
+          .style("opacity", opacity);
 
         bars
           .attr("x", x)
           .attr("y", y)
           .attr("rx", rx)
           .attr("ry", ry)
-          .attr("height", height)
-          .attr("width", width);
+          .attr("width", width)
+          .attr("height", height);
       });
+    }
+
+    function colorFill(d, i) {
+      return color(i);
     }
 
     element.x = function (_) {
@@ -85,6 +91,12 @@ define(function (require) {
     element.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
+      return element;
+    };
+
+    element.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
       return element;
     };
 

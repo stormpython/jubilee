@@ -9,6 +9,7 @@ define(function (require) {
     var lineClass = "line";
     var stroke = "black";
     var strokeWidth = 2;
+    var opacity = 1;
 
     function element(selection) {
       selection.each(function (data, i) {
@@ -30,7 +31,8 @@ define(function (require) {
           .attr("y1", y1)
           .attr("y2", y2)
           .attr("stroke", stroke)
-          .attr("stroke-width", strokeWidth);
+          .attr("stroke-width", strokeWidth)
+          .style("opacity", opacity);
       });
     }
 
@@ -61,6 +63,12 @@ define(function (require) {
     element.lineClass = function (_) {
       if (!arguments.length) { return lineClass; }
       lineClass = _;
+      return element;
+    };
+
+    element.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
       return element;
     };
 

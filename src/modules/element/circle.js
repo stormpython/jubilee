@@ -9,9 +9,10 @@ define(function (require) {
 
     // Options
     var circleClass = "circles";
-    var fill = function (d, i) { return color(i); };
+    var fill = null;
     var stroke = null;
     var strokeWidth = 0;
+    var opacity = 1;
 
     function element(selection) {
       selection.each(function (data, i) {
@@ -28,13 +29,18 @@ define(function (require) {
 
         // Update
         circles
-          .attr("fill", fill)
-          .attr("stroke", stroke ? stroke : fill)
+          .attr("fill", fill ? fill : colorFill)
+          .attr("stroke", stroke ? stroke : colorFill)
           .attr("stroke-width", strokeWidth)
           .attr("r", radius)
           .attr("cx", cx)
-          .attr("cy", cy);
+          .attr("cy", cy)
+          .style("opacity", opacity);
       });
+    }
+
+    function colorFill (d, i) {
+      return color(d, i);
     }
 
     element.cx = function (_) {
@@ -70,6 +76,12 @@ define(function (require) {
     element.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
+      return element;
+    };
+
+    element.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
       return element;
     };
 
