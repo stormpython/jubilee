@@ -13,9 +13,7 @@ define(function (require) {
     var accessor = function (d) { return d; };
     var xScale = null;
     var yScale = null;
-    var gTransform = function transform(d, i) {
-      return "translate(" + xScale(xValue.call(this, d, i)) + "," + yScale(d.median) + ")";
-    };
+    var transform = null;
     var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
     // X Axis
@@ -67,7 +65,7 @@ define(function (require) {
           .range([height, 0]);
 
         var boxPlotFunc = boxPlot()
-          .gTransform(gTransform)
+          .gTransform(transform ? transform : gTransform)
           .box({ width: boxWidth, height: boxHeight, y: boxY })
           .range({ y1: Y1, y2: Y2 })
           .max({ y1: Y1, y2: Y1 })
@@ -129,6 +127,10 @@ define(function (require) {
       });
     }
 
+    function gTransform(d, i) {
+      return "translate(" + xScale(xValue.call(this, d, i)) + "," + yScale(d.median) + ")";
+    }
+
     chart.margin = function (_) {
       if (!arguments.length) { return margin; }
       margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
@@ -180,9 +182,9 @@ define(function (require) {
       return chart;
     };
 
-    chart.gTransform = function (_) {
-      if (!arguments.length) { return gTransform; }
-      gTransform = _;
+    chart.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
       return chart;
     };
 

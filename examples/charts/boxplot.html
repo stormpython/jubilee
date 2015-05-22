@@ -47,7 +47,7 @@
       .x(function (d) { return d.label; })
       .xScale(xScale)
       .yScale(yScale)
-      .gTransform(function (d) {
+      .transform(function (d) {
         return "translate(" + (xScale(d.label) + (xScale.rangeBand() / 2)) + "," + yScale(d.median) + ")";
       });
 
