@@ -206,7 +206,7 @@ define(function (require) {
       return chart;
     };
 
-    chart.xAxis = function (_) {
+    chart.yAxis = function (_) {
       if (!arguments.length) { return yAxis; }
       yAxis.show = typeof _.show !== "undefined" ? _.show: yAxis.show;
       yAxis.yAxisClass = typeof _.yAxisClass !== "undefined" ? _.yAxisClass : yAxis.yAxisClass;
