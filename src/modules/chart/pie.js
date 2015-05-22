@@ -14,7 +14,6 @@ define(function (require) {
     var arc = d3.svg.arc();
     var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
-    var pathGroupClass = "arc";
     var pieFill = function (d, i) { return color(i); };
     var pieClass = "pie";
 
@@ -25,14 +24,15 @@ define(function (require) {
     var textTransform = function (d) { return "translate(" + arc.centroid(d) + ")"; };
 
     function chart (selection) {
-      selection.each(function (data) {
+      selection.each(function (data, i) {
         var pie = d3.layout.pie().sort(sort).value(value);
         var radius = Math.min(width, height) / 2;
 
         var svg = d3.select(this).append("svg")
           .attr("width", width)
-          .attr("height", height)
-          .append("g")
+          .attr("height", height);
+
+        var g = svg.append("g")
           .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
         arc.outerRadius(outerRadius || radius).innerRadius(innerRadius);
@@ -40,13 +40,12 @@ define(function (require) {
         var piePath = path()
           .pathGenerator(arc)
           .accessor(pie(data))
-          .gClass(pathGroupClass)
           .pathClass(pieClass)
           .fill(pieFill);
 
-        svg.call(piePath);
+        g.call(piePath);
 
-        svg.selectAll("g.arc")
+        g.selectAll("g")
           .data(pie(data))
           .append("text")
           .attr("transform", textTransform)
@@ -116,12 +115,6 @@ define(function (require) {
     chart.pieFill = function (_) {
       if (!arguments.length) { return pieFill; }
       pieFill = _;
-      return chart;
-    };
-
-    chart.pathGroupClass = function (_) {
-      if (!arguments.length) { return pathGroupClass; }
-      pathGroupClass = _;
       return chart;
     };
 
