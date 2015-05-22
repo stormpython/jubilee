@@ -38,7 +38,7 @@
         var rangeY2 = function (d) { return yScale(d.min) - yScale(d.median); };
 
         var boxplot = jubilee.component.boxplot()
-          .gTransform(function (d) {
+          .transform(function (d) {
             return "translate(" + xScale(d.x) + "," + yScale(d.median) + ")";
           })
           .box({

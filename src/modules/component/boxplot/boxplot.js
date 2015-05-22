@@ -3,7 +3,7 @@ define(function (require) {
 
   return function boxplot() {
     var gClass = "box";
-    var gTransform = null;
+    var transform = null;
 
     // Box
     var box = {
@@ -69,7 +69,7 @@ define(function (require) {
           .enter().append("g")
           .attr("class", gClass);
 
-        g.attr("transform", gTransform)
+        g.attr("transform", transform)
           .each(function (d, i) {
             var g = d3.select(this);
 
@@ -128,9 +128,9 @@ define(function (require) {
       return component;
     };
 
-    component.gTransform = function (_) {
-      if (!arguments.length) { return gTransform; }
-      gTransform = _;
+    component.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
       return component;
     };
 
