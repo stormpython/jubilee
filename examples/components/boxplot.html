@@ -41,15 +41,14 @@
           .gTransform(function (d) {
             return "translate(" + xScale(d.x) + "," + yScale(d.median) + ")";
           })
-          .boxWidth(50)
-          .boxHeight(function (d) { return yScale(d.q1) - yScale(d.q3); })
-          .boxY(function (d) { return yScale(d.q3) - yScale(d.median); })
-          .rangeY1(rangeY1)
-          .rangeY2(rangeY2)
-          .maxY1(rangeY1)
-          .maxY2(rangeY1)
-          .minY1(rangeY2)
-          .minY2(rangeY2);
+          .box({
+            width: 50,
+            height: function (d) { return yScale(d.q1) - yScale(d.q3); },
+            y: function (d) { return yScale(d.q3) - yScale(d.median); }
+          })
+          .range({ y1: rangeY1, y2: rangeY2 })
+          .max({ y1: rangeY1, y2: rangeY1 })
+          .min({ y1: rangeY2, y2: rangeY2 });
 
         d3.select("#chart").append("svg")
           .attr("width", width)

@@ -6,53 +6,63 @@ define(function (require) {
     var gTransform = null;
 
     // Box
-    var boxWidth = 20;
-    var boxHeight = null;
-    var boxY = null;
-    var boxClass = "range";
-    var boxFill = "white";
-    var boxStroke = "black";
-    var boxStrokeWidth = "2px";
+    var box = {
+      width: 20,
+      height: null,
+      y: null,
+      boxClass: "range",
+      fill: "white",
+      stroke: "black",
+      strokeWidth: "2px"
+    };
 
     // Range
-    var rangeX1 = 0;
-    var rangeX2 = 0;
-    var rangeY1 = null;
-    var rangeY2 = null;
-    var rangeClass = "range";
-    var rangeStroke = "black";
-    var rangeStrokeWidth = "4px";
+    var range = {
+      x1: 0,
+      x2: 0,
+      y1: null,
+      y2: null,
+      rangeClass: "range",
+      stroke: "black",
+      strokeWidth: "4px"
+    };
 
     // Max
-    var maxY1 = null;
-    var maxY2 = null;
-    var maxClass = "max";
-    var maxStroke = "black";
-    var maxStrokeWidth = "4px";
+    var max = {
+      y1: null,
+      y2: null,
+      maxClass: "max",
+      stroke: "black",
+      strokeWidth: "4px"
+    };
 
     // Min
-    var minY1 = null;
-    var minY2 = null;
-    var minClass = "min";
-    var minStroke = "black";
-    var minStrokeWidth = "4px";
+    var min = {
+      y1: null,
+      y2: null,
+      minClass: "min",
+      stroke: "black",
+      strokeWidth: "4px"
+    };
 
     // Median
-    var medianY1 = 0;
-    var medianY2 = 0;
-    var medianClass = "median";
-    var medianStroke = "darkgrey";
-    var medianStrokeWidth = "4px";
+    var median = {
+      y1: 0,
+      y2: 0,
+      medianClass: "median",
+      stroke: "darkgrey",
+      strokeWidth: "4px"
+    };
 
     function component(selection) {
       selection.each(function () {
-        var boxX = - (boxWidth / 2);
-        var maxX1 = - (boxWidth / 2);
-        var maxX2 = boxWidth / 2;
-        var minX1 = - (boxWidth / 2);
-        var minX2 = boxWidth / 2;
-        var medianX1 = - (boxWidth / 2);
-        var medianX2 = boxWidth / 2;
+        var boxX = - (box.width / 2);
+        var maxX1 = - (box.width / 2);
+        var maxX2 = box.width / 2;
+        var minX1 = - (box.width / 2);
+        var minX2 = box.width / 2;
+        var medianX1 = - (box.width / 2);
+        var medianX2 = box.width / 2;
 
         var g = d3.select(this).selectAll("g.box")
           .data(function (d) { return d; })
@@ -64,50 +74,50 @@ define(function (require) {
             var g = d3.select(this);
 
             g.append("line")
-              .attr("class", rangeClass)
-              .attr("x1", rangeX1)
-              .attr("x2", rangeX2)
-              .attr("y1", rangeY1)
-              .attr("y2", rangeY2)
-              .style("stroke", rangeStroke)
-              .style("stroke-boxWidth", rangeStrokeWidth);
+              .attr("class", range.rangeClass)
+              .attr("x1", range.x1)
+              .attr("x2", range.x2)
+              .attr("y1", range.y1)
+              .attr("y2", range.y2)
+              .style("stroke", range.stroke)
+              .style("stroke-boxWidth", range.strokeWidth);
 
             g.append("line")
-              .attr("class", maxClass)
+              .attr("class", max.maxClass)
               .attr("x1", maxX1)
               .attr("x2", maxX2)
-              .attr("y1", maxY1)
-              .attr("y2", maxY2)
-              .style("stroke", maxStroke)
-              .style("stroke-boxWidth", maxStrokeWidth);
+              .attr("y1", max.y1)
+              .attr("y2", max.y2)
+              .style("stroke", max.stroke)
+              .style("stroke-boxWidth", max.strokeWidth);
 
             g.append("line")
-              .attr("class", minClass)
+              .attr("class", min.minClass)
               .attr("x1", minX1)
               .attr("x2", minX2)
-              .attr("y1", minY1)
-              .attr("y2", minY2)
-              .style("stroke", minStroke)
-              .style("stroke-boxWidth", minStrokeWidth);
+              .attr("y1", min.y1)
+              .attr("y2", min.y2)
+              .style("stroke", min.stroke)
+              .style("stroke-boxWidth", min.strokeWidth);
 
             g.append("rect")
-              .attr("class", boxClass)
+              .attr("class", box.boxClass)
               .attr("x", boxX)
-              .attr("y", boxY)
-              .attr("width", boxWidth)
-              .attr("height", boxHeight)
-              .style("fill", boxFill)
-              .style("stroke", boxStroke)
-              .style("stroke-boxWidth", boxStrokeWidth);
+              .attr("y", box.y)
+              .attr("width", box.width)
+              .attr("height", box.height)
+              .style("fill", box.fill)
+              .style("stroke", box.stroke)
+              .style("stroke-boxWidth", box.strokeWidth);
 
             g.append("line")
-              .attr("class", medianClass)
+              .attr("class", median.medianClass)
               .attr("x1", medianX1)
               .attr("x2", medianX2)
-              .attr("y1", medianY1)
-              .attr("y2", medianY2)
-              .style("stroke", medianStroke)
-              .style("stroke-boxWidth", medianStrokeWidth);
+              .attr("y1", median.y1)
+              .attr("y2", median.y2)
+              .style("stroke", median.stroke)
+              .style("stroke-boxWidth", median.strokeWidth);
           });
       });
     }
@@ -124,177 +134,57 @@ define(function (require) {
       return component;
     };
 
-    component.boxWidth = function (_) {
-      if (!arguments.length) { return boxWidth; }
-      boxWidth = _;
+    component.box = function (_) {
+      if (!arguments.length) { return box; }
+      box.width = typeof _.width !== "undefined" ? _.width : box.width;
+      box.height = typeof _.height !== "undefined" ? _.height : box.height;
+      box.y = typeof _.y !== "undefined" ? _.y : box.y;
+      box.boxClass = typeof _.boxClass !== "undefined" ? _.boxClass : box.boxClass;
+      box.fill = typeof _.fill !== "undefined" ? _.fill : box.fill;
+      box.stroke = typeof _.stroke !== "undefined" ? _.stroke : box.stroke;
+      box.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : box.strokeWidth;
       return component;
     };
 
-    component.boxHeight = function (_) {
-      if (!arguments.length) { return boxHeight; }
-      boxHeight = _;
+    component.range = function (_) {
+      if (!arguments.length) { return range; }
+      range.x1 = typeof _.x1!== "undefined" ? _.x1: range.x1;
+      range.x2 = typeof _.x2!== "undefined" ? _.x2 : range.x2;
+      range.y1 = typeof _.y1 !== "undefined" ? _.y1 : range.y1;
+      range.y2 = typeof _.y2 !== "undefined" ? _.y2 : range.y2;
+      range.rangeClass = typeof _.rangeClass !== "undefined" ? _.rangeClass : range.rangeClass;
+      range.stroke = typeof _.stroke !== "undefined" ? _.stroke : range.stroke;
+      range.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : range.strokeWidth;
       return component;
     };
 
-    component.boxY = function (_) {
-      if (!arguments.length) { return boxY; }
-      boxY = _;
+    component.max = function (_) {
+      if (!arguments.length) { return max; }
+      max.y1 = typeof _.y1 !== "undefined" ? _.y1 : max.y1;
+      max.y2 = typeof _.y2 !== "undefined" ? _.y2 : max.y2;
+      max.maxClass = typeof _.maxClass !== "undefined" ? _.maxClass : max.maxClass;
+      max.stroke = typeof _.stroke !== "undefined" ? _.stroke : max.stroke;
+      max.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : max.strokeWidth;
       return component;
     };
 
-    component.boxClass = function (_) {
-      if (!arguments.length) { return boxClass; }
-      boxClass = _;
+    component.min = function (_) {
+      if (!arguments.length) { return min; }
+      min.y1 = typeof _.y1 !== "undefined" ? _.y1 : min.y1;
+      min.y2 = typeof _.y2 !== "undefined" ? _.y2 : min.y2;
+      min.minClass = typeof _.minClass !== "undefined" ? _.minClass : min.minClass;
+      min.stroke = typeof _.stroke !== "undefined" ? _.stroke : min.stroke;
+      min.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : min.strokeWidth;
       return component;
     };
 
-    component.boxFill = function (_) {
-      if (!arguments.length) { return boxFill; }
-      boxFill = _;
-      return component;
-    };
-
-    component.boxStroke = function (_) {
-      if (!arguments.length) { return boxStroke; }
-      boxStroke = _;
-      return component;
-    };
-
-    component.boxStrokeWidth = function (_) {
-      if (!arguments.length) { return boxStrokeWidth; }
-      boxStrokeWidth = _;
-      return component;
-    };
-
-    component.rangeX1 = function (_) {
-      if (!arguments.length) { return rangeX1; }
-      rangeX1 = _;
-      return component;
-    };
-
-    component.rangeX2 = function (_) {
-      if (!arguments.length) { return rangeX2; }
-      rangeX2 = _;
-      return component;
-    };
-
-    component.rangeY1 = function (_) {
-      if (!arguments.length) { return rangeY1; }
-      rangeY1 = _;
-      return component;
-    };
-
-    component.rangeY2 = function (_) {
-      if (!arguments.length) { return rangeY2; }
-      rangeY2 = _;
-      return component;
-    };
-
-    component.rangeClass = function (_) {
-      if (!arguments.length) { return rangeClass; }
-      rangeClass = _;
-      return component;
-    };
-
-    component.rangeStroke = function (_) {
-      if (!arguments.length) { return rangeStroke; }
-      rangeStroke = _;
-      return component;
-    };
-
-    component.rangeStrokeWidth = function (_) {
-      if (!arguments.length) { return rangeStrokeWidth; }
-      rangeStrokeWidth = _;
-      return component;
-    };
-
-    component.maxY1 = function (_) {
-      if (!arguments.length) { return maxY1; }
-      maxY1 = _;
-      return component;
-    };
-
-    component.maxY2 = function (_) {
-      if (!arguments.length) { return maxY2; }
-      maxY2 = _;
-      return component;
-    };
-
-    component.maxClass = function (_) {
-      if (!arguments.length) { return maxClass; }
-      maxClass = _;
-      return component;
-    };
-
-    component.maxStroke = function (_) {
-      if (!arguments.length) { return maxStroke; }
-      maxStroke = _;
-      return component;
-    };
-
-    component.maxStrokeWidth = function (_) {
-      if (!arguments.length) { return maxStrokeWidth; }
-      maxStrokeWidth = _;
-      return component;
-    };
-
-    component.minY1 = function (_) {
-      if (!arguments.length) { return minY1; }
-      minY1 = _;
-      return component;
-    };
-
-    component.minY2 = function (_) {
-      if (!arguments.length) { return minY2; }
-      minY2 = _;
-      return component;
-    };
-
-    component.minClass = function (_) {
-      if (!arguments.length) { return minClass; }
-      minClass = _;
-      return component;
-    };
-
-    component.minStroke = function (_) {
-      if (!arguments.length) { return minStroke; }
-      minStroke = _;
-      return component;
-    };
-
-    component.minStrokeWidth = function (_) {
-      if (!arguments.length) { return minStrokeWidth; }
-      minStrokeWidth = _;
-      return component;
-    };
-
-    component.medianY1 = function (_) {
-      if (!arguments.length) { return medianY1; }
-      medianY1 = _;
-      return component;
-    };
-
-    component.medianY2 = function (_) {
-      if (!arguments.length) { return medianY2; }
-      medianY2 = _;
-      return component;
-    };
-
-    component.medianClass = function (_) {
-      if (!arguments.length) { return medianClass; }
-      medianClass = _;
-      return component;
-    };
-
-    component.medianStroke = function (_) {
-      if (!arguments.length) { return medianStroke; }
-      medianStroke = _;
-      return component;
-    };
-
-    component.medianStrokeWidth = function (_) {
-      if (!arguments.length) { return medianStrokeWidth; }
-      medianStrokeWidth = _;
+    component.median = function (_) {
+      if (!arguments.length) { return median; }
+      median.y1 = typeof _.y1 !== "undefined" ? _.y1 : median.y1;
+      median.y2 = typeof _.y2 !== "undefined" ? _.y2 : median.y2;
+      median.medianClass = typeof _.medianClass !== "undefined" ? _.medianClass : median.medianClass;
+      median.stroke = typeof _.stroke !== "undefined" ? _.stroke : median.stroke;
+      median.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : median.strokeWidth;
       return component;
     };
 

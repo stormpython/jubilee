@@ -11,39 +11,34 @@ define(function (require) {
     var xValue = function (d) { return d.x; };
     var values = function (d) { return d.values; };
     var accessor = function (d) { return d; };
-    var xScale = d3.time.scale().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]);
-    var xDomain = function (domainData) {
-      return d3.extent(domainData, xValue);
-    };
-    var yDomain = function (domainData) {
-      return [
-        Math.min(0, d3.min(domainData)),
-        Math.max(0, d3.max(domainData))
-      ];
-    };
+    var xScale = null;
+    var yScale = null;
     var gTransform = function transform(d, i) {
       return "translate(" + xScale(xValue.call(this, d, i)) + "," + yScale(d.median) + ")";
     };
     var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
     // X Axis
-    var showXAxis = true;
-    var xAxisClass = "x axis";
-    var xAxisTextX = function () { return width / 2; };
-    var xAxisTextY = 30;
-    var xAxisTextDY = ".71em";
-    var xAxisTextAnchor = "middle";
-    var xAxisTitle = "";
+    var xAxis = {
+      show: true,
+      xAxisClass:  "x axis",
+      textX: function () { return width / 2; },
+      textY: 30,
+      textDY: ".71em",
+      textAnchor: "middle",
+      title: ""
+    };
 
     // Y Axis
-    var showYAxis = true;
-    var yAxisClass = "y axis";
-    var yAxisTextX = -height / 2;
-    var yAxisTextY = -60;
-    var yAxisTextDY = ".71em";
-    var yAxisTextAnchor = "middle";
-    var yAxisTitle = "";
+    var yAxis = {
+      show: true,
+      yAxisClass: "y axis",
+      textX: -height / 2,
+      textY: -60,
+      textDY: ".71em",
+      textAnchor: "middle",
+      title: ""
+    };
 
     // Box Options
     var boxWidth = 20;
@@ -60,49 +55,52 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        xScale.domain(xDomain && xDomain.call(this, data));
-        yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
+        xScale = xScale ? xScale : d3.time.scale()
+          .domain(d3.extent(data, xValue))
+          .range([0, width]);
+
+        yScale = yScale ? yScale : d3.scale.linear()
+          .domain([
+            Math.min(0, d3.min(mapDomain(data))),
+            Math.max(0, d3.max(mapDomain(data)))
+          ])
+          .range([height, 0]);
 
         var boxPlotFunc = boxPlot()
           .gTransform(gTransform)
-          .boxWidth(boxWidth)
-          .boxHeight(boxHeight)
-          .boxY(boxY)
-          .rangeY1(Y1)
-          .rangeY2(Y2)
-          .maxY1(Y1)
-          .maxY2(Y1)
-          .minY1(Y2)
-          .minY2(Y2);
+          .box({ width: boxWidth, height: boxHeight, y: boxY })
+          .range({ y1: Y1, y2: Y2 })
+          .max({ y1: Y1, y2: Y1 })
+          .min({ y1: Y2, y2: Y2});
 
         g.call(boxPlotFunc);
 
-        if (showXAxis) {
-          var xAxis = axis()
+        if (xAxis.show) {
+          var axisX = axis()
             .scale(xScale)
-            .gClass(xAxisClass)
+            .gClass(xAxis.xAxisClass)
             .transform("translate(0," + yScale.range()[0] + ")")
-            .titleX(xAxisTextX)
-            .titleY(xAxisTextY)
-            .titleDY(xAxisTextDY)
-            .titleAnchor(xAxisTextAnchor)
-            .title(xAxisTitle);
+            .titleX(xAxis.textX)
+            .titleY(xAxis.textY)
+            .titleDY(xAxis.textDY)
+            .titleAnchor(xAxis.textAnchor)
+            .title(xAxis.title);
 
-          g.call(xAxis);
+          g.call(axisX);
         }
 
-        if (showYAxis) {
-          var yAxis = axis()
+        if (yAxis.show) {
+          var axisY = axis()
             .scale(yScale)
             .orient("left")
-            .gClass(yAxisClass)
-            .titleX(yAxisTextX)
-            .titleY(yAxisTextY)
-            .titleDY(yAxisTextDY)
-            .titleAnchor(yAxisTextAnchor)
-            .title(yAxisTitle);
+            .gClass(yAxis.yAxisClass)
+            .titleX(yAxis.textX)
+            .titleY(yAxis.textY)
+            .titleDY(yAxis.textDY)
+            .titleAnchor(yAxis.textAnchor)
+            .title(yAxis.title);
 
-          g.call(yAxis);
+          g.call(axisY);
         }
       });
     }
@@ -182,18 +180,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.xDomain = function (_) {
-      if (!arguments.length) { return xDomain; }
-      xDomain = _;
-      return chart;
-    };
-
-    chart.yDomain = function (_) {
-      if (!arguments.length) { return yDomain; }
-      yDomain = _;
-      return chart;
-    };
-
     chart.gTransform = function (_) {
       if (!arguments.length) { return gTransform; }
       gTransform = _;
@@ -206,87 +192,27 @@ define(function (require) {
       return chart;
     };
 
-    chart.showXAxis = function (_) {
-      if (!arguments.length) { return showXAxis; }
-      showXAxis = _;
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return xAxis; }
+      xAxis.show = typeof _.show !== "undefined" ? _.show: xAxis.show;
+      xAxis.xAxisClass = typeof _.xAxisClass !== "undefined" ? _.xAxisClass : xAxis.xAxisClass;
+      xAxis.textX = typeof _.textX !== "undefined" ? _.textX : xAxis.textX;
+      xAxis.textY = typeof _.textY !== "undefined" ? _.textY : xAxis.textY;
+      xAxis.textDY = typeof _.textDY !== "undefined" ? _.textDY : xAxis.textDY;
+      xAxis.textAnchor = typeof _.textAnchor !== "undefined" ? _.textAnchor : xAxis.textAnchor;
+      xAxis.title = typeof _.title !== "undefined" ? _.title : xAxis.title;
       return chart;
     };
 
-    chart.showYAxis = function (_) {
-      if (!arguments.length) { return showYAxis; }
-      showYAxis = _;
-      return chart;
-    };
-
-    chart.xAxisTitle = function (_) {
-      if (!arguments.length) { return xAxisTitle; }
-      xAxisTitle = _;
-      return chart;
-    };
-
-    chart.yAxisTitle = function (_) {
-      if (!arguments.length) { return yAxisTitle; }
-      yAxisTitle = _;
-      return chart;
-    };
-
-    chart.xAxisClass = function (_) {
-      if (!arguments.length) { return xAxisClass; }
-      xAxisClass = _;
-      return chart;
-    };
-
-    chart.yAxisClass = function (_) {
-      if (!arguments.length) { return yAxisClass; }
-      yAxisClass = _;
-      return chart;
-    };
-
-    chart.xAxisTextX = function (_) {
-      if (!arguments.length) { return xAxisTextX; }
-      xAxisTextX = _;
-      return chart;
-    };
-
-    chart.yAxisTextX = function (_) {
-      if (!arguments.length) { return yAxisTextX; }
-      yAxisTextX = _;
-      return chart;
-    };
-
-    chart.xAxisTextY = function (_) {
-      if (!arguments.length) { return xAxisTextY; }
-      xAxisTextY = _;
-      return chart;
-    };
-
-    chart.yAxisTextY = function (_) {
-      if (!arguments.length) { return yAxisTextY; }
-      yAxisTextY = _;
-      return chart;
-    };
-
-    chart.xAxisTextDY = function (_) {
-      if (!arguments.length) { return xAxisTextDY; }
-      xAxisTextDY = _;
-      return chart;
-    };
-
-    chart.yAxisTextDY = function (_) {
-      if (!arguments.length) { return yAxisTextDY; }
-      yAxisTextDY = _;
-      return chart;
-    };
-
-    chart.xAxisTextAnchor = function (_) {
-      if (!arguments.length) { return xAxisTextAnchor; }
-      xAxisTextAnchor = _;
-      return chart;
-    };
-
-    chart.yAxisTextAnchor = function (_) {
-      if (!arguments.length) { return yAxisTextAnchor; }
-      yAxisTextAnchor = _;
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return yAxis; }
+      yAxis.show = typeof _.show !== "undefined" ? _.show: yAxis.show;
+      yAxis.yAxisClass = typeof _.yAxisClass !== "undefined" ? _.yAxisClass : yAxis.yAxisClass;
+      yAxis.textX = typeof _.textX !== "undefined" ? _.textX : yAxis.textX;
+      yAxis.textY = typeof _.textY !== "undefined" ? _.textY : yAxis.textY;
+      yAxis.textDY = typeof _.textDY !== "undefined" ? _.textDY : yAxis.textDY;
+      yAxis.textAnchor = typeof _.textAnchor !== "undefined" ? _.textAnchor : yAxis.textAnchor;
+      yAxis.title = typeof _.title !== "undefined" ? _.title : yAxis.title;
       return chart;
     };
 
