@@ -20,10 +20,10 @@ define(function (require) {
         images.exit().remove();
 
         images
-          .enter().append("image")
-          .attr("class", imageClass);
+          .enter().append("image");
 
         images
+          .attr("class", imageClass)
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)

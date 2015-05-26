@@ -25,11 +25,11 @@ define(function (require) {
 
         // Enter
         ellipses
-          .enter().append("ellipse")
-          .attr("class", ellipseClass);
+          .enter().append("ellipse");
 
         // Update
         ellipses
+          .attr("class", ellipseClass)
           .attr("fill", fill ? fill : colorFill)
           .attr("stroke", stroke ? stroke : colorFill)
           .attr("stroke-width", strokeWidth)

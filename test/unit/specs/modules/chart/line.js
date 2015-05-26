@@ -90,34 +90,5 @@ define(function (require) {
         chai.assert.equal(myChart.y().toString(), newY.toString());
       });
     });
-
-    describe("xAxis API", function () {
-      var isFunction = (typeof myChart.xAxis() === "function");
-      var newXAxis = "new X Axis";
-
-      it("should be a function", function () {
-        chai.assert.equal(isFunction, true);
-      });
-
-      it("should set the new x axis", function () {
-        myChart.xAxis(newXAxis);
-        chai.assert.equal(myChart.xAxis(), newXAxis);
-      });
-    });
-
-    describe("yAxis API", function () {
-      var isFunction = (typeof myChart.yAxis() === "function");
-      var newYAxis = "new Y Axis";
-
-      it("should be a function", function () {
-        chai.assert.equal(isFunction, true);
-      });
-
-      it("should set the new y axis", function () {
-        myChart.yAxis(newYAxis);
-        chai.assert.equal(myChart.yAxis(), newYAxis);
-      });
-    });
-
   });
 });

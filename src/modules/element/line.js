@@ -21,11 +21,11 @@ define(function (require) {
 
         // Enter
         lines
-          .enter().append("line")
-          .attr("class", lineClass);
+          .enter().append("line");
 
         // Update
         lines
+          .attr("class", lineClass)
           .attr("x1", x1)
           .attr("x2", x2)
           .attr("y1", y1)

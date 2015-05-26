@@ -24,11 +24,11 @@ define(function (require) {
 
         // Enter
         circles
-          .enter().append("circle")
-          .attr("class", circleClass);
+          .enter().append("circle");
 
         // Update
         circles
+          .attr("class", circleClass)
           .attr("fill", fill ? fill : colorFill)
           .attr("stroke", stroke ? stroke : colorFill)
           .attr("stroke-width", strokeWidth)
