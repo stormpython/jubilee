@@ -17,11 +17,13 @@ define(function (require) {
         var images = d3.select(this).selectAll("image")
           .data(data);
 
+        // Exit
         images.exit().remove();
 
-        images
-          .enter().append("image");
+        // Enter
+        images.enter().append("image");
 
+        // Update
         images
           .attr("class", imageClass)
           .attr("x", x)

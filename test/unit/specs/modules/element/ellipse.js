@@ -52,7 +52,6 @@ define(function (require) {
 
         fixture.selectAll("ellipse")
           .each(function (d, i) {
-            console.log(d, i);
             chai.assert.equal(this.getAttribute("cx"), d.x);
           });
       });
