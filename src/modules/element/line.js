@@ -6,22 +6,23 @@ define(function (require) {
     var x2 = null;
     var y1 = null;
     var y2 = null;
+    var color = d3.scale.category10();
+
     var lineClass = "line";
-    var stroke = "black";
+    var stroke = null;
     var strokeWidth = 2;
     var opacity = 1;
 
     function element(selection) {
       selection.each(function (data, i) {
-        var lines = d3.select(this).selectAll("lines")
+        var lines = d3.select(this).selectAll("line")
           .data(data);
 
         // Exit
         lines.exit().remove();
 
         // Enter
-        lines
-          .enter().append("line");
+        lines.enter().append("line");
 
         // Update
         lines
@@ -30,10 +31,14 @@ define(function (require) {
           .attr("x2", x2)
           .attr("y1", y1)
           .attr("y2", y2)
-          .attr("stroke", stroke)
+          .attr("stroke", stroke ? stroke : colorFill)
           .attr("stroke-width", strokeWidth)
           .style("opacity", opacity);
       });
+    }
+
+    function colorFill(d, i) {
+      return color(d, i);
     }
 
     element.x1 = function (_) {
@@ -57,6 +62,12 @@ define(function (require) {
     element.y2 = function (_) {
       if (!arguments.length) { return y2; }
       y2 = _;
+      return element;
+    };
+
+    element.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
       return element;
     };
 

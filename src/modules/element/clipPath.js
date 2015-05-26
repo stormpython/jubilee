@@ -6,13 +6,22 @@ define(function (require) {
     var transform = "translate(0,0)";
     var x = 0;
     var y = 0;
-    var width = 50;
-    var height = 50;
+    var width = 0;
+    var height = 0;
 
     function element(selection) {
-      selection.each(function () {
-        d3.select(this)
-          .append("clipPath")
+      selection.each(function (data, i) {
+        var clipPath = d3.select(this).select("clipPath")
+          .data(data);
+
+        // Exit
+        clipPath.exit().remove();
+
+        // Enter
+        clipPath.enter().append("clipPath");
+
+        // Update
+        clipPath
           .attr("id", id)
           .attr("transform", transform)
           .append("rect")

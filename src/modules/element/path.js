@@ -16,9 +16,14 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, i) {
-        d3.select(this).selectAll("path")
-          .data(accessor)
-          .enter().append("path")
+        var path = d3.select(this).selectAll("path")
+          .data(data, accessor);
+
+        path.exit().remove();
+
+        path.enter().append("path");
+
+        path
           .attr("transform", transform)
           .attr("class", pathClass)
           .attr("fill", fill)
