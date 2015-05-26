@@ -20,7 +20,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data, i) {
         var bars = d3.select(this).selectAll("rect")
-          .data(function (d) { return d; });
+          .data(data);
 
         bars.exit().remove();
 

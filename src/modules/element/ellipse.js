@@ -17,7 +17,7 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, i) {
-        var ellipses = d3.select(this).selectAll("ellipsePoints")
+        var ellipses = d3.select(this).selectAll("ellipse")
           .data(data);
 
         // Exit

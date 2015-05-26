@@ -44,10 +44,6 @@ define(function (require) {
         element.cx(defaultCX);
       });
 
-      afterEach(function () {
-        element.cx(defaultCX);
-      });
-
       it("should get the property", function () {
         chai.assert.equal(element.cx(), defaultCX);
       });
@@ -59,10 +55,12 @@ define(function (require) {
       });
 
       it("should set the proper value of the DOM attribute", function () {
+        element.cx(defaultCX);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
-          .each(function (d) {
+          .each(function (d, i) {
+            console.log(d, i);
             chai.assert.equal(this.getAttribute("cx"), d.x);
           });
       });
@@ -73,10 +71,6 @@ define(function (require) {
 
       beforeEach(function () {
         defaultCY = function (d) { return d.y; };
-        element.cy(defaultCY);
-      });
-
-      afterEach(function () {
         element.cy(defaultCY);
       });
 
@@ -91,10 +85,11 @@ define(function (require) {
       });
 
       it("should set the proper value of the DOM attribute", function () {
+        element.cy(defaultCY);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
-          .each(function (d) {
+          .each(function (d, i) {
             chai.assert.equal(this.getAttribute("cy"), d.y);
           });
       });
@@ -105,10 +100,6 @@ define(function (require) {
 
       beforeEach(function () {
         defaultRX = 20;
-        element.rx(defaultRX);
-      });
-
-      afterEach(function () {
         element.rx(defaultRX);
       });
 
@@ -123,6 +114,7 @@ define(function (require) {
       });
 
       it("should set the proper value of the DOM attribute", function () {
+        element.rx(defaultRX);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
@@ -140,10 +132,6 @@ define(function (require) {
         element.ry(defaultRY);
       });
 
-      afterEach(function () {
-        element.ry(defaultRY);
-      });
-
       it("should get the property", function () {
         chai.assert.equal(element.ry(), defaultRY);
       });
@@ -155,6 +143,7 @@ define(function (require) {
       });
 
       it("should set the proper value of the DOM attribute", function () {
+        element.ry(defaultRY);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
@@ -172,10 +161,6 @@ define(function (require) {
         element.ellipseClass(defaultClass);
       });
 
-      afterEach(function () {
-        element.ellipseClass(defaultClass);
-      });
-
       it("should get the property", function () {
         chai.assert.equal(element.ellipseClass(), defaultClass);
       });
@@ -187,6 +172,7 @@ define(function (require) {
       });
 
       it("should set the proper value of the DOM attribute", function () {
+        element.ellipseClass(defaultClass);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
@@ -204,10 +190,6 @@ define(function (require) {
         element.fill(defaultFill);
       });
 
-      afterEach(function () {
-        element.fill(defaultFill);
-      });
-
       it("should get the property", function () {
         chai.assert.equal(element.fill(), defaultFill);
       });
@@ -219,6 +201,7 @@ define(function (require) {
       });
 
       it("should set the proper value of the DOM attribute", function () {
+        element.fill(defaultFill);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
@@ -236,10 +219,6 @@ define(function (require) {
         element.opacity(defaultOpacity);
       });
 
-      afterEach(function () {
-        element.opacity(defaultOpacity);
-      });
-
       it("should get the property", function () {
         chai.assert.equal(element.opacity(), defaultOpacity);
       });
@@ -251,6 +230,7 @@ define(function (require) {
       });
 
       it("should set the proper value of the DOM attribute", function () {
+        element.opacity(defaultOpacity);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
@@ -268,10 +248,6 @@ define(function (require) {
         element.color(defaultColor);
       });
 
-      afterEach(function () {
-        element.color(defaultColor);
-      });
-
       it("should get the property", function () {
         chai.assert.equal(element.color(), defaultColor);
       });
@@ -283,6 +259,7 @@ define(function (require) {
       });
 
       it("should set the proper value of the DOM attribute", function () {
+        element.color(defaultColor);
         fixture.call(element); // Redraw
         var color = element.color();
 
@@ -302,10 +279,6 @@ define(function (require) {
         element.stroke(defaultStroke);
       });
 
-      afterEach(function () {
-        element.stroke(defaultStroke);
-      });
-
       it("should get the property", function () {
         chai.assert.equal(element.stroke(), defaultStroke);
       });
@@ -317,6 +290,7 @@ define(function (require) {
       });
 
       it("should set the proper value of the DOM attribute", function () {
+        element.stroke(defaultStroke);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
@@ -334,10 +308,6 @@ define(function (require) {
         element.strokeWidth(defaultStrokeWidth);
       });
 
-      afterEach(function () {
-        element.strokeWidth(defaultStrokeWidth);
-      });
-
       it("should get the property", function () {
         chai.assert.equal(element.strokeWidth(), defaultStrokeWidth);
       });
@@ -349,6 +319,7 @@ define(function (require) {
       });
 
       it("should set the proper value of the DOM attribute", function () {
+        element.strokeWidth(defaultStrokeWidth);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
