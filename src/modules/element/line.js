@@ -11,7 +11,7 @@ define(function (require) {
     var lineClass = "line";
     var stroke = null;
     var strokeWidth = 2;
-    var opacity = 1;
+    var opacity = null;
 
     function element(selection) {
       selection.each(function (data, i) {

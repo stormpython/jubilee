@@ -12,12 +12,12 @@ define(function (require) {
     var fill = "none";
     var stroke = function (d, i) { return color(i); };
     var strokeWidth = 1;
-    var opacity = 1;
+    var opacity = null;
 
     function element(selection) {
       selection.each(function (data, i) {
         var path = d3.select(this).selectAll("path")
-          .data(data, accessor);
+          .data(accessor);
 
         path.exit().remove();
 

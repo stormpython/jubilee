@@ -13,7 +13,7 @@ define(function (require) {
     var fill = null;
     var stroke = null;
     var strokeWidth = 0;
-    var opacity = 1;
+    var opacity = null;
 
     function element(selection) {
       selection.each(function (data, i) {
