@@ -24,8 +24,7 @@ define(function (require) {
         ellipses.exit().remove();
 
         // Enter
-        ellipses
-          .enter().append("ellipse");
+        ellipses.enter().append("ellipse");
 
         // Update
         ellipses
@@ -42,7 +41,7 @@ define(function (require) {
     }
 
     function colorFill(d, i) {
-      return color(i);
+      return color(d, i);
     }
 
     element.cx = function (_) {
