@@ -2,15 +2,7 @@ define(function (require) {
   describe("Rect SVG Tests", function () {
     var rect = require("src/modules/element/rect");
     var d3fixture = require("fixtures/fixture");
-    var generateData = function () {
-      return Array.apply(null, new Array(10))
-        .map(function (val, i) {
-          return {
-            x: +(Math.random() * 100).toFixed(0),
-            y: +(Math.random() * 100).toFixed(0)
-          };
-        });
-    };
+    var data = require("fixtures/data_generator")(10);
     var element = rect();
     var fixture;
 
@@ -22,7 +14,7 @@ define(function (require) {
         .attr("height", 500);
 
       fixture
-        .datum(generateData())
+        .datum(data)
         .call(element);
     });
 
