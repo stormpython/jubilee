@@ -20,7 +20,7 @@ define(function (require) {
     });
 
     describe("width API", function () {
-      var defaultWidth = 690;
+      var defaultWidth = 760;
       var newWidth = 960;
 
       it("should return the default width", function () {
@@ -35,7 +35,7 @@ define(function (require) {
     });
 
     describe("height API", function () {
-      var defaultHeight = 80;
+      var defaultHeight = 120;
       var newHeight = 500;
 
       it("should return the default height", function () {

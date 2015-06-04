@@ -96,8 +96,8 @@ define(function (require) {
       });
 
       it("should set the property", function () {
-        element.radius("test");
-        chai.assert.equal(element.radius(), "test");
+        element.radius(10);
+        chai.assert.equal(element.radius(), 10);
       });
 
       it("should set the proper value of the DOM attribute", function () {
