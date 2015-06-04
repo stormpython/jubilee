@@ -8,17 +8,13 @@ define(function (require) {
     beforeEach(function () {
       fixture = d3fixture;
 
-      fixture.append("svg")
-        .attr("width", 500)
-        .attr("height", 500);
-
       fixture
         .datum([{}]) // Only render 1 clippath
         .call(element);
     });
 
     afterEach(function () {
-      fixture.remove();
+      fixture.selectAll("*").remove();
       fixture = null;
     });
 

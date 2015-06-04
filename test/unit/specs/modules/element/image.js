@@ -9,17 +9,13 @@ define(function (require) {
     beforeEach(function () {
       fixture = d3fixture;
 
-      fixture.append("svg")
-        .attr("width", 500)
-        .attr("height", 500);
-
       fixture
         .datum(data)
         .call(element);
     });
 
     afterEach(function () {
-      fixture.remove();
+      fixture.selectAll("*").remove();
       fixture = null;
     });
 
