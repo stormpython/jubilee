@@ -107,7 +107,7 @@ define(function (require) {
         element.x(defaultX);
         fixture.call(element); // Redraw
 
-        fixture.selectAll("rect")
+        fixture.selectAll("clippath")
           .each(function () {
             chai.assert.equal(this.getAttribute("x"), element.x());
           });
@@ -136,7 +136,7 @@ define(function (require) {
         element.y(defaultY);
         fixture.call(element); // Redraw
 
-        fixture.selectAll("rect")
+        fixture.selectAll("clippath")
           .each(function () {
             chai.assert.equal(this.getAttribute("y"), element.y());
           });
@@ -165,7 +165,7 @@ define(function (require) {
         element.width(defaultWidth);
         fixture.call(element); // Redraw
 
-        fixture.selectAll("rect")
+        fixture.selectAll("clippath")
           .each(function () {
             chai.assert.equal(this.getAttribute("width"), element.width());
           });
@@ -194,7 +194,7 @@ define(function (require) {
         element.height(defaultHeight);
         fixture.call(element); // Redraw
 
-        fixture.selectAll("rect")
+        fixture.selectAll("clippath")
           .each(function () {
             chai.assert.equal(this.getAttribute("height"), element.height());
           });
