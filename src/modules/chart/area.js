@@ -55,7 +55,7 @@ define(function (require) {
 
         var areaPath = path()
           .pathGenerator(area)
-          .pathClass(areaClass)
+          .cssClass(areaClass)
           .stroke(areaStroke)
           .fill(areaFill);
 
@@ -71,15 +71,15 @@ define(function (require) {
           .range([height, 0])
           .nice();
 
-        g.call(areaPath);
+        g.append("g").call(areaPath);
 
         if (addLines) {
           var linePath = path()
             .pathGenerator(line)
-            .pathClass(lineClass)
+            .cssClass(lineClass)
             .stroke(lineStroke);
 
-          g.call(linePath);
+          g.append("g").call(linePath);
         }
 
         if (showXAxis) {

@@ -7,7 +7,7 @@ define(function (require) {
     var accessor = function (d) { return d; };
 
     // Options
-    var pathClass = "path";
+    var cssClass = "path";
     var transform = "translate(0,0)";
     var fill = "none";
     var stroke = function (d, i) { return color(i); };
@@ -25,7 +25,7 @@ define(function (require) {
 
         path
           .attr("transform", transform)
-          .attr("class", pathClass)
+          .attr("class", cssClass)
           .attr("fill", fill)
           .attr("stroke", stroke)
           .attr("stroke-width", strokeWidth)
@@ -52,9 +52,9 @@ define(function (require) {
       return element;
     };
 
-    element.pathClass = function (_) {
-      if (!arguments.length) { return pathClass; }
-      pathClass = _;
+    element.cssClass = function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
       return element;
     };
 

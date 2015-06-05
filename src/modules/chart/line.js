@@ -60,7 +60,7 @@ define(function (require) {
 
         var linePath = path()
           .pathGenerator(line)
-          .pathClass(lineClass)
+          .cssClass(lineClass)
           .stroke(lineStroke);
 
         xScale = xScale ? xScale : d3.time.scale.utc()

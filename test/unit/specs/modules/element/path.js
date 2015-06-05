@@ -4,10 +4,12 @@ define(function (require) {
     var d3fixture = require("fixtures/fixture");
     var pathGenerator = require("fixtures/path_generator")("line");
     var data = require("fixtures/data_generator")(10);
-    var element = path().pathGenerator(pathGenerator);
+    var element;
     var fixture;
 
     beforeEach(function () {
+      element = path().pathGenerator(pathGenerator);
+
       fixture = d3fixture;
 
       fixture
@@ -30,7 +32,7 @@ define(function (require) {
       var newGenerator;
 
       beforeEach(function () {
-        defaultGenerator = require("fixtures/path_generator")();
+        defaultGenerator = require("fixtures/path_generator")("line");
         areaGenerator = require("fixtures/path_generator")("area");
         element.pathGenerator(defaultGenerator);
       });
@@ -50,6 +52,7 @@ define(function (require) {
 
         fixture.selectAll("path")
           .each(function (d) {
+            console.log(this);
             chai.assert.equal(this.getAttribute("d"), defaultGenerator(d));
           });
       });
@@ -80,7 +83,9 @@ define(function (require) {
 
       beforeEach(function () {
         defaultTransform = "translate(0,0)";
-        newTransform = "translate(20,30)";
+        newTransform = function (d) {
+          return "transform(" + d.x + "," + d.y + ")";
+        };
       });
 
       it("should get the property", function () {
@@ -104,31 +109,31 @@ define(function (require) {
       });
     });
 
-    describe("pathClass API", function () {
+    describe("cssClass API", function () {
       var defaultClass;
 
       beforeEach(function () {
         defaultClass = "paths";
-        element.pathClass(defaultClass);
+        element.cssClass(defaultClass);
       });
 
       it("should get the property", function () {
-        chai.assert.equal(element.pathClass(), defaultClass);
+        chai.assert.equal(element.cssClass(), defaultClass);
       });
 
       it("should set the property", function () {
         var newClass = "lines";
-        element.pathClass(newClass);
-        chai.assert.equal(element.pathClass(), newClass);
+        element.cssClass(newClass);
+        chai.assert.equal(element.cssClass(), newClass);
       });
 
       it("should set the proper value of the DOM attribute", function () {
-        element.pathClass(defaultClass);
+        element.cssClass(defaultClass);
         fixture.call(element);
 
         fixture.selectAll("path")
           .each(function () {
-            chai.assert.equal(this.getAttribute("class"), element.pathClass());
+            chai.assert.equal(this.getAttribute("class"), element.cssClass());
           });
       });
     });
@@ -216,7 +221,6 @@ define(function (require) {
 
         fixture.selectAll("path")
           .each(function () {
-            chai.assert.equal(this.getAttribute("fill"), color());
             chai.assert.equal(this.getAttribute("stroke"), color());
           });
       });
