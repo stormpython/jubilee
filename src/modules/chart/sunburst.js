@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var path = require("src/modules/element/path");
+  var path = require("src/modules/element/svg/path");
 
   return function sunburst() {
     // Chart options

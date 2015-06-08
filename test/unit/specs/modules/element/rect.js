@@ -1,6 +1,6 @@
 define(function (require) {
   describe("Rect SVG Tests", function () {
-    var rect = require("src/modules/element/rect");
+    var rect = require("src/modules/element/svg/rect");
     var d3fixture = require("fixtures/fixture");
     var data = require("fixtures/data_generator")(10);
     var element = rect();

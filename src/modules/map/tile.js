@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var image = require("src/modules/element/image");
+  var image = require("src/modules/element/svg/image");
 
   return function tile() {
     var width = 960;

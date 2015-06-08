@@ -1,6 +1,6 @@
 define(function (require) {
   describe("Line SVG Tests", function () {
-    var line = require("src/modules/element/line");
+    var line = require("src/modules/element/svg/line");
     var d3fixture = require("fixtures/fixture");
     var data = require("fixtures/data_generator")(10);
     var element = line();

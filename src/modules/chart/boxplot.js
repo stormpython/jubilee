@@ -65,7 +65,7 @@ define(function (require) {
           .range([height, 0]);
 
         var boxPlotFunc = boxPlot()
-          .gTransform(transform ? transform : gTransform)
+          .transform(transform ? transform : gTransform)
           .box({ width: boxWidth, height: boxHeight, y: boxY })
           .range({ y1: Y1, y2: Y2 })
           .max({ y1: Y1, y2: Y1 })

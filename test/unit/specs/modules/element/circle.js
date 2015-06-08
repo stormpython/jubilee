@@ -1,6 +1,6 @@
 define(function (require) {
   describe("Circle SVG Tests", function () {
-    var circle = require("src/modules/element/circle");
+    var circle = require("src/modules/element/svg/circle");
     var d3fixture = require("fixtures/fixture");
     var data = require("fixtures/data_generator")(10);
     var element = circle();

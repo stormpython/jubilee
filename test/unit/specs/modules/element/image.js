@@ -1,6 +1,6 @@
 define(function (require) {
   describe("Image SVG Tests", function () {
-    var image = require("src/modules/element/image");
+    var image = require("src/modules/element/svg/image");
     var d3fixture = require("fixtures/fixture");
     var data = require("fixtures/data_generator")(10);
     var element = image();

@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
-  var circle = require("src/modules/element/circle");
-  var clipPath = require("src/modules/element/clipPath");
+  var circle = require("src/modules/element/svg/circle");
+  var clipPath = require("src/modules/element/svg/clipPath");
   var axis = require("src/modules/component/axis/axis");
 
   return function scatterPlot() {

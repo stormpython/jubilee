@@ -1,9 +1,9 @@
 define(function (require) {
   var d3 = require("d3");
   var axis = require("src/modules/component/axis/axis");
-  var path = require("src/modules/element/path");
-  var clipPath = require("src/modules/element/clipPath");
-  var circle = require("src/modules/element/circle");
+  var path = require("src/modules/element/svg/path");
+  var clipPath = require("src/modules/element/svg/clipPath");
+  var circle = require("src/modules/element/svg/circle");
 
   return function lineChart() {
     // Chart options

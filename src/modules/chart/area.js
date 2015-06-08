@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var path = require("src/modules/element/path");
+  var path = require("src/modules/element/svg/path");
   var axis = require("src/modules/component/axis/axis");
 
   return function areaChart() {

@@ -1,6 +1,6 @@
 define(function (require) {
   describe("Path SVG Tests", function () {
-    var path = require("src/modules/element/path");
+    var path = require("src/modules/element/svg/path");
     var d3fixture = require("fixtures/fixture");
     var pathGenerator = require("fixtures/path_generator")("line");
     var data = require("fixtures/data_generator")(10);

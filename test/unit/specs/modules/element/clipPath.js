@@ -1,6 +1,6 @@
 define(function (require) {
   describe("ClipPath SVG Tests", function () {
-    var clipPath = require("src/modules/element/clipPath");
+    var clipPath = require("src/modules/element/svg/clipPath");
     var d3fixture = require("fixtures/fixture");
     var element = clipPath();
     var fixture;

@@ -27,13 +27,13 @@ define(function (require) {
       boxplot: require("src/modules/component/boxplot/boxplot")
     },
     element: {
-      circle: require("src/modules/element/circle"),
-      clipPath: require("src/modules/element/clipPath"),
-      ellipse: require("src/modules/element/ellipse"),
-      image: require("src/modules/element/image"),
-      line: require("src/modules/element/line"),
-      path: require("src/modules/element/path"),
-      rect: require("src/modules/element/rect")
+      circle: require("src/modules/element/svg/circle"),
+      clipPath: require("src/modules/element/svg/clipPath"),
+      ellipse: require("src/modules/element/svg/ellipse"),
+      image: require("src/modules/element/svg/image"),
+      line: require("src/modules/element/svg/line"),
+      path: require("src/modules/element/svg/path"),
+      rect: require("src/modules/element/svg/rect")
     }
   };
 });
