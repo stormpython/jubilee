@@ -5,21 +5,40 @@ define(function (require) {
 
   return function xzyPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760 - margin.left - margin.right;
-    var height = 120 - margin.top - margin.bottom;
-    var xScale = null;
-    var yScale = null;
-    var zScale = null;
+    var width = 760;
+    var height = 120;
     var elements = null;
-    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
-    var showXAxis = true;
-    var xAxisTitle = "";
-    var showYAxis = true;
-    var yAxisTitle = "";
-    var showZAxis = true;
-    var zAxisTitle = "";
+    var xAxis = {
+      cssClass: "x axis",
+      show: true,
+      scale: null,
+      title: "",
+      y: 6,
+      dy: ".71em",
+      titleAnchor: "end"
+    };
+
+    var yAxis = {
+      cssClass: "y axis",
+      show: true,
+      scale: null,
+      title: "",
+      y: 6,
+      dy: ".71em",
+      titleAnchor: "end"
+    };
+
+    var zAxis = {
+      cssClass: "z axis",
+      show: true,
+      scale: null,
+      title: "",
+      y: 6,
+      dy: ".71em",
+      titleAnchor: "end"
+    };
 
     function chart(selection) {
       selection.each(function (data) {
@@ -32,51 +51,52 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        if (typeof elements === "function") { g.call(elements); }
-        if (elements instanceof Array) {
-          elements.forEach(function (element) {
-            if (typeof element === "function") { g.call(element); }
-          });
+        elements = !(elements instanceof Array) ? [elements] : elements;
+
+        elements.forEach(function (element) {
+          if (typeof element === "function") {
+            g.append("g").call(element);
+          }
+        });
+
+        if (xAxis.show) {
+          var axisX = axis()
+            .scale(xAxis.scale)
+            .gClass(xAxis.cssClass)
+            .transform("translate(0," + yAxis.scale.range()[0] + ")")
+            .titleY(xAxis.y)
+            .titleDY(xAxis.dy)
+            .titleAnchor(xAxis.titleAnchor)
+            .title(xAxis.title);
+
+          g.call(axisX);
         }
 
-        if (showXAxis) {
-          var xAxis = axis()
-            .scale(xScale)
-            .gClass("x axis")
-            .transform("translate(0," + yScale.range()[0] + ")")
-            .titleY(6)
-            .titleDY(".71em")
-            .titleAnchor("end")
-            .title(xAxisTitle);
-
-          g.call(xAxis);
-        }
-
-        if (showYAxis) {
-          var yAxis = axis()
-            .scale(yScale)
+        if (yAxis.show) {
+          var axisY = axis()
+            .scale(yAxis.scale)
             .orient("left")
-            .gClass("y axis")
-            .titleY(6)
-            .titleDY(".71em")
-            .titleAnchor("end")
-            .title(yAxisTitle);
+            .gClass(yAxis.cssClass)
+            .titleY(yAxis.y)
+            .titleDY(yAxis.dy)
+            .titleAnchor(yAxis.titleAnchor)
+            .title(yAxis.title);
 
-          g.call(yAxis);
+          g.call(axisY);
         }
 
-        if (showZAxis) {
-          var zAxis = axis()
-            .scale(zScale)
+        if (zAxis.show) {
+          var axisZ = axis()
+            .scale(zAxis.scale)
             .orient("right")
-            .gClass("z axis")
-            .transform("translate(" + xScale.range()[1] + "," + "0)")
-            .titleY(6)
-            .titleDY(".71em")
-            .titleAnchor("end")
-            .title(zAxisTitle);
+            .gClass(zAxis.cssClass)
+            .transform("translate(" + xAxis.scale.range()[1] + "," + "0)")
+            .titleY(zAxis.y)
+            .titleDY(zAxis.dy)
+            .titleAnchor(zAxis.titleAnchor)
+            .title(zAxis.title);
 
-          g.call(zAxis);
+          g.call(axisZ);
         }
       });
     }
@@ -102,21 +122,36 @@ define(function (require) {
       return chart;
     };
 
-    chart.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return xAxis; }
+      xAxis.cssClass = typeof _.cssClass !== "undefined" ? _.cssClass : xAxis.cssClass;
+      xAxis.scale = typeof _.scale !== "undefined" ? _.scale : xAxis.scale;
+      xAxis.y = typeof _.y !== "undefined" ? _.y : xAxis.y;
+      xAxis.dy = typeof _.dy !== "undefined" ? _.dy : xAxis.dy;
+      xAxis.titleAnchor = typeof _.titleAnchor !== "undefined" ? _.titleAnchor : xAxis.titleAnchor;
+      xAxis.title = typeof _.title !== "undefined" ? _.title : xAxis.title;
       return chart;
     };
 
-    chart.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
+    chart.yAxis = function (_) {
+      if (!arguments.length) { return yAxis; }
+      yAxis.cssClass = typeof _.cssClass !== "undefined" ? _.cssClass : yAxis.cssClass;
+      yAxis.scale = typeof _.scale !== "undefined" ? _.scale : yAxis.scale;
+      yAxis.y = typeof _.y !== "undefined" ? _.y : yAxis.y;
+      yAxis.dy = typeof _.dy !== "undefined" ? _.dy : yAxis.dy;
+      yAxis.titleAnchor = typeof _.titleAnchor !== "undefined" ? _.titleAnchor : yAxis.titleAnchor;
+      yAxis.title = typeof _.title !== "undefined" ? _.title : yAxis.title;
       return chart;
     };
 
-    chart.zScale = function (_) {
-      if (!arguments.length) { return zScale; }
-      zScale = _;
+    chart.zAxis = function (_) {
+      if (!arguments.length) { return zAxis; }
+      zAxis.cssClass = typeof _.cssClass !== "undefined" ? _.cssClass : zAxis.cssClass;
+      zAxis.scale = typeof _.scale !== "undefined" ? _.scale : zAxis.scale;
+      zAxis.y = typeof _.y !== "undefined" ? _.y : zAxis.y;
+      zAxis.dy = typeof _.dy !== "undefined" ? _.dy : zAxis.dy;
+      zAxis.titleAnchor = typeof _.titleAnchor !== "undefined" ? _.titleAnchor : zAxis.titleAnchor;
+      zAxis.title = typeof _.title !== "undefined" ? _.title : zAxis.title;
       return chart;
     };
 
@@ -126,43 +161,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.showXAxis = function (_) {
-      if (!arguments.length) { return showXAxis; }
-      showXAxis = _;
-      return chart;
-    };
-
-    chart.showYAxis = function (_) {
-      if (!arguments.length) { return showYAxis; }
-      showYAxis = _;
-      return chart;
-    };
-
-    chart.showZAxis = function (_) {
-      if (!arguments.length) { return showZAxis; }
-      showZAxis = _;
-      return chart;
-    };
-
-    chart.xAxisTitle = function (_) {
-      if (!arguments.length) { return xAxisTitle; }
-      xAxisTitle = _;
-      return chart;
-    };
-
-    chart.yAxisTitle = function (_) {
-      if (!arguments.length) { return yAxisTitle; }
-      yAxisTitle = _;
-      return chart;
-    };
-
-    chart.zAxisTitle = function (_) {
-      if (!arguments.length) { return zAxisTitle; }
-      zAxisTitle = _;
-      return chart;
-    };
-
-    d3.rebind(chart, dispatch, "on");
     return chart;
   };
 });

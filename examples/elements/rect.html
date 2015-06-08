@@ -40,6 +40,7 @@
     var yScale = d3.scale.linear().domain([0, 141]).range([height, 0]);
 
     var verticalBars = rect()
+      .data(data.series)
       .x(function (d) { return xScale(d.x); })
       .y(function (d) { return yScale(d.y); })
       .width(function () { return width / 6; })
@@ -49,7 +50,6 @@
       .append("svg")
       .attr("width", width)
       .attr("height", height)
-      .datum(data.series)
       .call(verticalBars);
 
     var testData = [
@@ -84,7 +84,7 @@
       .enter().append("g")
       .attr("class", "group");
 
-    g.call(verticalBars.y(function (d) { return yScale(d.y + d.y0); }));
+    g.call(verticalBars.data(null).y(function (d) { return yScale(d.y + d.y0); }));
   });
 </script>
 </body>

@@ -6,9 +6,10 @@ define(function (require) {
     var cy = function (d) { return d.y; };
     var radius = 5;
     var color = d3.scale.category10();
+    var values = null;
 
     // Options
-    var circleClass = "circles";
+    var cssClass = "circles";
     var fill = null;
     var stroke = null;
     var strokeWidth = 0;
@@ -17,7 +18,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data, i) {
         var circles = d3.select(this).selectAll("circle")
-          .data(data);
+          .data(values ? values : data);
 
         // Exit
         circles.exit().remove();
@@ -28,7 +29,7 @@ define(function (require) {
 
         // Update
         circles
-          .attr("class", circleClass)
+          .attr("class", cssClass)
           .attr("fill", fill ? fill : colorFill)
           .attr("stroke", stroke ? stroke : colorFill)
           .attr("stroke-width", strokeWidth)
@@ -42,6 +43,12 @@ define(function (require) {
     function colorFill (d, i) {
       return color(d, i);
     }
+
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
 
     element.cx = function (_) {
       if (!arguments.length) { return cx; }
@@ -61,9 +68,9 @@ define(function (require) {
       return element;
     };
 
-    element.circleClass = function (_) {
-      if (!arguments.length) { return circleClass; }
-      circleClass = _;
+    element.cssClass = function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
       return element;
     };
 

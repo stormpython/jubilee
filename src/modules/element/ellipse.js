@@ -7,9 +7,10 @@ define(function (require) {
     var rx = 20;
     var ry = 20;
     var color = d3.scale.category20c();
+    var values = null;
 
     // Options
-    var ellipseClass = "ellipses";
+    var cssClass = "ellipses";
     var fill = null;
     var stroke = null;
     var strokeWidth = 0;
@@ -18,7 +19,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data, i) {
         var ellipses = d3.select(this).selectAll("ellipse")
-          .data(data);
+          .data(values ? values : data);
 
         // Exit
         ellipses.exit().remove();
@@ -28,7 +29,7 @@ define(function (require) {
 
         // Update
         ellipses
-          .attr("class", ellipseClass)
+          .attr("class", cssClass)
           .attr("fill", fill ? fill : colorFill)
           .attr("stroke", stroke ? stroke : colorFill)
           .attr("stroke-width", strokeWidth)
@@ -43,6 +44,12 @@ define(function (require) {
     function colorFill(d, i) {
       return color(d, i);
     }
+    
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
 
     element.cx = function (_) {
       if (!arguments.length) { return cx; }
@@ -68,9 +75,9 @@ define(function (require) {
       return element;
     };
 
-    element.ellipseClass = function (_) {
-      if (!arguments.length) { return ellipseClass; }
-      ellipseClass = _;
+    element.cssClass = function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
       return element;
     };
 

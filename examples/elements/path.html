@@ -51,6 +51,7 @@
       .interpolate("cardinal");
 
     var element = jubilee.element.path()
+      .data(data)
       .pathGenerator(area)
       .cssClass("area")
       .stroke(function (d, i) { return color(i); })
@@ -62,7 +63,6 @@
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .datum(data)
       .call(element);
   });
 </script>

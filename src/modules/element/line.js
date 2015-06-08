@@ -7,8 +7,9 @@ define(function (require) {
     var y1 = null;
     var y2 = null;
     var color = d3.scale.category10();
+    var values = null;
 
-    var lineClass = "line";
+    var cssClass = "line";
     var stroke = null;
     var strokeWidth = 2;
     var opacity = null;
@@ -16,7 +17,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data, i) {
         var lines = d3.select(this).selectAll("line")
-          .data(data);
+          .data(values ? values : data);
 
         // Exit
         lines.exit().remove();
@@ -26,7 +27,7 @@ define(function (require) {
 
         // Update
         lines
-          .attr("class", lineClass)
+          .attr("class", cssClass)
           .attr("x1", x1)
           .attr("x2", x2)
           .attr("y1", y1)
@@ -41,6 +42,12 @@ define(function (require) {
       return color(d, i);
     }
 
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
+    
     element.x1 = function (_) {
       if (!arguments.length) { return x1; }
       x1 = _;
@@ -71,9 +78,9 @@ define(function (require) {
       return element;
     };
 
-    element.lineClass = function (_) {
-      if (!arguments.length) { return lineClass; }
-      lineClass = _;
+    element.cssClass = function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
       return element;
     };
 

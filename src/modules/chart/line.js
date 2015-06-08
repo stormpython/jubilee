@@ -115,12 +115,13 @@ define(function (require) {
             .cy(Y)
             .color(color)
             .radius(circleRadius)
-            .circleClass(circleClass)
+            .cssClass(circleClass)
             .fill(circleFill)
             .stroke(circleStroke ? circleStroke : circleFill)
             .strokeWidth(circleStrokeWidth);
 
           g.call(clippath);
+          
           g.append("g")
             .attr("clip-path", "url(#" + clippath.id() + ")")
             .selectAll("gCircles")

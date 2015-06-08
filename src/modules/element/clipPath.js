@@ -8,11 +8,12 @@ define(function (require) {
     var y = 0;
     var width = 0;
     var height = 0;
+    var values = null;
 
     function element(selection) {
       selection.each(function (data, i) {
         var clipPath = d3.select(this).select("clipPath")
-          .data(data);
+          .data(values ? values : data);
 
         // Exit
         clipPath.exit().remove();
@@ -37,6 +38,12 @@ define(function (require) {
       return "uniqueId_" + randomNumber;
     }
 
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
+    
     element.id = function (_) {
       if (!arguments.length) { return id; }
       id = _;

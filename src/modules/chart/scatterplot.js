@@ -1,24 +1,19 @@
 define(function (require) {
   var d3 = require("d3");
   var circle = require("src/modules/element/circle");
+  var clipPath = require("src/modules/element/clipPath");
   var axis = require("src/modules/component/axis/axis");
 
   return function scatterPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760 - margin.left - margin.right;
-    var height = 620 - margin.top - margin.bottom;
+    var width = 760;
+    var height = 500;
     var color = d3.scale.category20c();
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var zValue = function (d) { return d.z; };
-    var xScale = d3.scale.linear().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]);
-    var xDomain = function (domainData) {
-      return d3.extent(domainData, xValue);
-    };
-    var yDomain = function (domainData) {
-      return d3.extent(domainData, yValue);
-    };
+    var xScale = null;
+    var yScale = null;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     var showXAxis = true;
@@ -48,6 +43,8 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data, i) {
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
 
         var svg = d3.select(this).append("svg")
           .data([data])
@@ -57,15 +54,20 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        xScale.domain(xDomain.call(this, data));
-        yScale.domain(yDomain.call(this, data));
+        xScale = xScale ? xScale : d3.scale.linear()
+          .domain(d3.extent(data, xValue))
+          .range([0, width]);
+
+        yScale = yScale ? yScale : d3.scale.linear()
+          .domain(d3.extent(data, yValue))
+          .range([height, 0]);
 
         var points = circle()
           .cx(X)
           .cy(Y)
           .color(color)
           .radius(circleRadius)
-          .circleClass(circleClass)
+          .cssClass(circleClass)
           .fill(circleFill)
           .stroke(circleStroke)
           .strokeWidth(circleStrokeWidth);

@@ -111,30 +111,30 @@ define(function (require) {
       });
     });
 
-    describe("circleClass API", function () {
+    describe("cssClass API", function () {
       var defaultClass;
 
       beforeEach(function () {
         defaultClass = "circles";
-        element.circleClass(defaultClass);
+        element.cssClass(defaultClass);
       });
 
       it("should get the property", function () {
-        chai.assert.equal(element.circleClass(), defaultClass);
+        chai.assert.equal(element.cssClass(), defaultClass);
       });
 
       it("should set the property", function () {
-        element.circleClass("test");
-        chai.assert.equal(element.circleClass(), "test");
+        element.cssClass("test");
+        chai.assert.equal(element.cssClass(), "test");
       });
 
       it("should set the proper value of the DOM attribute", function () {
-        element.circleClass("dots"); // Set new class attribute
+        element.cssClass("dots"); // Set new class attribute
         fixture.call(element); // Redraw circles
 
         fixture.selectAll("circle")
           .each(function () {
-            chai.assert.equal(this.getAttribute("class"), element.circleClass());
+            chai.assert.equal(this.getAttribute("class"), element.cssClass());
           });
       });
     });

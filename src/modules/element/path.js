@@ -5,6 +5,7 @@ define(function (require) {
     var pathGenerator = null;
     var color = d3.scale.category10();
     var accessor = function (d) { return d; };
+    var values = null;
 
     // Options
     var cssClass = "path";
@@ -17,7 +18,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data, i) {
         var path = d3.select(this).selectAll("path")
-          .data(accessor);
+          .data(values ? values.map(accessor) : accessor);
 
         path.exit().remove();
 
@@ -33,6 +34,12 @@ define(function (require) {
           .style("opacity", opacity);
       });
     }
+
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
 
     element.pathGenerator = function (_) {
       if (!arguments.length) { return pathGenerator; }

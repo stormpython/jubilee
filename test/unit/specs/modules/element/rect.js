@@ -198,31 +198,31 @@ define(function (require) {
       });
     });
 
-    describe("rectClass API", function () {
+    describe("cssClass API", function () {
       var defaultClass;
 
       beforeEach(function () {
         defaultClass = "rects";
-        element.rectClass(defaultClass);
+        element.cssClass(defaultClass);
       });
 
       it("should get the property", function () {
-        chai.assert.equal(element.rectClass(), defaultClass);
+        chai.assert.equal(element.cssClass(), defaultClass);
       });
 
       it("should set the property", function () {
         var newClass = "squares";
-        element.rectClass(newClass);
-        chai.assert.equal(element.rectClass(), newClass);
+        element.cssClass(newClass);
+        chai.assert.equal(element.cssClass(), newClass);
       });
 
       it("should set the proper value of the DOM attribute", function () {
-        element.rectClass(defaultClass); // Set new attribute
+        element.cssClass(defaultClass); // Set new attribute
         fixture.call(element); // Redraw rects
 
         fixture.selectAll("rect")
           .each(function () {
-            chai.assert.equal(this.getAttribute("class"), element.rectClass());
+            chai.assert.equal(this.getAttribute("class"), element.cssClass());
           });
       });
     });

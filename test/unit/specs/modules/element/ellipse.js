@@ -140,31 +140,31 @@ define(function (require) {
       });
     });
 
-    describe("ellipseClass API", function () {
+    describe("cssClass API", function () {
       var defaultClass;
 
       beforeEach(function () {
         defaultClass = "ellipses";
-        element.ellipseClass(defaultClass);
+        element.cssClass(defaultClass);
       });
 
       it("should get the property", function () {
-        chai.assert.equal(element.ellipseClass(), defaultClass);
+        chai.assert.equal(element.cssClass(), defaultClass);
       });
 
       it("should set the property", function () {
         var newClass = "ovals";
-        element.ellipseClass(newClass);
-        chai.assert.equal(element.ellipseClass(), newClass);
+        element.cssClass(newClass);
+        chai.assert.equal(element.cssClass(), newClass);
       });
 
       it("should set the proper value of the DOM attribute", function () {
-        element.ellipseClass(defaultClass);
+        element.cssClass(defaultClass);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
           .each(function () {
-            chai.assert.equal(this.getAttribute("class"), element.ellipseClass());
+            chai.assert.equal(this.getAttribute("class"), element.cssClass());
           });
       });
     });

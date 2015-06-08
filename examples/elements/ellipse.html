@@ -29,6 +29,7 @@
       .range([height, 0]);
 
     var element = jubilee.element.ellipse()
+      .data(data)
       .cx(function (d) { return xScale(d.x); })
       .cy(function (d) { return yScale(d.y); })
       .rx(20)
@@ -41,7 +42,6 @@
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .datum(data)
       .call(element);
   });
 </script>

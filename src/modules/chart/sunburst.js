@@ -54,7 +54,7 @@ define(function (require) {
         var arcPath = path()
           .pathGenerator(arc)
           .accessor(partition.nodes)
-          .pathClass(pieClass)
+          .cssClass(pieClass)
           .stroke(pieStroke)
           .fill(pieFill);
 

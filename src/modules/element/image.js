@@ -4,18 +4,19 @@ define(function (require) {
   return function image() {
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
+    var values = null;
     var width = 10;
     var height = 10;
     var xlink = null;
     var preserveAspectRatio = null;
 
     // Options
-    var imageClass = "image";
+    var cssClass = "image";
 
     function element(selection) {
       selection.each(function (data, i) {
         var images = d3.select(this).selectAll("image")
-          .data(data);
+          .data(values ? values : data);
 
         // Exit
         images.exit().remove();
@@ -25,7 +26,7 @@ define(function (require) {
 
         // Update
         images
-          .attr("class", imageClass)
+          .attr("class", cssClass)
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)
@@ -35,6 +36,12 @@ define(function (require) {
       });
     }
 
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
+    
     element.x = function (_) {
       if (!arguments.length) { return x; }
       x = _;
@@ -71,9 +78,9 @@ define(function (require) {
       return element;
     };
 
-    element.imageClass= function (_) {
-      if (!arguments.length) { return imageClass; }
-      imageClass = _;
+    element.cssClass= function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
       return element;
     };
 

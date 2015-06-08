@@ -140,31 +140,31 @@ define(function (require) {
       });
     });
 
-    describe("lineClass API", function () {
+    describe("cssClass API", function () {
       var defaultClass;
 
       beforeEach(function () {
         defaultClass = "lines";
-        element.lineClass(defaultClass);
+        element.cssClass(defaultClass);
       });
 
       it("should get the property", function () {
-        chai.assert.equal(element.lineClass(), defaultClass);
+        chai.assert.equal(element.cssClass(), defaultClass);
       });
 
       it("should set the property", function () {
         var newClass = "edges";
-        element.lineClass(newClass);
-        chai.assert.equal(element.lineClass(), newClass);
+        element.cssClass(newClass);
+        chai.assert.equal(element.cssClass(), newClass);
       });
 
       it("should set the proper value of the DOM attribute", function () {
-        element.lineClass(defaultClass);
+        element.cssClass(defaultClass);
         fixture.call(element); // Redraw
 
         fixture.selectAll("line")
           .each(function () {
-            chai.assert.equal(this.getAttribute("class"), element.lineClass());
+            chai.assert.equal(this.getAttribute("class"), element.cssClass());
           });
       });
     });

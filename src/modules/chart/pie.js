@@ -40,7 +40,7 @@ define(function (require) {
         var piePath = path()
           .pathGenerator(arc)
           .accessor(pie(data))
-          .pathClass(pieClass)
+          .cssClass(pieClass)
           .fill(pieFill);
 
         g.call(piePath);

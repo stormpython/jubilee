@@ -8,10 +8,11 @@ define(function (require) {
     var ry = 0;
     var width = null;
     var height = null;
+    var values = null;
 
     // Options
     var color = d3.scale.category10();
-    var rectClass = "bar";
+    var cssClass = "bar";
     var fill = null;
     var stroke = null;
     var strokeWidth = 0;
@@ -20,14 +21,14 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data, i) {
         var bars = d3.select(this).selectAll("rect")
-          .data(data);
+          .data(values ? values : data);
 
         bars.exit().remove();
 
         bars.enter().append("rect");
 
         bars
-          .attr("class", rectClass)
+          .attr("class", cssClass)
           .attr("fill", fill ? fill : colorFill)
           .attr("stroke", stroke ? stroke : colorFill)
           .attr("stroke-width", strokeWidth)
@@ -44,6 +45,12 @@ define(function (require) {
     function colorFill(d, i) {
       return color(d, i);
     }
+
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
 
     element.x = function (_) {
       if (!arguments.length) { return x; }
@@ -81,9 +88,9 @@ define(function (require) {
       return element;
     };
 
-    element.rectClass= function (_) {
-      if (!arguments.length) { return rectClass; }
-      rectClass = _;
+    element.cssClass= function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
       return element;
     };
 

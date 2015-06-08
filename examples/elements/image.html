@@ -21,6 +21,7 @@
     var height = 500 - margin.top - margin.bottom;
 
     var element = jubilee.element.image()
+      .data(data)
       .x(function (d) { return d.x; })
       .y(function (d) { return d.y; })
       .width(width)
@@ -33,7 +34,6 @@
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .datum(data)
       .call(element);
   });
 </script>
