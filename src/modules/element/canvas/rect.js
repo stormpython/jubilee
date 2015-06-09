@@ -12,6 +12,7 @@ define(function (require) {
     var fillStyle = "blue";
     var lineWidth = 3;
     var strokeStyle = "black";
+    var globalAlpha = 1;
 
     function element(selection) {
       selection.each(function (data, index) {
@@ -37,6 +38,7 @@ define(function (require) {
           .attr("height", height)
           .attr("fillStyle", fillStyle)
           .attr("lineWidth", lineWidth)
+          .attr("globalAlpha", globalAlpha)
           .attr("strokeStyle", strokeStyle);
 
         // Clear Canvas
@@ -44,12 +46,14 @@ define(function (require) {
         context.rect(0, 0, canvas.attr("width"), canvas.attr("height"));
         context.fill();
 
-        var elements = container.selectAll("custom.rect")
+        var elements = container.selectAll("custom.rect");
+
         elements.each(function (d, i) {
           var node = d3.select(this);
 
           context.beginPath();
-          context.fillStyle = node.attr("fillStyle");
+          context.fillStyle = node.attr("fillstyle");
+          context.globalAlpha = node.attr("globalAlpha");
           context.rect(node.attr("x"), node.attr("y"), node.attr("width"), node.attr("height"));
           context.fill();
           context.closePath();
@@ -91,6 +95,12 @@ define(function (require) {
     element.fillStyle = function (_) {
       if (!arguments.length) { return fillStyle; }
       fillStyle = _;
+      return element;
+    };
+
+    element.opacity = function (_) {
+      if (!arguments.length) { return globalAlpha; }
+      globalAlpha = _;
       return element;
     };
 

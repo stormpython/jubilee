@@ -7,6 +7,7 @@ define(function (require) {
       boxplot: require("src/modules/chart/boxplot"),
       pie: require("src/modules/chart/pie"),
       scatter : require("src/modules/chart/scatterplot"),
+      heatmap: require("src/modules/chart/heatmap"),
       sunburst: require("src/modules/chart/sunburst"),
       dendrogram: require("src/modules/chart/dendrogram"),
       treemap: require("src/modules/chart/treemap"),
