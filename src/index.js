@@ -34,6 +34,9 @@ define(function (require) {
       line: require("src/modules/element/svg/line"),
       path: require("src/modules/element/svg/path"),
       rect: require("src/modules/element/svg/rect")
+    },
+    canvas: {
+      rect: require("src/modules/element/canvas/rect")
     }
   };
 });
