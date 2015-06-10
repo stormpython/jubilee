@@ -9,10 +9,10 @@ define(function (require) {
     var height = 10;
 
     var cssClass = "rect";
-    var fillStyle = function (d) { return "blue"; };
+    var fillStyle = "blue";
     var lineWidth = 3;
     var strokeStyle = "black";
-    var globalAlpha = function (d) { return d.z; };
+    var globalAlpha = 1;
 
     function element(selection) {
       selection.each(function (data, index) {
@@ -20,15 +20,25 @@ define(function (require) {
         var context = canvas.node().getContext("2d");
         // var container = canvas.append("custom");
 
+        // Clear Canvas
         context.fillStyle = "#fff";
         context.rect(0, 0, canvas.attr("width"), canvas.attr("height"));
         context.fill();
 
         data.forEach(function (d, i) {
+          d.fillStyle = (typeof fillStyle === "function") ? fillStyle.call(data, d, i) : fillStyle;
+          d.strokeStyle = (typeof strokeStyle === "function") ? strokeStyle.call(data, d, i) : strokeStyle;
+          d.globalAlpha = (typeof globalAlpha === "function") ? globalAlpha.call(data, d, i) : globalAlpha;
+          d.lineWidth = (typeof lineWidth === "function") ? lineWidth.call(data, d, i) : lineWidth;
+          d.width = (typeof width === "function") ? width.call(data, d, i) : width;
+          d.height = (typeof height === "function") ? height.call(data, d, i) : height;
+
           context.beginPath();
-          context.fillStyle = fillStyle.call(data, d, i);
-          context.globalAlpha = globalAlpha.call(data, d, i);
-          context.rect(x.call(data, d, i), y.call(data, d, i), width, height);
+          context.fillStyle = d.fillStyle;
+          context.strokeStyle = d.strokeStyle;
+          context.lineWidth = d.lineWidth;
+          context.globalAlpha = d.globalAlpha;
+          context.rect(x.call(data, d, i), y.call(data, d, i), d.width, d.height);
           context.fill();
           context.closePath();
         });

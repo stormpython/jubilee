@@ -31,7 +31,7 @@
     <script>
       require(["../../src/index"], function (jubilee) {
         var heatmap = jubilee.chart.heatmap;
-        var data = createHeatMapData(30);
+        var data = createHeatMapData(200);
         var colorDomain = d3.extent(data, function (d) { return d.z; });
         var opacityDomain = d3.extent(data, function (d) { return d.z; });
         var colorScale = d3.scale.linear().domain(colorDomain).range(["blue", "red"]);
@@ -41,6 +41,7 @@
           .margin({ bottom: 50 })
           .color(colorScale)
           .rect({
+            canvas: false,
             x: function (d) { return d.x; },
             y: function (d) { return d.y; },
             fill: function (d) { return d.z; },
