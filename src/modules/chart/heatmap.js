@@ -10,10 +10,10 @@ define(function (require) {
     var width = 960;
     var height = 500;
     var color = d3.scale.category10();
+    var isCanvas = false;
 
     var rect = {
       cssClass: "rect",
-      canvas: false,
       x: function (d) { return d.x; },
       y: function (d) { return d.y; },
       fill: function (d) { return d.fill; },
@@ -59,7 +59,7 @@ define(function (require) {
           d.opacity = rect.opacity.call(data, d, i);
         });
 
-        if (rect.canvas) {
+        if (isCanvas) {
           var padding = Object.keys(margin).map(function (key) {
             return margin[key];
           }).join("px ") + "px";
@@ -85,20 +85,7 @@ define(function (require) {
           .domain(getDomain(data, "y"))
           .rangeBands([height, 0], rect.padding);
 
-        if (!rect.canvas) {
-          var svgRects = svgRect()
-            .cssClass(rect.cssClass)
-            .x(function (d) { return xScale(d.x); })
-            .y(function (d) { return yScale(d.y); })
-            .width(xScale.rangeBand())
-            .height(yScale.rangeBand())
-            .fill(function (d) { return color(d.fill); })
-            .stroke(function (d) { return color(d.fill); })
-            .strokeWidth(rect.strokeWidth)
-            .opacity(function (d) { return d.opacity; });
-
-          g.datum(data).call(svgRects);
-        } else {
+        if (isCanvas) {
           var canvasRects = canvasRect()
             .cssClass(rect.cssClass)
             .x(function (d) { return xScale(d.x); })
@@ -111,6 +98,19 @@ define(function (require) {
             .lineWidth(rect.strokeWidth);
 
           canvas.datum(data).call(canvasRects);
+        } else {
+          var svgRects = svgRect()
+            .cssClass(rect.cssClass)
+            .x(function (d) { return xScale(d.x); })
+            .y(function (d) { return yScale(d.y); })
+            .width(xScale.rangeBand())
+            .height(yScale.rangeBand())
+            .fill(function (d) { return color(d.fill); })
+            .stroke(function (d) { return color(d.fill); })
+            .strokeWidth(rect.strokeWidth)
+            .opacity(function (d) { return d.opacity; });
+
+          g.datum(data).call(svgRects);
         }
 
         if (axisX.show) {
@@ -202,6 +202,12 @@ define(function (require) {
       return chart;
     };
 
+    chart.canvas = function (_) {
+      if (!arguments.length) return isCanvas;
+      isCanvas = _;
+      return chart;
+    };
+
     chart.rect = function (_) {
       if (!arguments.length) { return rect; }
       rect.x = typeof _.x !== "undefined" ? _.x : rect.x;
@@ -212,7 +218,6 @@ define(function (require) {
       rect.fill = typeof _.fill !== "undefined" ? _.fill : rect.fill;
       rect.opacity = typeof _.opacity !== "undefined" ? _.opacity : rect.opacity;
       rect.padding = typeof _.padding !== "undefined" ? _.padding : rect.padding;
-      rect.canvas = typeof _.canvas !== "undefined" ? _.canvas : rect.canvas;
       return chart;
     };
 
