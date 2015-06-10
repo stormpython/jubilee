@@ -28,7 +28,7 @@
           .domain([0, d3.max(data, function (d) { return d.y; })])
           .range([height, 0]);
 
-        var element = jubilee.element.circle()
+        var element = jubilee.svg.circle()
           .data(data)
           .cx(function (d) { return xScale(d.x); })
           .cy(function (d) { return yScale(d.y); })

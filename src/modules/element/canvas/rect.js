@@ -9,55 +9,68 @@ define(function (require) {
     var height = 10;
 
     var cssClass = "rect";
-    var fillStyle = "blue";
+    var fillStyle = function (d) { return "blue"; };
     var lineWidth = 3;
     var strokeStyle = "black";
-    var globalAlpha = 1;
+    var globalAlpha = function (d) { return d.z; };
 
     function element(selection) {
       selection.each(function (data, index) {
         var canvas = d3.select(this);
         var context = canvas.node().getContext("2d");
-        var container = canvas.append("custom");
+        // var container = canvas.append("custom");
 
-        var rects = container.selectAll("custom.rect")
-          .data(data);
-
-        // Exit
-        rects.exit().remove();
-
-        // Enter
-        rects.enter().append("custom");
-
-        // Update
-        rects
-          .attr("class", cssClass)
-          .attr("x", x)
-          .attr("y", y)
-          .attr("width", width)
-          .attr("height", height)
-          .attr("fillStyle", fillStyle)
-          .attr("lineWidth", lineWidth)
-          .attr("globalAlpha", globalAlpha)
-          .attr("strokeStyle", strokeStyle);
-
-        // Clear Canvas
         context.fillStyle = "#fff";
         context.rect(0, 0, canvas.attr("width"), canvas.attr("height"));
         context.fill();
 
-        var elements = container.selectAll("custom.rect");
-
-        elements.each(function (d, i) {
-          var node = d3.select(this);
-
+        data.forEach(function (d, i) {
           context.beginPath();
-          context.fillStyle = node.attr("fillstyle");
-          context.globalAlpha = node.attr("globalAlpha");
-          context.rect(node.attr("x"), node.attr("y"), node.attr("width"), node.attr("height"));
+          context.fillStyle = fillStyle.call(data, d, i);
+          context.globalAlpha = globalAlpha.call(data, d, i);
+          context.rect(x.call(data, d, i), y.call(data, d, i), width, height);
           context.fill();
           context.closePath();
         });
+
+        // var rects = container.selectAll("custom.rect")
+        //   .data(data);
+
+        // // Exit
+        // rects.exit().remove();
+
+        // // Enter
+        // rects.enter().append("custom");
+
+        // // Update
+        // rects
+        //   .attr("class", cssClass)
+        //   .attr("x", x)
+        //   .attr("y", y)
+        //   .attr("width", width)
+        //   .attr("height", height)
+        //   .attr("fillStyle", fillStyle)
+        //   .attr("lineWidth", lineWidth)
+        //   .attr("globalAlpha", globalAlpha)
+        //   .attr("strokeStyle", strokeStyle);
+
+        // // Clear Canvas
+        // context.fillStyle = "#fff";
+        // context.rect(0, 0, canvas.attr("width"), canvas.attr("height"));
+        // context.fill();
+
+        // var elements = container.selectAll("custom.rect");
+
+        // elements.each(function (d, i) {
+        //   var node = d3.select(this);
+
+        //   context.beginPath();
+        //   context.fillStyle = node.attr("fillstyle");
+        //   context.globalAlpha = node.attr("globalAlpha");
+        //   context.rect(node.attr("x"), node.attr("y"), node.attr("width"), node.attr("height"));
+        //   context.fill();
+        //   context.closePath();
+        // });
       });
     }
 

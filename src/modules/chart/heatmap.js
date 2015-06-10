@@ -85,8 +85,6 @@ define(function (require) {
           .domain(getDomain(data, "y"))
           .rangeBands([height, 0], rect.padding);
 
-        var color = rect.color;
-
         if (!rect.canvas) {
           var svgRects = svgRect()
             .cssClass(rect.cssClass)
@@ -195,6 +193,12 @@ define(function (require) {
     chart.height = function (_) {
       if (!arguments.length) return height;
       height = _;
+      return chart;
+    };
+
+    chart.color = function (_) {
+      if (!arguments.length) return color;
+      color = _;
       return chart;
     };
 

@@ -28,7 +28,7 @@
       .domain([0, d3.max(data, function (d) { return d.y; })])
       .range([height, 0]);
 
-    var element = jubilee.element.line()
+    var element = jubilee.svg.line()
       .data(data)
       .x1(function (d) { return xScale(d.x1); })
       .x2(function (d) { return xScale(d.x2); })

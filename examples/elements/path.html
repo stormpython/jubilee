@@ -50,7 +50,7 @@
       .y1(function (d) { return yScale(d.y); })
       .interpolate("cardinal");
 
-    var element = jubilee.element.path()
+    var element = jubilee.svg.path()
       .data(data)
       .pathGenerator(area)
       .cssClass("area")

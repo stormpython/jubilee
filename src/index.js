@@ -27,7 +27,7 @@ define(function (require) {
       chart: require("src/modules/component/chart/chart"),
       boxplot: require("src/modules/component/boxplot/boxplot")
     },
-    element: {
+    svg: {
       circle: require("src/modules/element/svg/circle"),
       clipPath: require("src/modules/element/svg/clipPath"),
       ellipse: require("src/modules/element/svg/ellipse"),
