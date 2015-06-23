@@ -21,6 +21,11 @@
       stroke-width: 1.5px;
     }
 
+    .tick line {
+      opacity: 0.2;
+      stroke-width: 1px;
+    }
+
   </style>
 
   <div id="chart"></div>
@@ -64,11 +69,11 @@
       var color = d3.scale.category10(["band", "of", "brothers", "yes"]);
       var myChart = jubilee.chart.line()
         .height(500)
-        .line({
+        .lines({
           stroke: function (d) { return color(d[0].label); },
           interpolate: "cardinal"
         })
-        .circle({
+        .circles({
           show: true,
           fill: function (d) { return color(d.label); }
         });

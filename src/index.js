@@ -24,8 +24,9 @@ define(function (require) {
     },
     component: {
       axis: require("src/modules/component/axis/axis"),
+      boxplot: require("src/modules/component/boxplot/boxplot"),
       chart: require("src/modules/component/chart/chart"),
-      boxplot: require("src/modules/component/boxplot/boxplot")
+      events: require("src/modules/component/events/events")
     },
     svg: {
       circle: require("src/modules/element/svg/circle"),

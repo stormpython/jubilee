@@ -1,5 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
+  var event = require("src/modules/component/events/events");
 
   return function line() {
     var x1 = null;
@@ -13,11 +14,21 @@ define(function (require) {
     var stroke = null;
     var strokeWidth = 2;
     var opacity = null;
+    var events = {
+      mouseover: function () {},
+      mouseout: function () {},
+      click: function () {}
+    };
 
     function element(selection) {
-      selection.each(function (data, i) {
+      selection.each(function (data, index) {
         var lines = d3.select(this).selectAll("line")
           .data(values ? values : data);
+
+        var lineEvents = event()
+          .mouseover(events.mouseover)
+          .mouseout(events.mouseout)
+          .click(events.click);
 
         // Exit
         lines.exit().remove();
@@ -35,6 +46,8 @@ define(function (require) {
           .attr("stroke", stroke ? stroke : colorFill)
           .attr("stroke-width", strokeWidth)
           .style("opacity", opacity);
+
+        lines.call(lineEvents);
       });
     }
 
@@ -99,6 +112,14 @@ define(function (require) {
     element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
+      return element;
+    };
+
+    element.events = function (_) {
+      if (!arguments.length) { return events; }
+      events.mouseover = typeof _.mouseover !== "undefined" ? _.mouseover : events.mouseover;
+      events.mouseout = typeof _.mouseout !== "undefined" ? _.mouseout : events.mouseout;
+      events.click = typeof _.click !== "undefined" ? _.click : events.click;
       return element;
     };
 
