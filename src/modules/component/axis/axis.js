@@ -11,6 +11,14 @@ define(function (require) {
     var outerTickSize = 6;
     var tickPadding = 3;
     var tickFormat = null;
+    var rotateTicks = 0;
+    var tickText = {
+      anchor: "middle",
+      x: 0,
+      y: 9,
+      dx: "",
+      dy: ".71em"
+    };
 
     var transform = "translate(0,0)";
     var gClass = "axis";
@@ -39,6 +47,14 @@ define(function (require) {
           .attr("class", gClass)
           .attr("transform", transform)
           .call(axis);
+
+        g.selectAll(".tick text")
+          .attr("transform", "rotate(" + rotateTicks + ")")
+          .attr("x", tickText.x)
+          .attr("y", tickText.y)
+          .attr("dx", tickText.dx)
+          .attr("dy", tickText.dy)
+          .style("text-anchor", tickText.anchor);
 
         g.append("text")
           .attr("class", titleClass)
@@ -105,6 +121,22 @@ define(function (require) {
       return component;
     };
 
+    component.rotateTicks = function (_) {
+      if (!arguments.length) { return rotateTicks; }
+      rotateTicks = _;
+      return component;
+    };
+
+    component.tickText = function (_) {
+      if (!arguments.length) { return tickText; }
+      tickText.anchor = typeof _.anchor !== "undefined" ? _.anchor : tickText.anchor;
+      tickText.x = typeof _.x !== "undefined" ? _.x : tickText.x;
+      tickText.y = typeof _.y !== "undefined" ? _.y : tickText.y;
+      tickText.dx = typeof _.dx !== "undefined" ? _.dx : tickText.dx;
+      tickText.dy = typeof _.dy !== "undefined" ? _.dy : tickText.dy;
+      return component;
+    };
+
     component.gClass = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
@@ -134,6 +166,7 @@ define(function (require) {
       titleX = _;
       return component;
     };
+
     component.titleY = function (_) {
       if (!arguments.length) { return titleY; }
       titleY = _;

@@ -49,6 +49,14 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data, index) {
+        var xScale = d3.scale.ordinal()
+          .domain(getDomain(data, "x"))
+          .rangeBands([0, width], rect.padding);
+
+        var yScale = d3.scale.ordinal()
+          .domain(getDomain(data, "y"))
+          .rangeBands([height, 0], rect.padding);
+
         width = width - margin.left - margin.right;
         height = height - margin.top - margin.bottom;
 
@@ -73,17 +81,16 @@ define(function (require) {
         var svg = d3.select(this).append("svg")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.top + margin.bottom)
+          .on("mousemove", function (d, i) {
+            var x = d3.event.clientX;
+            var y = d3.event.clientY;
+            console.log(xScale.domain().filter(function (d) {
+              return (x <= xScale(d) && yScale(d) <= y);
+            }), x, y);
+          });
 
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        var xScale = d3.scale.ordinal()
-          .domain(getDomain(data, "x"))
-          .rangeBands([0, width], rect.padding);
-
-        var yScale = d3.scale.ordinal()
-          .domain(getDomain(data, "y"))
-          .rangeBands([height, 0], rect.padding);
 
         if (isCanvas) {
           var canvasRects = canvasRect()

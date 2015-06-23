@@ -8,11 +8,21 @@ define(function (require) {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
     var width = 760;
     var height = 120;
-    var color = d3.scale.category20c();
-    var interpolate = "linear";
-    var offset = "zero";
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
+    var color = d3.scale.category20c();
+    var interpolate = "linear";
+
+    // Stack options
+    var stackOptions = {
+      offset: "zero",
+      order: "default",
+      out: function (d, y0, y) {
+        d.y0 = y0;
+        d.y = y;
+      }
+    };
+
     var xScale = null;
     var yScale = null;
     var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
@@ -24,21 +34,34 @@ define(function (require) {
     var yAxisTitle = "";
 
     // Area options
-    var areaClass = "area";
-    var areaStroke = function (d, i) { return color(i); };
-    var areaFill = function (d, i) { return color(i); };
+    var areas = {
+      areaClass: "area",
+      stroke: function (d, i) { return color(i); },
+      fill: function (d, i) { return color(i); },
+      opacity: 1
+    };
 
     // Line options
-    var addLines = true;
-    var lineClass = "line";
-    var lineStroke = function (d, i) { return color(i); };
+    var lines = {
+      show: true,
+      lineClass: "line",
+      stroke: function (d, i) { return color(i); },
+      strokeWidth: 3,
+      opacity: 1
+    };
 
     function chart(selection) {
       selection.each(function (data) {
         width = width - margin.left - margin.right;
         height = height - margin.top - margin.bottom;
 
-        var stack = d3.layout.stack().x(xValue).y(yValue).offset(offset);
+        var stack = d3.layout.stack()
+          .x(xValue)
+          .y(yValue)
+          .offset(stackOptions.offset)
+          .order(stackOptions.order)
+          .out(stackOptions.out);
+
         var layers = stack(data);
 
         var svg = d3.select(this).selectAll("svg")
@@ -50,14 +73,23 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var area = d3.svg.area().x(X).y0(Y0).y1(Y1).interpolate(interpolate);
-        var line = d3.svg.line().x(X).y(Y1).interpolate(interpolate);
+        var area = d3.svg.area()
+          .x(X)
+          .y0(Y0)
+          .y1(Y1)
+          .interpolate(interpolate);
+
+        var line = d3.svg.line()
+          .x(X)
+          .y(Y1)
+          .interpolate(interpolate);
 
         var areaPath = path()
           .pathGenerator(area)
-          .cssClass(areaClass)
-          .stroke(areaStroke)
-          .fill(areaFill);
+          .cssClass(areas.areaClass)
+          .stroke(areas.stroke)
+          .fill(areas.fill)
+          .opacity(areas.opacity);
 
         xScale = xScale ? xScale : d3.time.scale.utc()
           .domain(d3.extent(mapDomain(data), xValue))
@@ -73,11 +105,13 @@ define(function (require) {
 
         g.append("g").call(areaPath);
 
-        if (addLines) {
+        if (lines.show) {
           var linePath = path()
             .pathGenerator(line)
-            .cssClass(lineClass)
-            .stroke(lineStroke);
+            .cssClass(lines.lineClass)
+            .stroke(lines.stroke)
+            .strokeWidth(lines.strokeWidth)
+            .opacity(lines.opacity);
 
           g.append("g").call(linePath);
         }
@@ -115,17 +149,17 @@ define(function (require) {
     }
 
     function Y(d, i) {
-      if (offset === "overlap") { return d.y; }
+      if (stackOptions.offset === "overlap") { return d.y; }
       return d.y0 + yValue.call(null, d, i);
     }
 
     function Y0(d) {
-      if (offset ==="overlap") { return yScale(0); }
+      if (stackOptions.offset === "overlap") { return yScale(0); }
       return yScale(d.y0);
     }
 
     function Y1(d, i) {
-      if (offset === "overlap") { return yScale(d.y); }
+      if (stackOptions.offset === "overlap") { return yScale(d.y); }
       return yScale(d.y0 + yValue.call(null, d, i));
     }
 
@@ -222,45 +256,30 @@ define(function (require) {
       return chart;
     };
 
-    chart.offset = function (_) {
-      if (!arguments.length) { return offset; }
-      offset = _;
+    chart.stack = function (_) {
+      if (!arguments.length) { return stackOptions; }
+      stackOptions.offset = typeof _.offset !== "undefined" ? _.offset : stackOptions.offset;
+      stackOptions.order = typeof _.order !== "undefined" ? _.order : stackOptions.order;
+      stackOptions.out = typeof _.out !== "undefined" ? _.out : stackOptions.out;
       return chart;
     };
 
-    chart.areaClass = function (_) {
-      if (!arguments.length) { return areaClass; }
-      areaClass = _;
+    chart.area = function (_) {
+      if (!arguments.length) { return areas; }
+      areas.areaClass = typeof _.areaClass !== "undefined" ? _.areaClass : areas.areaClass;
+      areas.stroke = typeof _.stroke !== "undefined" ? _.stroke : areas.stroke;
+      areas.fill = typeof _.fill !== "undefined" ? _.fill : areas.fill;
+      areas.opacity = typeof _.opacity !== "undefined" ? _.opacity : areas.opacity;
       return chart;
     };
 
-    chart.areaStroke = function (_) {
-      if (!arguments.length) { return areaStroke; }
-      areaStroke = _;
-      return chart;
-    };
-
-    chart.areaFill = function (_) {
-      if (!arguments.length) { return areaFill; }
-      areaFill = _;
-      return chart;
-    };
-
-    chart.addLines = function (_) {
-      if (!arguments.length) { return addLines; }
-      addLines = _;
-      return chart;
-    };
-
-    chart.lineStroke = function (_) {
-      if (!arguments.length) { return lineStroke; }
-      lineStroke = _;
-      return chart;
-    };
-
-    chart.lineClass = function (_) {
-      if (!arguments.length) { return lineClass; }
-      lineClass = _;
+    chart.line = function (_) {
+      if (!arguments.length) { return lines; }
+      lines.show = typeof _.show !== "undefined" ? _.show : lines.show;
+      lines.lineClass = typeof _.lineClass !== "undefined" ? _.lineClass : lines.lineClass;
+      lines.stroke = typeof _.stroke !== "undefined" ? _.stroke : lines.stroke;
+      lines.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : lines.strokeWidth;
+      lines.opacity = typeof _.opacity !== "undefined" ? _.opacity : lines.opacity;
       return chart;
     };
 

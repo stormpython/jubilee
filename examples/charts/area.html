@@ -59,39 +59,14 @@
             ]
         };
 
-        var ordinalData = {
-            series: [
-                [
-                    { x: "band", y: 41 },
-                    { x: "stick", y: 18 },
-                    { x: "balloon", y: 22 },
-                    { x: "bam", y: 17 },
-                    { x: "hero", y: 17 }
-                ],
-                [
-                    { x: "band", y: 141 },
-                    { x: "stick", y: 218 },
-                    { x: "balloon", y: 222 },
-                    { x: "bam", y: 217 },
-                    { x: "hero", y: 117 }
-                ]
-            ]
-        };
-
-        var width = 700;
-        var height = 700;
-        var xScale = d3.scale.ordinal().domain(["band", "stick", "balloon", "bam", "hero"]).rangeBands([0, width], 0.1);
-        var xDomain = function () { return xScale.domain(); }
-        var areaX = function (d) { return xScale(d.x) + xScale.rangeBand() / 2; };
-
         var myChart = jubilee.chart.area()
-          .width(width)
-          .height(height)
-          .addLines(true)
-//          .xScale(xScale)
-//          .xDomain(xDomain)
-//          .areaX(areaX)
-//          .lineX(areaX)
+          .width(700)
+          .height(700)
+          .stack({ offset: "overlap" })
+          .line({ show: true })
+          .area({
+            opacity: 0.5
+          })
           .interpolate("cardinal");
 
         d3.select("#chart")

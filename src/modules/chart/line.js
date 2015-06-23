@@ -11,12 +11,13 @@ define(function (require) {
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();
-    var interpolate = "linear";
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
+    var interpolate = "linear";
+    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
+
     var xScale = null;
     var yScale = null;
-    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
     var showXAxis = true;
@@ -25,22 +26,30 @@ define(function (require) {
     var yAxisTitle = "";
 
     // Line Options
-    var pathGroupClass = "paths";
-    var lineClass = "line";
-    var lineStroke = function (d, i) { return color(i); };
+    var lines = {
+      groupClass: "paths",
+      lineClass: "line",
+      stroke: function (d, i) { return color(i); },
+      strokeWidth: 3,
+      opacity: 1,
+      tension:  0.7,
+      defined: function () { return true; }
+    };
 
     // ClipPath Options
     var clipPathWidth = null;
     var clipPathHeight = null;
 
     // Circle Options
-    var addCircles = true;
-    var circleGroupClass = "circle layer";
-    var circleClass = "circle";
-    var circleFill = function (d, i, j) { return color(j); };
-    var circleStroke = null;
-    var circleRadius = 5;
-    var circleStrokeWidth = 3;
+    var circles = {
+      show: true,
+      groupClass: "circle layer",
+      circleClass: "circle",
+      fill: function (d, i, j) { return color(j); },
+      stroke: null,
+      radius: 5,
+      strokeWidth: 3
+    };
 
     function chart(selection) {
       selection.each(function (data) {
@@ -56,12 +65,19 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var line = d3.svg.line().x(X).y(Y).interpolate(interpolate);
+        var line = d3.svg.line()
+          .x(X)
+          .y(Y)
+          .interpolate(lines.interpolate)
+          .tension(lines.tension)
+          .defined(lines.defined);
 
         var linePath = path()
           .pathGenerator(line)
-          .cssClass(lineClass)
-          .stroke(lineStroke);
+          .cssClass(lines.lineClass)
+          .stroke(lines.stroke)
+          .strokeWidth(lines.strokeWidth)
+          .opacity(lines.opacity);
 
         xScale = xScale ? xScale : d3.time.scale.utc()
           .domain(d3.extent(mapDomain(data), xValue))
@@ -76,7 +92,7 @@ define(function (require) {
           .nice();
 
         g.append("g")
-          .attr("class", pathGroupClass)
+          .attr("class", lines.groupClass)
           .call(linePath);
 
         if (showXAxis) {
@@ -84,6 +100,8 @@ define(function (require) {
             .scale(xScale)
             .gClass("x axis")
             .transform("translate(0," + yScale.range()[0] + ")")
+            .tickText({ x: 0, y: 9, dy: ".71em", anchor: "middle" })
+            .rotateTicks(0)
             .titleY(6)
             .titleDY(".71em")
             .titleAnchor("end")
@@ -97,6 +115,8 @@ define(function (require) {
             .scale(yScale)
             .orient("left")
             .gClass("y axis")
+            .tickText({ x: -9, y: 0, dy: ".32em", anchor: "end" })
+            .rotateTicks(0)
             .titleY(6)
             .titleDY(".71em")
             .titleAnchor("end")
@@ -105,7 +125,7 @@ define(function (require) {
           g.call(yAxis);
         }
 
-        if (addCircles) {
+        if (circles.show) {
           var clippath = clipPath()
             .width(clipPathWidth ? clipPathWidth : width)
             .height(clipPathHeight ? clipPathHeight : height);
@@ -114,11 +134,11 @@ define(function (require) {
             .cx(X)
             .cy(Y)
             .color(color)
-            .radius(circleRadius)
-            .cssClass(circleClass)
-            .fill(circleFill)
-            .stroke(circleStroke ? circleStroke : circleFill)
-            .strokeWidth(circleStrokeWidth);
+            .radius(circles.radius)
+            .cssClass(circles.circleClass)
+            .fill(circles.fill)
+            .stroke(circles.stroke ? circles.stroke : circles.fill)
+            .strokeWidth(circles.strokeWidth);
 
           g.call(clippath);
           
@@ -127,7 +147,7 @@ define(function (require) {
             .selectAll("gCircles")
             .data(function (d) { return d; })
             .enter().append("g")
-            .attr("class", circleGroupClass)
+            .attr("class", circles.groupClass)
             .datum(function (d) { return d; })
             .call(points);
         }
@@ -187,6 +207,12 @@ define(function (require) {
       return chart;
     };
 
+    chart.interpolate = function (_) {
+      if (!arguments.length) { return interpolate; }
+      interpolate = _;
+      return chart;
+    };
+
     chart.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale = _;
@@ -196,12 +222,6 @@ define(function (require) {
     chart.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale = _;
-      return chart;
-    };
-
-    chart.lineX = function (_) {
-      if (!arguments.length) { return lineX; }
-      lineX = _;
       return chart;
     };
 
@@ -235,21 +255,14 @@ define(function (require) {
       return chart;
     };
 
-    chart.interpolate = function (_) {
-      if (!arguments.length) { return interpolate; }
-      interpolate = _;
-      return chart;
-    };
-
-    chart.lineStroke = function (_) {
-      if (!arguments.length) { return lineStroke; }
-      lineStroke = _;
-      return chart;
-    };
-
-    chart.lineClass = function (_) {
-      if (!arguments.length) { return lineClass; }
-      lineClass = _;
+    chart.line = function (_) {
+      if (!arguments.length) { return lines; }
+      lines.tension = typeof _.tension !== "undefined" ? _.tension : lines.tension;
+      lines.defined = typeof _.defined !== "undefined" ? _.defined : lines.defined;
+      lines.stroke = typeof _.stroke !== "undefined" ? _.stroke : lines.stroke;
+      lines.strokeWidth = typeof _.stroke !== "undefined" ? _.strokeWidth : lines.strokeWidth;
+      lines.opacity = typeof _.opacity !== "undefined" ? _.opacity : lines.opacity;
+      lines.lineClass = typeof _.lineClass !== "undefined" ? _.lineClass : lines.lineClass;
       return chart;
     };
 
@@ -265,45 +278,15 @@ define(function (require) {
       return chart;
     };
 
-    chart.addCircles = function (_) {
-      if (!arguments.length) { return addCircles; }
-      addCircles = _;
-      return chart;
-    };
-
-    chart.circleGroupClass = function (_) {
-      if (!arguments.length) { return circleGroupClass; }
-      circleGroupClass = _;
-      return chart;
-    };
-
-    chart.circleClass = function (_) {
-      if (!arguments.length) { return circleClass; }
-      circleClass = _;
-      return chart;
-    };
-
-    chart.circleRadius = function (_) {
-      if (!arguments.length) { return circleRadius; }
-      circleRadius = _;
-      return chart;
-    };
-
-    chart.circleFill = function (_) {
-      if (!arguments.length) { return circleFill; }
-      circleFill = _;
-      return chart;
-    };
-
-    chart.circleStroke = function (_) {
-      if (!arguments.length) { return circleStroke; }
-      circleStroke = _;
-      return chart;
-    };
-
-    chart.circleStrokeWidth = function (_) {
-      if (!arguments.length) { return circleStrokeWidth; }
-      circleStrokeWidth = _;
+    chart.circle = function (_) {
+      if (!arguments.length) { return circles; }
+      circles.show = typeof _.show !== "undefined" ? _.show : circles.show;
+      circles.groupClass = typeof _.groupClass !== "undefined" ? _.groupClass : circles.groupClass;
+      circles.circleClass = typeof _.circleClass !== "undefined" ? _.circleClass : circles.circleClass;
+      circles.radius = typeof _.radius !== "undefined" ? _.radius : circles.radius;
+      circles.fill = typeof _.fill !== "undefined" ? _.fill : circles.fill;
+      circles.stroke = typeof _.stroke !== "undefined" ? _.stroke : circles.stroke;
+      circles.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : circles.strokeWidth;
       return chart;
     };
 
