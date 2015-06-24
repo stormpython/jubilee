@@ -336,16 +336,24 @@ define(function (require) {
       axisX.tick.padding = _.tick && typeof _.tick.padding !== "undefined" ? _.tick.padding : axisX.tick.padding;
       axisX.tick.format = _.tick && typeof _.tick.format !== "undefined" ? _.tick.format : axisX.tick.format;
       axisX.tick.rotate = _.tick && typeof _.tick.rotate !== "undefined" ? _.tick.rotate : axisX.tick.rotate;
-      axisX.tick.innerTickSize = _.tick && typeof _.tick.innerTickSize !== "undefined" ? _.tick.innerTickSize : axisX.tick.innerTickSize;
-      axisX.tick.outerTickSize = _.tick && typeof _.tick.outerTickSize !== "undefined" ? _.tick.outerTickSize : axisX.tick.outerTickSize;
+      axisX.tick.innerTickSize = _.tick && typeof _.tick.innerTickSize !== "undefined" ?
+        _.tick.innerTickSize : axisX.tick.innerTickSize;
+      axisX.tick.outerTickSize = _.tick && typeof _.tick.outerTickSize !== "undefined" ?
+        _.tick.outerTickSize : axisX.tick.outerTickSize;
 
-      axisX.tick.text.anchor = _.tick && _.tick.text && typeof _.tick.text.anchor !== "undefined" ? _.tick.text.anchor : axisX.tick.text.anchor;
-      axisX.tick.text.x = _.tick && _.tick.text && typeof _.tick.text.x !== "undefined" ? _.tick.text.x : axisX.tick.text.x;
-      axisX.tick.text.y = _.tick && _.tick.text && typeof _.tick.text.y !== "undefined" ? _.tick.text.y : axisX.tick.text.y;
-      axisX.tick.text.dx = _.tick && _.tick.text && typeof _.tick.text.dx !== "undefined" ? _.tick.text.dx : axisX.tick.text.dx;
-      axisX.tick.text.dy = _.tick && _.tick.text && typeof _.tick.text.dy !== "undefined" ? _.tick.text.dy : axisX.tick.text.dy;
+      axisX.tick.text.anchor = _.tick && _.tick.text && typeof _.tick.text.anchor !== "undefined" ?
+        _.tick.text.anchor : axisX.tick.text.anchor;
+      axisX.tick.text.x = _.tick && _.tick.text && typeof _.tick.text.x !== "undefined" ?
+        _.tick.text.x : axisX.tick.text.x;
+      axisX.tick.text.y = _.tick && _.tick.text && typeof _.tick.text.y !== "undefined" ?
+        _.tick.text.y : axisX.tick.text.y;
+      axisX.tick.text.dx = _.tick && _.tick.text && typeof _.tick.text.dx !== "undefined" ?
+        _.tick.text.dx : axisX.tick.text.dx;
+      axisX.tick.text.dy = _.tick && _.tick.text && typeof _.tick.text.dy !== "undefined" ?
+        _.tick.text.dy : axisX.tick.text.dy;
 
-      axisX.title.titleClass = _.title && typeof _.title.titleClass !== "undefined" ? _.title.titleClass : axisX.title.titleClass;
+      axisX.title.titleClass = _.title && typeof _.title.titleClass !== "undefined" ?
+        _.title.titleClass : axisX.title.titleClass;
       axisX.title.x = _.title && typeof _.title.x !== "undefined" ? _.title.x : axisX.title.x;
       axisX.title.y = _.title && typeof _.title.y !== "undefined" ? _.title.y : axisX.title.y;
       axisX.title.dx = _.title && typeof _.title.dx !== "undefined" ? _.title.dx : axisX.title.dx;
@@ -366,16 +374,24 @@ define(function (require) {
       axisY.tick.padding = _.tick && typeof _.tick.padding !== "undefined" ? _.tick.padding : axisY.tick.padding;
       axisY.tick.format = _.tick && typeof _.tick.format !== "undefined" ? _.tick.format : axisY.tick.format;
       axisY.tick.rotate = _.tick && typeof _.tick.rotate !== "undefined" ? _.tick.rotate : axisY.tick.rotate;
-      axisY.tick.innerTickSize = _.tick && typeof _.tick.innerTickSize !== "undefined" ? _.tick.innerTickSize : axisY.tick.innerTickSize;
-      axisY.tick.outerTickSize = _.tick && typeof _.tick.outerTickSize !== "undefined" ? _.tick.outerTickSize : axisY.tick.outerTickSize;
+      axisY.tick.innerTickSize = _.tick && typeof _.tick.innerTickSize !== "undefined" ?
+        _.tick.innerTickSize : axisY.tick.innerTickSize;
+      axisY.tick.outerTickSize = _.tick && typeof _.tick.outerTickSize !== "undefined" ?
+        _.tick.outerTickSize : axisY.tick.outerTickSize;
 
-      axisY.tick.text.anchor = _.tick && _.tick.text && typeof _.tick.text.anchor !== "undefined" ? _.tick.text.anchor : axisY.tick.text.anchor;
-      axisY.tick.text.x = _.tick && _.tick.text && typeof _.tick.text.x !== "undefined" ? _.tick.text.x : axisY.tick.text.x;
-      axisY.tick.text.y = _.tick && _.tick.text && typeof _.tick.text.y !== "undefined" ? _.tick.text.y : axisY.tick.text.y;
-      axisY.tick.text.dx = _.tick && _.tick.text && typeof _.tick.text.dx !== "undefined" ? _.tick.text.dx : axisY.tick.text.dx;
-      axisY.tick.text.dy = _.tick && _.tick.text && typeof _.tick.text.dy !== "undefined" ? _.tick.text.dy : axisY.tick.text.dy;
+      axisY.tick.text.anchor = _.tick && _.tick.text && typeof _.tick.text.anchor !== "undefined" ?
+        _.tick.text.anchor : axisY.tick.text.anchor;
+      axisY.tick.text.x = _.tick && _.tick.text && typeof _.tick.text.x !== "undefined" ?
+        _.tick.text.x : axisY.tick.text.x;
+      axisY.tick.text.y = _.tick && _.tick.text && typeof _.tick.text.y !== "undefined" ?
+        _.tick.text.y : axisY.tick.text.y;
+      axisY.tick.text.dx = _.tick && _.tick.text && typeof _.tick.text.dx !== "undefined" ?
+        _.tick.text.dx : axisY.tick.text.dx;
+      axisY.tick.text.dy = _.tick && _.tick.text && typeof _.tick.text.dy !== "undefined" ?
+        _.tick.text.dy : axisY.tick.text.dy;
 
-      axisY.title.titleClass = _.title && typeof _.title.titleClass !== "undefined" ? _.title.titleClass : axisY.title.titleClass;
+      axisY.title.titleClass = _.title && typeof _.title.titleClass !== "undefined" ?
+        _.title.titleClass : axisY.title.titleClass;
       axisY.title.x = _.title && typeof _.title.x !== "undefined" ? _.title.x : axisY.title.x;
       axisY.title.y = _.title && typeof _.title.y !== "undefined" ? _.title.y : axisY.title.y;
       axisY.title.dx = _.title && typeof _.title.dx !== "undefined" ? _.title.dx : axisY.title.dx;
@@ -403,9 +419,12 @@ define(function (require) {
       lines.strokeWidth = typeof _.stroke !== "undefined" ? _.strokeWidth : lines.strokeWidth;
       lines.opacity = typeof _.opacity !== "undefined" ? _.opacity : lines.opacity;
 
-      lines.events.mouseover = _.events && typeof _.events.mouseover !== "undefined" ? _.events.mouseover : lines.events.mouseover;
-      lines.events.mouseout = _.events && typeof _.events.mouseout !== "undefined" ? _.events.mouseout : lines.events.mouseout;
-      lines.events.click = _.events && typeof _.events.click !== "undefined" ? _.events.click : lines.events.click;
+      lines.events.mouseover = _.events && typeof _.events.mouseover !== "undefined" ?
+        _.events.mouseover : lines.events.mouseover;
+      lines.events.mouseout = _.events && typeof _.events.mouseout !== "undefined" ?
+        _.events.mouseout : lines.events.mouseout;
+      lines.events.click = _.events && typeof _.events.click !== "undefined" ?
+        _.events.click : lines.events.click;
       return chart;
     };
 
@@ -419,9 +438,12 @@ define(function (require) {
       circles.stroke = typeof _.stroke !== "undefined" ? _.stroke : circles.stroke;
       circles.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : circles.strokeWidth;
 
-      circles.events.mouseover = _.events && typeof _.events.mouseover !== "undefined" ? _.events.mouseover : circles.events.mouseover;
-      circles.events.mouseout = _.events && typeof _.events.mouseout !== "undefined" ? _.events.mouseout : circles.events.mouseout;
-      circles.events.click = _.events && typeof _.events.click !== "undefined" ? _.events.click : circles.events.click;
+      circles.events.mouseover = _.events && typeof _.events.mouseover !== "undefined" ?
+        _.events.mouseover : circles.events.mouseover;
+      circles.events.mouseout = _.events && typeof _.events.mouseout !== "undefined" ?
+        _.events.mouseout : circles.events.mouseout;
+      circles.events.click = _.events && typeof _.events.click !== "undefined" ?
+        _.events.click : circles.events.click;
       return chart;
     };
 
