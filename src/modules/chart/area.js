@@ -24,8 +24,10 @@ define(function (require) {
     };
 
     var xScale = null;
+    var xDomain = null;
     var yScale = null;
-    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
+    var yDomain = null;
+    var dispatch = d3.dispatch("brush");
 
     // Axis options
     var showXAxis = true;
@@ -92,16 +94,15 @@ define(function (require) {
           .opacity(areas.opacity);
 
         xScale = xScale ? xScale : d3.time.scale.utc()
-          .domain(d3.extent(mapDomain(data), xValue))
+          .domain(xDomain || d3.extent(mapDomain(data), xValue))
           .range([0, width]);
 
         yScale = yScale ? yScale : d3.scale.linear()
-          .domain([
+          .domain(yDomain || [
             Math.min(0, d3.min(mapDomain(data), Y)),
             Math.max(0, d3.max(mapDomain(data), Y))
           ])
-          .range([height, 0])
-          .nice();
+          .range([height, 0]);
 
         g.append("g").call(areaPath);
 

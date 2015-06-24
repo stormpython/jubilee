@@ -15,6 +15,7 @@ define(function (require) {
     var yValue = function (d) { return d.y; };
     var dispatch = d3.dispatch("brush");
 
+    // scale options
     var xScale = null;
     var xDomain = null;
     var yScale = null;
@@ -25,30 +26,13 @@ define(function (require) {
       show: true,
       gClass: "x axis",
       tick: {
-        number: 10,
-        values: null,
-        size: 6,
-        padding: 3,
-        format: null,
-        rotate: 0,
-        innerTickSize: 6,
-        outerTickSize: 6,
-        text: {
-          anchor: "middle",
-          x: 0,
-          y: 9,
-          dx: "",
-          dy: ".71em"
-        }
+        number: 10, values: null, size: 6, padding: 3, format: null, rotate: 0,
+        innerTickSize: 6, outerTickSize: 6,
+        text: { anchor: "middle", x: 0, y: 9, dx: "", dy: ".71em" }
       },
       title: {
-        titleClass: "axis title",
-        x: 6,
-        y: 6,
-        dx: "",
-        dy: ".71em",
-        anchor: "middle",
-        text: ""
+        titleClass: "axis title", x: 6, y: 6, dx: "", dy: ".71em",
+        anchor: "middle", text: ""
       }
     };
 
@@ -57,31 +41,13 @@ define(function (require) {
       show: true,
       gClass: "y axis",
       tick: {
-        number: 10,
-        values: null,
-        size: 6,
-        padding: 3,
-        format: null,
-        rotate: 0,
-        innerTickSize: 6,
-        outerTickSize: 6,
-        text: {
-          anchor: "end",
-          x: -9,
-          y: 0,
-          dx: "",
-          dy: ".32em"
-        }
+        number: 10, values: null, size: 6, padding: 3, format: null, rotate: 0,
+        innerTickSize: 6, outerTickSize: 6,
+        text: { anchor: "end", x: -9, y: 0, dx: "", dy: ".32em" }
       },
       title: {
-        titleClass: "axis title",
-        x: 0,
-        y: -40,
-        dx: "",
-        dy: ".71em",
-        anchor: "middle",
-        rotate: 270,
-        text: ""
+        titleClass: "axis title", x: 0, y: -40, dx: "", dy: ".71em",
+        anchor: "middle", rotate: 270, text: ""
       }
     };
 
@@ -103,10 +69,7 @@ define(function (require) {
     };
 
     // ClipPath Options
-    var clipPath = {
-      width: null,
-      height: null
-    };
+    var clipPath = { width: null, height: null };
 
     // Circle Options
     var circles = {
@@ -292,6 +255,7 @@ define(function (require) {
       return yScale(yValue.call(null, d, i));
     }
 
+    // Public API
     chart.margin = function (_) {
       if (!arguments.length) { return margin; }
       margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
