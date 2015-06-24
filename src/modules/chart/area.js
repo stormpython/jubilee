@@ -2,16 +2,25 @@ define(function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
   var axis = require("src/modules/component/axis/axis");
+  var mapDomain = require("src/modules/helpers/map_domain");
+  var scaleValue = require("src/modules/helpers/scale_value");
 
   return function areaChart() {
     // Chart options
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
     var width = 760;
     var height = 120;
+    var color = d3.scale.category20c();
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
-    var color = d3.scale.category20c();
+    var dispatch = d3.dispatch("brush");
     var interpolate = "linear";
+
+    // scale options
+    var xScale = d3.time.scale.utc();
+    var yScale = d3.scale.linear();
+    var xDomain = null;
+    var yDomain = null;
 
     // Stack options
     var stackOptions = {
@@ -23,17 +32,35 @@ define(function (require) {
       }
     };
 
-    var xScale = null;
-    var xDomain = null;
-    var yScale = null;
-    var yDomain = null;
-    var dispatch = d3.dispatch("brush");
+    // x axis options
+    var axisX = {
+      show: true,
+      gClass: "x axis",
+      tick: {
+        number: 10, values: null, size: 6, padding: 3, format: null, rotate: 0,
+        innerTickSize: 6, outerTickSize: 6,
+        text: { anchor: "middle", x: 0, y: 9, dx: "", dy: ".71em" }
+      },
+      title: {
+        titleClass: "axis title", x: 6, y: 6, dx: "", dy: ".71em",
+        anchor: "middle", text: ""
+      }
+    };
 
-    // Axis options
-    var showXAxis = true;
-    var showYAxis = true;
-    var xAxisTitle = "";
-    var yAxisTitle = "";
+    // y axis options
+    var axisY = {
+      show: true,
+      gClass: "y axis",
+      tick: {
+        number: 10, values: null, size: 6, padding: 3, format: null, rotate: 0,
+        innerTickSize: 6, outerTickSize: 6,
+        text: { anchor: "end", x: -9, y: 0, dx: "", dy: ".32em" }
+      },
+      title: {
+        titleClass: "axis title", x: 0, y: -40, dx: "", dy: ".71em",
+        anchor: "middle", rotate: 270, text: ""
+      }
+    };
 
     // Area options
     var areas = {
@@ -57,9 +84,21 @@ define(function (require) {
         width = width - margin.left - margin.right;
         height = height - margin.top - margin.bottom;
 
-        var stack = d3.layout.stack()
-          .x(xValue)
-          .y(yValue)
+        xScale.domain(xDomain || d3.extent(mapDomain(data), xValue));
+
+        if (xScale.rangeBands) {
+          xScale.rangeBands([0, width], 0.1);
+        } else {
+          xScale.range([0, width]);
+        }
+
+        yScale.domain(yDomain || [
+            Math.min(0, d3.min(mapDomain(data), Y)),
+            Math.max(0, d3.max(mapDomain(data), Y))
+          ])
+          .range([height, 0]);
+
+        var stack = d3.layout.stack().x(xValue).y(yValue)
           .offset(stackOptions.offset)
           .order(stackOptions.order)
           .out(stackOptions.out);
@@ -75,16 +114,9 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var area = d3.svg.area()
-          .x(X)
-          .y0(Y0)
-          .y1(Y1)
-          .interpolate(interpolate);
-
-        var line = d3.svg.line()
-          .x(X)
-          .y(Y1)
-          .interpolate(interpolate);
+        var X = scaleValue(xScale, xValue);
+        var area = d3.svg.area().x(X).y0(Y0).y1(Y1).interpolate(interpolate);
+        var line = d3.svg.line().x(X).y(Y1).interpolate(interpolate);
 
         var areaPath = path()
           .pathGenerator(area)
@@ -92,30 +124,6 @@ define(function (require) {
           .stroke(areas.stroke)
           .fill(areas.fill)
           .opacity(areas.opacity);
-
-        xScale = xScale ? xScale : d3.time.scale.utc()
-          .domain(xDomain || d3.extent(mapDomain(data), xValue))
-          .range([0, width]);
-
-        yScale = yScale ? yScale : d3.scale.linear()
-          .domain(yDomain || [
-            Math.min(0, d3.min(mapDomain(data), Y)),
-            Math.max(0, d3.max(mapDomain(data), Y))
-          ])
-          .range([height, 0]);
-
-        g.append("g").call(areaPath);
-
-        if (lines.show) {
-          var linePath = path()
-            .pathGenerator(line)
-            .cssClass(lines.lineClass)
-            .stroke(lines.stroke)
-            .strokeWidth(lines.strokeWidth)
-            .opacity(lines.opacity);
-
-          g.append("g").call(linePath);
-        }
 
         if (showXAxis) {
           var xAxis = axis()
@@ -142,11 +150,20 @@ define(function (require) {
 
           g.call(yAxis);
         }
-      });
-    }
 
-    function X(d, i) {
-      return xScale(xValue.call(null, d, i));
+        g.append("g").call(areaPath);
+
+        if (lines.show) {
+          var linePath = path()
+            .pathGenerator(line)
+            .cssClass(lines.lineClass)
+            .stroke(lines.stroke)
+            .strokeWidth(lines.strokeWidth)
+            .opacity(lines.opacity);
+
+          g.append("g").call(linePath);
+        }
+      });
     }
 
     function Y(d, i) {
@@ -164,12 +181,7 @@ define(function (require) {
       return yScale(d.y0 + yValue.call(null, d, i));
     }
 
-    function mapDomain (data) {
-      return data.reduce(function (a, b) {
-        return a.concat(b);
-      });
-    }
-
+    // Public API
     chart.margin = function (_) {
       if (!arguments.length) { return margin; }
       margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
