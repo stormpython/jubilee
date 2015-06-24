@@ -16,7 +16,9 @@ define(function (require) {
     var dispatch = d3.dispatch("brush");
 
     var xScale = null;
+    var xDomain = null;
     var yScale = null;
+    var yDomain = null;
 
     // x axis options
     var axisX = {
@@ -156,16 +158,17 @@ define(function (require) {
           });
 
         xScale = xScale ? xScale : d3.time.scale.utc()
-          .domain(d3.extent(mapDomain(data), xValue))
-          .range([0, width]);
+          .domain(xDomain || d3.extent(mapDomain(data), xValue));
+
+        if (typeof xScale.rangeBands === "function") {
+          xScale.rangeBands([0, width, 0.1]);
+        } else {
+          xScale.range([0, width]);
+        }
 
         yScale = yScale ? yScale : d3.scale.linear()
-          .domain([
-            Math.min(0, d3.min(mapDomain(data), yValue)),
-            Math.max(0, d3.max(mapDomain(data), yValue))
-          ])
-          .range([height, 0])
-          .nice();
+          .domain(yDomain || d3.extent(mapDomain(data), yValue))
+          .range([height, 0]);
 
         g.append("g")
           .attr("class", lines.groupClass)
@@ -244,8 +247,8 @@ define(function (require) {
 
         if (circles.show) {
           var clippath = clip()
-            .width(clipPath.width ? clipPath.width : width)
-            .height(clipPath.height ? clipPath.height : height);
+            .width(clipPath.width || width)
+            .height(clipPath.height || height);
 
           var points = circle()
             .cx(X)
@@ -262,7 +265,7 @@ define(function (require) {
             });
 
           g.call(clippath);
-          
+
           g.append("g")
             .attr("clip-path", "url(#" + clippath.id() + ")")
             .selectAll("gCircles")
@@ -334,9 +337,21 @@ define(function (require) {
       return chart;
     };
 
+    chart.xDomain = function (_) {
+      if (!arguments.length) { return xDomain; }
+      xDomain = _;
+      return chart;
+    };
+
     chart.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale = _;
+      return chart;
+    };
+
+    chart.yDomain = function (_) {
+      if (!arguments.length) { return yDomain; }
+      yDomain = _;
       return chart;
     };
 
