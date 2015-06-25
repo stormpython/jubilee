@@ -5,6 +5,7 @@ define(function (require) {
   var clip = require("src/modules/element/svg/clipPath");
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
+  var marginOptions = require("src/modules/helpers/chart/options/margin");
   var stackOptions = require("src/modules/helpers/chart/options/stack");
   var clipPathOptions = require("src/modules/helpers/chart/options/clippath");
   var xAxisOptions = require("src/modules/helpers/chart/options/x_axis");
@@ -18,7 +19,7 @@ define(function (require) {
 
   return function areaChart() {
     // Chart options
-    var margin = {top: 20, right: 20, bottom: 20, left: 100};
+    var margin = marginOptions;
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();

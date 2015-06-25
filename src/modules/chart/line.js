@@ -6,6 +6,7 @@ define(function (require) {
   var circle = require("src/modules/element/svg/circle");
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
+  var marginOptions = require("src/modules/helpers/chart/options/margin");
   var clipPathOptions = require("src/modules/helpers/chart/options/clippath");
   var xAxisOptions = require("src/modules/helpers/chart/options/x_axis");
   var yAxisOptions = require("src/modules/helpers/chart/options/y_axis");
@@ -17,7 +18,7 @@ define(function (require) {
 
   return function lineChart() {
     // Chart options
-    var margin = {top: 20, right: 20, bottom: 20, left: 50};
+    var margin = marginOptions;
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();
