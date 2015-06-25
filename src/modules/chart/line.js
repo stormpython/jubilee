@@ -117,7 +117,7 @@ define(function (require) {
           var xAxis = axis()
             .scale(xScale)
             .gClass(axisX.gClass)
-            .transform("translate(0," + yScale.range()[0] + ")")
+            .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
             .tick({
               number: axisX.tick.number,
               values: axisX.tick.values,
@@ -153,6 +153,7 @@ define(function (require) {
             .scale(yScale)
             .orient("left")
             .gClass(axisY.gClass)
+            .transform(axisY.transform || "translate(-1,0)")
             .tick({
               number: axisY.tick.number,
               values: axisY.tick.values,

@@ -1,78 +1,83 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title></title>
-</head>
-<body>
-<style>
-    body {
+  </head>
+  <body>
+    <style>
+      body {
         font: 10px sans-serif;
-    }
+      }
 
-    .axis path,
-    .axis line {
+      .axis path,
+      .axis line {
         fill: none;
         stroke: #000;
         shape-rendering: crispEdges;
-    }
+      }
+    </style>
 
-    .line {
-        fill: none;
-        stroke-width: 1.5px;
-    }
+    <div id="chart"></div>
 
-    .area {
-        stroke-width: 1.5px;
-        opacity: 0.6;
-    }
-
-</style>
-
-<div id="chart"></div>
-
-<script data-main="../../src/require.config.js" src="../../../node_modules/requirejs/require.js"></script>
-<script>
-    require(["../../src/index"], function (jubilee) {
+    <script data-main="../../src/require.config.js" src="../../../node_modules/requirejs/require.js"></script>
+    <script>
+      require(["../../src/index"], function (jubilee) {
         var data = {
-            series: [
-                [
-                    { x: 1411761450000, y: 41, label: "band"},
-                    { x: 1411761480000, y: 18, label: "band"},
-                    { x: 1411761510000, y: 22, label: "band"},
-                    { x: 1411761540000, y: 17, label: "band"},
-                    { x: 1411761570000, y: 17, label: "band"}
-                ],
-                [
-                    { x: 1411761450000, y: 91, label: "of"},
-                    { x: 1411761480000, y: 88, label: "of"},
-                    { x: 1411761510000, y: 32, label: "of"},
-                    { x: 1411761540000, y: 47, label: "of"},
-                    { x: 1411761570000, y: 57, label: "of"}
-                ],
-                [
-                    { x: 1411761450000, y: 191, label: "brothers"},
-                    { x: 1411761480000, y: 188, label: "brothers"},
-                    { x: 1411761510000, y: 132, label: "brothers"},
-                    { x: 1411761540000, y: 147, label: "brothers"},
-                    { x: 1411761570000, y: 157, label: "brothers"}
-                ]
+          series: [
+            [
+              { x: 1411761450000, y: 41, label: "band"},
+              { x: 1411761480000, y: 18, label: "band"},
+              { x: 1411761510000, y: 22, label: "band"},
+              { x: 1411761540000, y: 17, label: "band"},
+              { x: 1411761570000, y: 17, label: "band"}
+            ],
+            [
+              { x: 1411761450000, y: 91, label: "of"},
+              { x: 1411761480000, y: 88, label: "of"},
+              { x: 1411761510000, y: 32, label: "of"},
+              { x: 1411761540000, y: 47, label: "of"},
+              { x: 1411761570000, y: 57, label: "of"}
+            ],
+            [
+              { x: 1411761450000, y: 191, label: "brothers"},
+              { x: 1411761480000, y: 188, label: "brothers"},
+              { x: 1411761510000, y: 132, label: "brothers"},
+              { x: 1411761540000, y: 147, label: "brothers"},
+              { x: 1411761570000, y: 157, label: "brothers"}
             ]
+          ]
         };
 
-        var myChart = jubilee.chart.area()
-          .width(700)
-          .height(700)
-          .stack({ offset: "overlap" })
-          .line({ show: true })
-          .area({
-            opacity: 0.5
+        var width = 700;
+        var height = 700;
+
+        // Example logarithmic stacked area chart configuration
+        var logChart = jubilee.chart.area()
+          .width(width)
+          .height(height)
+          .stack({
+            // Needed because of stacking, default y0 = 0 for first stack
+            out: function (d, y0, y) {
+              d.y0 = (y0 === 0) ? 1 : y0 + 1;
+              d.y = y;
+            }
           })
+          .yScale(d3.scale.log())
+          .yDomain([1, 323]) // Need to write a function to calculate the yMax
+          .interpolate("cardinal");
+
+        // Example normal area chart configuration
+        var myChart = jubilee.chart.area()
+          .width(width)
+          .height(height)
+          .stack({ offset: "overlap" })
+          .area({ opacity: 0.5 })
           .interpolate("cardinal");
 
         d3.select("#chart")
-            .datum(data.series)
-            .call(myChart);
-    });
-</script>
-</body>
+          .datum(data.series)
+          .call(myChart);
+      });
+    </script>
+  </body>
 </html>

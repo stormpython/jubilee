@@ -1,5 +1,6 @@
 define(function () {
   return function (_, lines) {
+    lines.show = typeof _.show !== "undefined" ? _.show : lines.show;
     lines.lineClass = typeof _.lineClass !== "undefined" ? _.lineClass : lines.lineClass;
     lines.interpolate = typeof _.interpolate !== "undefined" ? _.interpolate : lines.interpolate;
     lines.tension = typeof _.tension !== "undefined" ? _.tension : lines.tension;
@@ -8,6 +9,7 @@ define(function () {
     lines.strokeWidth = typeof _.stroke !== "undefined" ? _.strokeWidth : lines.strokeWidth;
     lines.opacity = typeof _.opacity !== "undefined" ? _.opacity : lines.opacity;
 
+    lines.events = typeof _.events !== "undefined" ? _.events : {};
     lines.events.mouseover = _.events && typeof _.events.mouseover !== "undefined" ?
       _.events.mouseover : lines.events.mouseover;
     lines.events.mouseout = _.events && typeof _.events.mouseout !== "undefined" ?

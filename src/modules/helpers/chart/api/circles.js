@@ -8,6 +8,7 @@ define(function () {
     circles.stroke = typeof _.stroke !== "undefined" ? _.stroke : circles.stroke;
     circles.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : circles.strokeWidth;
 
+    circles.events = typeof _.events !== "undefined" ? _.events : {};
     circles.events.mouseover = _.events && typeof _.events.mouseover !== "undefined" ?
       _.events.mouseover : circles.events.mouseover;
     circles.events.mouseout = _.events && typeof _.events.mouseout !== "undefined" ?
