@@ -5,6 +5,8 @@ define(function (require) {
   var clip = require("src/modules/element/svg/clipPath");
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
+  var stackOptions = require("src/modules/helpers/chart/options/stack");
+  var clipPathOptions = require("src/modules/helpers/chart/options/clippath");
   var xAxisOptions = require("src/modules/helpers/chart/options/x_axis");
   var yAxisOptions = require("src/modules/helpers/chart/options/y_axis");
   var axisAPI = require("src/modules/helpers/chart/api/axis");
@@ -31,21 +33,10 @@ define(function (require) {
     var xDomain = null;
     var yDomain = null;
 
-    // Stack options
-    var stackOptions = {
-      offset: "zero",
-      order: "default",
-      out: function (d, y0, y) {
-        d.y0 = y0;
-        d.y = y;
-      }
-    };
-
+    var stackOpts = stackOptions;
     var axisX = xAxisOptions;
     var axisY = yAxisOptions;
-
-    // ClipPath Options
-    var clipPath = { width: null, height: null };
+    var clipPath = clipPathOptions;
 
     // Area options
     var areas = {
@@ -82,9 +73,9 @@ define(function (require) {
         height = height - margin.top - margin.bottom;
 
         var stack = d3.layout.stack().x(xValue).y(yValue)
-          .offset(stackOptions.offset)
-          .order(stackOptions.order)
-          .out(stackOptions.out);
+          .offset(stackOpts.offset)
+          .order(stackOpts.order)
+          .out(stackOpts.out);
 
         var layers = stack(data);
 
@@ -228,18 +219,18 @@ define(function (require) {
     }
 
     function Y(d, i) {
-      if (stackOptions.offset === "overlap") { return d.y; }
+      if (stackOpts.offset === "overlap") { return d.y; }
       return d.y0 + yValue.call(null, d, i);
     }
 
     function Y0(d) {
       var min = Math.max(0, yScale.domain()[0]);
-      if (stackOptions.offset === "overlap") { return yScale(min); }
+      if (stackOpts.offset === "overlap") { return yScale(min); }
       return yScale(d.y0);
     }
 
     function Y1(d, i) {
-      if (stackOptions.offset === "overlap") { return yScale(d.y); }
+      if (stackOpts.offset === "overlap") { return yScale(d.y); }
       return yScale(d.y0 + yValue.call(null, d, i));
     }
 
@@ -329,8 +320,8 @@ define(function (require) {
     };
 
     chart.stack = function (_) {
-      if (!arguments.length) { return stackOptions; }
-      stackOptions = stackAPI(_, stackOptions);
+      if (!arguments.length) { return stackOpts; }
+      stackOpts = stackAPI(_, stackOpts);
       return chart;
     };
 

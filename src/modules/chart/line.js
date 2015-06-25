@@ -6,6 +6,7 @@ define(function (require) {
   var circle = require("src/modules/element/svg/circle");
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
+  var clipPathOptions = require("src/modules/helpers/chart/options/clippath");
   var xAxisOptions = require("src/modules/helpers/chart/options/x_axis");
   var yAxisOptions = require("src/modules/helpers/chart/options/y_axis");
   var axisAPI = require("src/modules/helpers/chart/api/axis");
@@ -32,6 +33,7 @@ define(function (require) {
 
     var axisX = xAxisOptions;
     var axisY = yAxisOptions;
+    var clipPath = clipPathOptions;
 
     // Line Options
     var lines = {
@@ -49,9 +51,6 @@ define(function (require) {
         click: function () {}
       }
     };
-
-    // ClipPath Options
-    var clipPath = { width: null, height: null };
 
     // Circle Options
     var circles = {
