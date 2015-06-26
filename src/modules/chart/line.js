@@ -14,12 +14,14 @@ define(function (require) {
   var scaleOptions = require("src/modules/helpers/options/scale");
   var xAxisOptions = require("src/modules/helpers/options/x_axis");
   var yAxisOptions = require("src/modules/helpers/options/y_axis");
+  var zeroLineOptions = require("src/modules/helpers/options/zero_line");
   var axisAPI = require("src/modules/helpers/api/axis");
   var linesAPI = require("src/modules/helpers/api/lines");
   var circlesAPI = require("src/modules/helpers/api/circles");
   var marginAPI = require("src/modules/helpers/api/margin");
   var clippathAPI = require("src/modules/helpers/api/clippath");
   var scaleAPI = require("src/modules/helpers/api/scale");
+  var zeroLineAPI = require("src/modules/helpers/api/zero_line");
 
   return function lineChart() {
     // Chart options
@@ -41,19 +43,7 @@ define(function (require) {
     var axisX = deepCopy(xAxisOptions, {});
     var axisY = deepCopy(yAxisOptions, {});
     var clipPath = deepCopy(clipPathOptions, {});
-
-    // Zero-line options
-    var zeroLine = {
-      add: true,
-      lineClass: "zero-line",
-      stroke: "black",
-      strokeWidth: 1,
-      opacity: 0.5,
-      x1: function () { return xScale.range()[0]; },
-      x2: function () { return xScale.range()[1]; },
-      y1: function () { return yScale(0); },
-      y2: function () { return yScale(0); }
-    };
+    var zeroLine = deepCopy(zeroLineOptions, {});
 
     // Line Options
     var lines = {
@@ -202,10 +192,10 @@ define(function (require) {
         if (zeroLine.add) {
           var zLine = zeroAxisLine()
             .cssClass(zeroLine.lineClass)
-            .x1(zeroLine.x1)
-            .x2(zeroLine.x2)
-            .y1(zeroLine.y1)
-            .y2(zeroLine.y2)
+            .x1(function () { return xScale.range()[0]; })
+            .x2(function () { return xScale.range()[1]; })
+            .y1(function () { return yScale(0); })
+            .y2(function () { return yScale(0); })
             .stroke(zeroLine.stroke)
             .strokeWidth(zeroLine.strokeWidth)
             .opacity(zeroLine.opacity);

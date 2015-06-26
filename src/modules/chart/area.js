@@ -6,6 +6,7 @@ define(function (require) {
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
   var deepCopy = require("src/modules/helpers/deep_copy");
+  var zeroAxisLine = require("src/modules/element/svg/line");
   var eventOptions = require("src/modules/helpers/options/events");
   var marginOptions = require("src/modules/helpers/options/margin");
   var scaleOptions = require("src/modules/helpers/options/scale");
@@ -13,6 +14,7 @@ define(function (require) {
   var clipPathOptions = require("src/modules/helpers/options/clippath");
   var xAxisOptions = require("src/modules/helpers/options/x_axis");
   var yAxisOptions = require("src/modules/helpers/options/y_axis");
+  var zeroLineOptions = require("src/modules/helpers/options/zero_line");
   var axisAPI = require("src/modules/helpers/api/axis");
   var areaAPI = require("src/modules/helpers/api/area");
   var linesAPI = require("src/modules/helpers/api/lines");
@@ -20,6 +22,7 @@ define(function (require) {
   var scaleAPI = require("src/modules/helpers/api/scale");
   var stackAPI = require("src/modules/helpers/api/stack");
   var clippathAPI = require("src/modules/helpers/api/clippath");
+  var zeroLineAPI = require("src/modules/helpers/api/zero_line");
 
   return function areaChart() {
     // Chart options
@@ -43,6 +46,7 @@ define(function (require) {
     var axisX = deepCopy(xAxisOptions, {});
     var axisY = deepCopy(yAxisOptions, {});
     var clipPath = deepCopy(clipPathOptions, {});
+    var zeroLine = deepCopy(zeroLineOptions, {});
 
     // Area options
     var areas = {
@@ -208,6 +212,20 @@ define(function (require) {
           .attr("class", areas.groupClass)
           .call(areaPath);
 
+        if (zeroLine.add) {
+          var zLine = zeroAxisLine()
+            .cssClass(zeroLine.lineClass)
+            .x1(function () { return xScale.range()[0]; })
+            .x2(function () { return xScale.range()[1]; })
+            .y1(function () { return yScale(0); })
+            .y2(function () { return yScale(0); })
+            .stroke(zeroLine.stroke)
+            .strokeWidth(zeroLine.strokeWidth)
+            .opacity(zeroLine.opacity);
+
+          g.call(zLine);
+        }
+
         if (lines.show) {
           var linePath = path()
             .pathGenerator(line)
@@ -319,6 +337,12 @@ define(function (require) {
     chart.clipPath = function (_) {
       if (!arguments.lenth) { return clipPath; }
       clipPath = clippathAPI(_, clipPath);
+      return chart;
+    };
+
+    chart.zeroLine = function (_) {
+      if (!arguments.length) { return zeroLine; }
+      zeroLine = zeroLineAPI(_, zeroLine);
       return chart;
     };
 

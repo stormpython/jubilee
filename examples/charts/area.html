@@ -39,11 +39,11 @@
               { x: 1411761570000, y: 57, label: "of"}
             ],
             [
-              { x: 1411761450000, y: 191, label: "brothers"},
-              { x: 1411761480000, y: 188, label: "brothers"},
-              { x: 1411761510000, y: 132, label: "brothers"},
-              { x: 1411761540000, y: 147, label: "brothers"},
-              { x: 1411761570000, y: 157, label: "brothers"}
+              { x: 1411761450000, y: -191, label: "brothers"},
+              { x: 1411761480000, y: -188, label: "brothers"},
+              { x: 1411761510000, y: -132, label: "brothers"},
+              { x: 1411761540000, y: -147, label: "brothers"},
+              { x: 1411761570000, y: -157, label: "brothers"}
             ]
           ]
         };
@@ -71,6 +71,7 @@
           .width(width)
           .height(height)
           .yScale({ nice: true })
+          .zeroLine({ add: true })
           .stack({ offset: "overlap" })
           .area({
             opacity: 0.5,

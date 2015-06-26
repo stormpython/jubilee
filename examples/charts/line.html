@@ -56,8 +56,10 @@
       };
 
       var color = d3.scale.category10(["band", "of", "brothers", "yes"]);
+
       var myChart = jubilee.chart.line()
         .height(500)
+        .yScale({ nice: true })
         .lines({
           stroke: function (d) { return color(d[0].label); },
           interpolate: "cardinal",
