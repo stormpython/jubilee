@@ -49,7 +49,7 @@
         };
 
         var width = 700;
-        var height = 700;
+        var height = 400;
 
         // Example logarithmic stacked area chart configuration
         var logChart = jubilee.chart.area()
@@ -62,14 +62,15 @@
               d.y = y;
             }
           })
-          .yScale(d3.scale.log())
-          .yDomain([1, 323]) // Need to write a function to calculate the yMax
+          .xAxis({ tick: { number: 5 } })
+          .yScale({ scale: d3.scale.log(), domain: [1, 323] })
           .interpolate("cardinal");
 
         // Example normal area chart configuration
         var myChart = jubilee.chart.area()
           .width(width)
           .height(height)
+          .yScale({ nice: true })
           .stack({ offset: "overlap" })
           .area({ opacity: 0.5 })
           .interpolate("cardinal");
@@ -78,6 +79,7 @@
           .datum(data.series)
           .call(myChart);
       });
+
     </script>
   </body>
 </html>

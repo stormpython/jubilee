@@ -4,10 +4,12 @@ define(function (require) {
   var path = require("src/modules/element/svg/path");
   var clip = require("src/modules/element/svg/clipPath");
   var circle = require("src/modules/element/svg/circle");
+  var deepCopy = require("src/modules/helpers/deep_copy");
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
   var marginOptions = require("src/modules/helpers/chart/options/margin");
   var clipPathOptions = require("src/modules/helpers/chart/options/clippath");
+  var scaleOptions = require("src/modules/helpers/chart/options/scale");
   var xAxisOptions = require("src/modules/helpers/chart/options/x_axis");
   var yAxisOptions = require("src/modules/helpers/chart/options/y_axis");
   var axisAPI = require("src/modules/helpers/chart/api/axis");
@@ -15,6 +17,7 @@ define(function (require) {
   var circlesAPI = require("src/modules/helpers/chart/api/circles");
   var marginAPI = require("src/modules/helpers/chart/api/margin");
   var clippathAPI = require("src/modules/helpers/chart/api/clippath");
+  var scaleAPI = require("src/modules/helpers/chart/api/scale");
 
   return function lineChart() {
     // Chart options
@@ -26,15 +29,16 @@ define(function (require) {
     var yValue = function (d) { return d.y; };
     var dispatch = d3.dispatch("brush");
 
-    // scale options
-    var xScale = d3.time.scale.utc();
-    var yScale = d3.scale.linear();
-    var xDomain = null;
-    var yDomain = null;
+    // Scale options
+    var xScaleOpts = deepCopy(scaleOptions, {});
+    var yScaleOpts = deepCopy(scaleOptions, {});
+    var xScale;
+    var yScale;
 
-    var axisX = xAxisOptions;
-    var axisY = yAxisOptions;
-    var clipPath = clipPathOptions;
+    // Other options
+    var axisX = deepCopy(xAxisOptions, {});
+    var axisY = deepCopy(yAxisOptions, {});
+    var clipPath = deepCopy(clipPathOptions, {});
 
     // Line Options
     var lines = {
@@ -74,7 +78,8 @@ define(function (require) {
         width = width - margin.left - margin.right;
         height = height - margin.top - margin.bottom;
 
-        xScale.domain(xDomain || d3.extent(mapDomain(data), xValue));
+        xScale = xScaleOpts.scale || d3.time.scale.utc();
+        xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(data), xValue));
 
         if (typeof xScale.rangeBands === "function") {
           xScale.rangeBands([0, width, 0.1]);
@@ -82,8 +87,12 @@ define(function (require) {
           xScale.range([0, width]);
         }
 
-        yScale.domain(yDomain || d3.extent(mapDomain(data), yValue))
+        yScale = yScaleOpts.scale || d3.scale.linear();
+        yScale.domain(yScaleOpts.domain || d3.extent(mapDomain(data), yValue))
           .range([height, 0]);
+
+        if (xScaleOpts.nice) { xScale.nice(); }
+        if (yScaleOpts.nice) { yScale.nice(); }
 
         var svg = d3.select(this).selectAll("svg")
           .data([data])
@@ -257,33 +266,21 @@ define(function (require) {
       return chart;
     };
 
+    chart.dispatch = function (_) {
+      if (!arguments.length) { return dispatch; }
+      dispatch = _;
+      return chart;
+    };
+
     chart.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
+      if (!arguments.length) { return xScaleOpts; }
+      xScaleOpts = scaleAPI(_, xScaleOpts);
       return chart;
     };
 
     chart.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
-      return chart;
-    };
-
-    chart.xDomain = function (_) {
-      if (!arguments.length) { return xDomain; }
-      xDomain = _;
-      return chart;
-    };
-
-    chart.yDomain = function (_) {
-      if (!arguments.length) { return yDomain; }
-      yDomain = _;
-      return chart;
-    };
-
-    chart.dispatch = function (_) {
-      if (!arguments.length) { return dispatch; }
-      dispatch = _;
+      if (!arguments.length) { return yScaleOpts; }
+      yScaleOpts = scaleAPI(_, yScaleOpts);
       return chart;
     };
 
