@@ -1,9 +1,9 @@
 define(function (require) {
   var d3 = require("d3");
   var deepCopy = require("src/modules/helpers/deep_copy");
-  var event = require("src/modules/component/events/events");
   var eventOptions = require("src/modules/helpers/options/events");
   var eventAPI = require("src/modules/helpers/api/events");
+  var attachEvents = require("src/modules/helpers/attach_events");
 
   return function path() {
     var pathGenerator = null;
@@ -22,13 +22,10 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
-        var path = d3.select(this).selectAll("path")
+        var path = d3.select(this).selectAll("paths")
           .data(values ? values.map(accessor) : accessor);
 
-        var pathEvents = event()
-          .mouseover(events.mouseover)
-          .mouseout(events.mouseout)
-          .click(events.click);
+        var pathEvents = attachEvents(events);
 
         path.exit().remove();
 

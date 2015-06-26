@@ -4,6 +4,7 @@ define(function (require) {
   var path = require("src/modules/element/svg/path");
   var clip = require("src/modules/element/svg/clipPath");
   var circle = require("src/modules/element/svg/circle");
+  var zeroAxisLine = require("src/modules/element/svg/line");
   var deepCopy = require("src/modules/helpers/deep_copy");
   var eventOptions = require("src/modules/helpers/options/events");
   var mapDomain = require("src/modules/helpers/map_domain");
@@ -40,6 +41,19 @@ define(function (require) {
     var axisX = deepCopy(xAxisOptions, {});
     var axisY = deepCopy(yAxisOptions, {});
     var clipPath = deepCopy(clipPathOptions, {});
+
+    // Zero-line options
+    var zeroLine = {
+      add: true,
+      lineClass: "zero-line",
+      stroke: "black",
+      strokeWidth: 1,
+      opacity: 0.5,
+      x1: function () { return xScale.range()[0]; },
+      x2: function () { return xScale.range()[1]; },
+      y1: function () { return yScale(0); },
+      y2: function () { return yScale(0); }
+    };
 
     // Line Options
     var lines = {
@@ -185,6 +199,20 @@ define(function (require) {
           .attr("class", lines.groupClass)
           .call(linePath);
 
+        if (zeroLine.add) {
+          var zLine = zeroAxisLine()
+            .cssClass(zeroLine.lineClass)
+            .x1(zeroLine.x1)
+            .x2(zeroLine.x2)
+            .y1(zeroLine.y1)
+            .y2(zeroLine.y2)
+            .stroke(zeroLine.stroke)
+            .strokeWidth(zeroLine.strokeWidth)
+            .opacity(zeroLine.opacity);
+
+          g.call(zLine);
+        }
+
         if (circles.show) {
           var clippath = clip()
             .width(clipPath.width || width)
@@ -285,6 +313,12 @@ define(function (require) {
     chart.clipPath = function (_) {
       if (!arguments.length) { return clipPath; }
       clipPath = clippathAPI(_, clipPath);
+      return chart;
+    };
+
+    chart.zeroLine = function (_) {
+      if (!arguments.length) { return zeroLine; }
+      zeroLine = zeroLineAPI(_, zeroLine);
       return chart;
     };
 

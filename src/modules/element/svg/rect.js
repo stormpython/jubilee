@@ -1,9 +1,9 @@
 define(function (require) {
   var d3 = require("d3");
   var deepCopy = require("src/modules/helpers/deep_copy");
-  var event = require("src/modules/component/events/events");
   var eventOptions = require("src/modules/helpers/options/events");
   var eventAPI = require("src/modules/helpers/api/events");
+  var attachEvents = require("src/modules/helpers/attach_events");
 
   return function rect() {
     var x = function (d) { return d.x; };
@@ -25,13 +25,10 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
-        var bars = d3.select(this).selectAll("rect")
+        var bars = d3.select(this).selectAll("rects")
           .data(values ? values : data);
 
-        var rectEvents = event()
-          .mouseover(events.mouseover)
-          .mouseout(events.mouseout)
-          .click(events.click);
+        var rectEvents = attachEvents(events);
 
         bars.exit().remove();
 

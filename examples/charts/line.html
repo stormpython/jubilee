@@ -46,11 +46,11 @@
             { x: 1411761570000, y: 157, label: "brothers"}
           ],
           [
-            { x: 1411761450000, y: 201, label: "yes"},
-            { x: 1411761480000, y: 198, label: "yes"},
-            { x: 1411761510000, y: 232, label: "yes"},
-            { x: 1411761540000, y: 547, label: "yes"},
-            { x: 1411761570000, y: 357, label: "yes"}
+            { x: 1411761450000, y: -201, label: "yes"},
+            { x: 1411761480000, y: -198, label: "yes"},
+            { x: 1411761510000, y: -232, label: "yes"},
+            { x: 1411761540000, y: -547, label: "yes"},
+            { x: 1411761570000, y: -357, label: "yes"}
           ]
         ]
       };
@@ -69,7 +69,7 @@
           show: true,
           fill: function (d) { return color(d.label); },
           events: {
-            mouseover: function (e) { console.log(e); }
+            dblclick: function (e) { console.log(e); }
           }
         });
 
