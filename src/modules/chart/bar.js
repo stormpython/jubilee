@@ -22,6 +22,7 @@ define(function (require) {
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();
+    var stacked = true;
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var dispatch = d3.dispatch("brush");
@@ -50,6 +51,7 @@ define(function (require) {
     };
 
     // Rect options
+    var rects;
 
     function chart(selection) {
       selection.each(function (data, index) {
@@ -195,6 +197,12 @@ define(function (require) {
       return chart;
     };
 
+    chart.stacked = function (_) {
+      if (!arguments.length) { return stacked; }
+      stacked = _;
+      return chart;
+    };
+
     chart.x = function (_) {
       if (!arguments.length) { return xValue; }
       xValue = _;
@@ -240,6 +248,18 @@ define(function (require) {
     chart.zeroLine = function (_) {
       if (!arguments.length) { return zeroLine; }
       zeroLine = zeroLineAPI(_, zeroLine);
+      return chart;
+    };
+
+    chart.zeroLine = function (_) {
+      if (!arguments.length) { return zeroLine; }
+      zeroLine = zeroLineAPI(_, zeroLine);
+      return chart;
+    };
+
+    chart.rects = function (_) {
+      if (!arguments.length) { return rects; }
+      rects = rectAPI(_, rects);
       return chart;
     };
 

@@ -352,7 +352,7 @@ define(function (require) {
       return chart;
     };
 
-    chart.line = function (_) {
+    chart.lines = function (_) {
       if (!arguments.length) { return lines; }
       lines = linesAPI(_, lines);
       return chart;
