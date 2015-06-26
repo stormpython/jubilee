@@ -6,19 +6,19 @@ define(function (require) {
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
   var deepCopy = require("src/modules/helpers/deep_copy");
-  var marginOptions = require("src/modules/helpers/chart/options/margin");
-  var scaleOptions = require("src/modules/helpers/chart/options/scale");
-  var stackOptions = require("src/modules/helpers/chart/options/stack");
-  var clipPathOptions = require("src/modules/helpers/chart/options/clippath");
-  var xAxisOptions = require("src/modules/helpers/chart/options/x_axis");
-  var yAxisOptions = require("src/modules/helpers/chart/options/y_axis");
-  var axisAPI = require("src/modules/helpers/chart/api/axis");
-  var areaAPI = require("src/modules/helpers/chart/api/area");
-  var linesAPI = require("src/modules/helpers/chart/api/lines");
-  var marginAPI = require("src/modules/helpers/chart/api/margin");
-  var scaleAPI = require("src/modules/helpers/chart/api/scale");
-  var stackAPI = require("src/modules/helpers/chart/api/stack");
-  var clippathAPI = require("src/modules/helpers/chart/api/clippath");
+  var marginOptions = require("src/modules/helpers/options/margin");
+  var scaleOptions = require("src/modules/helpers/options/scale");
+  var stackOptions = require("src/modules/helpers/options/stack");
+  var clipPathOptions = require("src/modules/helpers/options/clippath");
+  var xAxisOptions = require("src/modules/helpers/options/x_axis");
+  var yAxisOptions = require("src/modules/helpers/options/y_axis");
+  var axisAPI = require("src/modules/helpers/api/axis");
+  var areaAPI = require("src/modules/helpers/api/area");
+  var linesAPI = require("src/modules/helpers/api/lines");
+  var marginAPI = require("src/modules/helpers/api/margin");
+  var scaleAPI = require("src/modules/helpers/api/scale");
+  var stackAPI = require("src/modules/helpers/api/stack");
+  var clippathAPI = require("src/modules/helpers/api/clippath");
 
   return function areaChart() {
     // Chart options

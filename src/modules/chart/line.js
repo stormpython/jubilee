@@ -7,17 +7,17 @@ define(function (require) {
   var deepCopy = require("src/modules/helpers/deep_copy");
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
-  var marginOptions = require("src/modules/helpers/chart/options/margin");
-  var clipPathOptions = require("src/modules/helpers/chart/options/clippath");
-  var scaleOptions = require("src/modules/helpers/chart/options/scale");
-  var xAxisOptions = require("src/modules/helpers/chart/options/x_axis");
-  var yAxisOptions = require("src/modules/helpers/chart/options/y_axis");
-  var axisAPI = require("src/modules/helpers/chart/api/axis");
-  var linesAPI = require("src/modules/helpers/chart/api/lines");
-  var circlesAPI = require("src/modules/helpers/chart/api/circles");
-  var marginAPI = require("src/modules/helpers/chart/api/margin");
-  var clippathAPI = require("src/modules/helpers/chart/api/clippath");
-  var scaleAPI = require("src/modules/helpers/chart/api/scale");
+  var marginOptions = require("src/modules/helpers/options/margin");
+  var clipPathOptions = require("src/modules/helpers/options/clippath");
+  var scaleOptions = require("src/modules/helpers/options/scale");
+  var xAxisOptions = require("src/modules/helpers/options/x_axis");
+  var yAxisOptions = require("src/modules/helpers/options/y_axis");
+  var axisAPI = require("src/modules/helpers/api/axis");
+  var linesAPI = require("src/modules/helpers/api/lines");
+  var circlesAPI = require("src/modules/helpers/api/circles");
+  var marginAPI = require("src/modules/helpers/api/margin");
+  var clippathAPI = require("src/modules/helpers/api/clippath");
+  var scaleAPI = require("src/modules/helpers/api/scale");
 
   return function lineChart() {
     // Chart options
