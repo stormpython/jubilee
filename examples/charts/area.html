@@ -72,7 +72,12 @@
           .height(height)
           .yScale({ nice: true })
           .stack({ offset: "overlap" })
-          .area({ opacity: 0.5 })
+          .area({
+            opacity: 0.5,
+            events: {
+              click: function (e) { console.log(e); }
+            }
+          })
           .interpolate("cardinal");
 
         d3.select("#chart")

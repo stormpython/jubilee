@@ -4,7 +4,11 @@ define(function (require) {
   return function events() {
     var mouseover = function () {};
     var mouseout = function () {};
+    var mousemove = function () {};
+    var mouseup = function () {};
+    var mousedown = function () {};
     var click = function () {};
+    var dblclick = function () {};
 
     function component(selection) {
       selection
@@ -14,8 +18,20 @@ define(function (require) {
         .on("mouseout", function (d, i) {
           mouseout.call(this, d3.event, d, i);
         })
+        .on("mousemove", function (d, i) {
+          mousemove.call(this, d3.event, d, i);
+        })
+        .on("mouseup", function (d, i) {
+          mouseup.call(this, d3.event, d, i);
+        })
+        .on("mousedown", function (d, i) {
+          mousedown.call(this, d3.event, d, i);
+        })
         .on("click", function (d, i) {
           click.call(this, d3.event, d, i);
+        })
+        .on("dblclick", function (d, i) {
+          dblclick.call(this, d3.event, d, i);
         });
     }
 
@@ -31,9 +47,33 @@ define(function (require) {
       return component;
     };
 
+    component.mousemove = function (_) {
+      if (!arguments.length) { return mousemove; }
+      mousemove = _;
+      return component;
+    };
+
+    component.mouseup = function (_) {
+      if (!arguments.length) { return mouseup; }
+      mouseup = _;
+      return component;
+    };
+
+    component.mousedown = function (_) {
+      if (!arguments.length) { return mousedown; }
+      mousedown = _;
+      return component;
+    };
+
     component.click = function (_) {
       if (!arguments.length) { return click; }
       click = _;
+      return component;
+    };
+
+    component.dblclick = function (_) {
+      if (!arguments.length) { return dblclick; }
+      dblclick = _;
       return component;
     };
 

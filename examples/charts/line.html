@@ -60,11 +60,17 @@
         .height(500)
         .lines({
           stroke: function (d) { return color(d[0].label); },
-          interpolate: "cardinal"
+          interpolate: "cardinal",
+          events: {
+            click: function (e) { console.log(e); }
+          }
         })
         .circles({
           show: true,
-          fill: function (d) { return color(d.label); }
+          fill: function (d) { return color(d.label); },
+          events: {
+            mouseover: function (e) { console.log(e); }
+          }
         });
 
       d3.select("#chart")

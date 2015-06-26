@@ -1,4 +1,6 @@
-define(function () {
+define(function (require) {
+  var eventAPI = require("src/modules/helpers/api/events");
+
   return function (_, lines) {
     lines.show = typeof _.show !== "undefined" ? _.show : lines.show;
     lines.lineClass = typeof _.lineClass !== "undefined" ? _.lineClass : lines.lineClass;
@@ -10,12 +12,7 @@ define(function () {
     lines.opacity = typeof _.opacity !== "undefined" ? _.opacity : lines.opacity;
 
     lines.events = typeof _.events !== "undefined" ? _.events : {};
-    lines.events.mouseover = _.events && typeof _.events.mouseover !== "undefined" ?
-      _.events.mouseover : lines.events.mouseover;
-    lines.events.mouseout = _.events && typeof _.events.mouseout !== "undefined" ?
-      _.events.mouseout : lines.events.mouseout;
-    lines.events.click = _.events && typeof _.events.click !== "undefined" ?
-      _.events.click : lines.events.click;
+    lines.events = eventAPI(_, lines.events);
 
     return lines;
   };

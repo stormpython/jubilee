@@ -5,6 +5,7 @@ define(function (require) {
   var clip = require("src/modules/element/svg/clipPath");
   var circle = require("src/modules/element/svg/circle");
   var deepCopy = require("src/modules/helpers/deep_copy");
+  var eventOptions = require("src/modules/helpers/options/events");
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
   var marginOptions = require("src/modules/helpers/options/margin");
@@ -50,11 +51,7 @@ define(function (require) {
       interpolate: "linear",
       tension:  0.7,
       defined: function () { return true; },
-      events: {
-        mouseover: function () {},
-        mouseout: function () {},
-        click: function () {}
-      }
+      events: deepCopy(eventOptions, {})
     };
 
     // Circle Options
@@ -66,11 +63,7 @@ define(function (require) {
       stroke: null,
       radius: 5,
       strokeWidth: 3,
-      events: {
-        mouseover: function () {},
-        mouseout: function () {},
-        click: function () {}
-      }
+      events: deepCopy(eventOptions, {})
     };
 
     function chart(selection) {
@@ -116,11 +109,7 @@ define(function (require) {
           .stroke(lines.stroke)
           .strokeWidth(lines.strokeWidth)
           .opacity(lines.opacity)
-          .events({
-            mouseover: lines.events.mouseover,
-            mouseout: lines.events.mouseout,
-            click: lines.events.click
-          });
+          .events(lines.events);
 
         if (axisX.show) {
           var xAxis = axis()
@@ -210,10 +199,7 @@ define(function (require) {
             .fill(circles.fill)
             .stroke(circles.stroke ? circles.stroke : circles.fill)
             .strokeWidth(circles.strokeWidth)
-            .events({
-              mouseover: circles.events.mouseover,
-              mouseout: circles.events.mouseout
-            });
+            .events(circles.events);
 
           g.call(clippath);
 

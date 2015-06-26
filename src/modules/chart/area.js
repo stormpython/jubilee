@@ -6,6 +6,7 @@ define(function (require) {
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
   var deepCopy = require("src/modules/helpers/deep_copy");
+  var eventOptions = require("src/modules/helpers/options/events");
   var marginOptions = require("src/modules/helpers/options/margin");
   var scaleOptions = require("src/modules/helpers/options/scale");
   var stackOptions = require("src/modules/helpers/options/stack");
@@ -52,11 +53,7 @@ define(function (require) {
       strokeWidth: 0,
       opacity: 1,
       defined: function () { return true; },
-      events: {
-        mouseover: function () {},
-        mouseout: function () {},
-        click: function () {}
-      }
+      events: deepCopy(eventOptions, {})
     };
 
     // Line options
@@ -71,7 +68,6 @@ define(function (require) {
       tension:  0.7,
       defined: function () { return true; }
     };
-
 
     function chart(selection) {
       selection.each(function (data) {
@@ -204,11 +200,7 @@ define(function (require) {
           .strokeWidth(areas.strokeWidth)
           .fill(areas.fill)
           .opacity(areas.opacity)
-          .events({
-            mouseover: areas.events.mouseover,
-            mouseout: areas.events.mouseout,
-            click: areas.events.click
-          });
+          .events(areas.events);
 
         g.call(clippath);
         g.append("g")
