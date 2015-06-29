@@ -1,7 +1,7 @@
 define(function () {
   return function (data, type) {
-    var output = {};
     var grid = Math.ceil(Math.sqrt(data.length));
+    var output = {};
 
     switch (type) {
       case "grid":
