@@ -9,9 +9,9 @@ define(function (require) {
     var columnScale = d3.scale.linear();
 
     function layout(data) {
-      var format = getFormat(data);
-      var rows = format[type].rows;
-      var columns = format[type].columns;
+      var format = getFormat(data, type);
+      var rows = format.rows;
+      var columns = format.columns;
       var cellWidth = size[0] / columns;
       var cellHeight = size[1] / rows;
       var cell = 0;

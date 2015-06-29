@@ -1,18 +1,25 @@
 define(function () {
-  return function (data) {
-    return {
-      rows: {
-        rows: data.length,
-        columns: 1
-      },
-      columns: {
-        rows: 1,
-        columns: data.length
-      },
-      grid: {
-        rows: Math.ceil(Math.sqrt(data.length)),
-        columns: Math.ceil(Math.sqrt(data.length))
-      }
-    };
+  return function (data, type) {
+    var output = {};
+    var grid = Math.ceil(Math.sqrt(data.length));
+
+    switch (type) {
+      case "grid":
+        output.rows = grid;
+        output.columns = grid;
+        break;
+
+      case "columns":
+        output.rows = 1;
+        output.columns = data.length;
+        break;
+
+      default:
+        output.rows = data.length;
+        output.columns = 1;
+        break;
+    }
+
+    return output;
   };
 });
