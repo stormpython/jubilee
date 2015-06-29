@@ -1,7 +1,10 @@
 define(function (require) {
   var d3 = require("d3");
-  var deepCopy = require("src/modules/helpers/deep_copy");
   var axis = require("src/modules/component/axis/axis");
+  var clip = require("src/modules/element/svg/clipPath");
+  var clippathAPI = require("src/modules/helpers/api/clippath");
+  var clipPathOptions = require("src/modules/helpers/options/clippath");
+  var deepCopy = require("src/modules/helpers/deep_copy");
   var rect = require("src/modules/element/svg/rect");
   var zeroAxisLine = require("src/modules/element/svg/line");
   var eventOptions = require("src/modules/helpers/options/events");
@@ -15,17 +18,23 @@ define(function (require) {
   var marginAPI = require("src/modules/helpers/api/margin");
   var rectAPI = require("src/modules/helpers/api/rect");
   var scaleAPI = require("src/modules/helpers/api/scale");
+  var stackAPI = require("src/modules/helpers/api/stack");
+  var stackOptions = require("src/modules/helpers/options/stack");
+  var zeroAxisLine = require("src/modules/element/svg/line");
+  var zeroLineOptions = require("src/modules/helpers/options/zero_line");
+  var zeroLineAPI = require("src/modules/helpers/api/zero_line");
 
   return function barChart() {
     // Private variables
-    var margin = marginOptions;
+    var margin = deepCopy(marginOptions, {});
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();
-    var stacked = true;
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
+    var values = function (d) { return d; };
     var dispatch = d3.dispatch("brush");
+    var stacked = true;
 
     // Scale options
     var xScaleOpts = deepCopy(scaleOptions, {});
@@ -34,24 +43,37 @@ define(function (require) {
     var yScale;
 
     // Other options
+    var stackOpts = deepCopy(stackOptions, {});
     var axisX = deepCopy(xAxisOptions, {});
     var axisY = deepCopy(yAxisOptions, {});
-
-    // Zero-line options
-    var zeroLine = {
-      add: true,
-      lineClass: "zero-line",
-      stroke: "black",
-      strokeWidth: 1,
-      opacity: 0.5,
-      x1: function () { return xScale.range()[0]; },
-      x2: function () { return xScale.range()[1]; },
-      y1: function () { return yScale(0); },
-      y2: function () { return yScale(0); }
-    };
+    var clipPath = deepCopy(clipPathOptions, {});
+    var zeroLine = deepCopy(zeroLineOptions, {});
 
     // Rect options
-    var rects;
+    var rects = {
+      groupClass: "rects",
+      rectClass: "bars",
+      values: function (d) { return d; },
+      x: function (d, i, j, scale) {
+        return scale(xValue.call(d, i));
+      },
+      y: function (d, i, j, scale) {
+        return scale(yValue.call(d, i));
+      },
+      width: function (d, i, j, scale, data) {
+        return scale.range()[1] / data.length - 5;
+      },
+      height: function (d, i, j, scale) {
+        return scale.range()[0] - scale(yValue.call(null, d, i));
+      },
+      rx: 0,
+      ry: 0,
+      fill: function (d, i, j) { return color(i); },
+      stroke: function (d, i) { return color(i); },
+      strokeWidth: 0,
+      opacity: 1,
+      events: deepCopy(eventOptions, {})
+    };
 
     function chart(selection) {
       selection.each(function (data, index) {
@@ -74,6 +96,9 @@ define(function (require) {
         if (xScaleOpts.nice) { xScale.nice(); }
         if (yScaleOpts.nice) { yScale.nice(); }
 
+        var X = scaleValue(xScale, xValue);
+        var Y = scaleValue(yScale, yValue);
+
         var svg = d3.select(this).selectAll("svg")
           .data([data])
           .enter().append("svg")
@@ -83,8 +108,46 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var X = scaleValue(xScale, xValue);
-        var Y = scaleValue(yScale, yValue);
+        var clippath = clip()
+          .width(clipPath.width || width)
+          .height(clipPath.height || height);
+
+        var bars = rect()
+          .data(barData)
+          .cssClass(rects.rectClass)
+          .fill(rects.fill)
+          .stroke(rects.stroke)
+          .strokeWidth(rects.strokeWidth)
+          .opacity(rects.opacity)
+          .rx(rects.rx)
+          .ry(rects.ry)
+          .x(function (d, i, j) {
+            return rects.x.call(null, d, i, j, xScale, data);
+          })
+          .width(function (d, i, j) {
+            return rects.width.call(null, d, i, j, xScale, data);
+          })
+          .y(function (d, i, j) {
+            return rects.y.call(null, d, i, j, yScale, data);
+          })
+          .height(function (d, i, j) {
+            return rects.height.call(null, d, i, j, yScale, data);
+          });
+
+        //g.call(clippath)
+        //  .append("g")
+        //  .attr("clip-path", "url(#" + clippath.id() + ")")
+        //  .attr("class", rects.groupClass)
+        //  .call(bars);
+
+        if (stacked) {
+          g.selectAll("g")
+            .data(values)
+            .enter().append("g")
+            .attr("class", rects.groupClass);
+        }
+
+        g.call(bars);
 
         if (axisX.show) {
           var xAxis = axis()
@@ -197,12 +260,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.stacked = function (_) {
-      if (!arguments.length) { return stacked; }
-      stacked = _;
-      return chart;
-    };
-
     chart.x = function (_) {
       if (!arguments.length) { return xValue; }
       xValue = _;
@@ -212,6 +269,12 @@ define(function (require) {
     chart.y = function (_) {
       if (!arguments.length) { return yValue; }
       yValue = _;
+      return chart;
+    };
+
+    chart.stacked = function (_) {
+      if (!arguments.length) { return stacked; }
+      stacked = _;
       return chart;
     };
 

@@ -26,14 +26,15 @@ define(function (require) {
 
   return function areaChart() {
     // Chart options
-    var margin = marginOptions;
+    var margin = deepCopy(marginOptions, {});
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
-    var dispatch = d3.dispatch("brush");
     var interpolate = "linear";
+    var defined = function () { return true; };
+    var dispatch = d3.dispatch("brush");
 
     // Scale options
     var xScaleOpts = deepCopy(scaleOptions, {});
@@ -56,7 +57,6 @@ define(function (require) {
       stroke: function (d, i) { return color(i); },
       strokeWidth: 0,
       opacity: 1,
-      defined: function () { return true; },
       events: deepCopy(eventOptions, {})
     };
 
@@ -69,12 +69,11 @@ define(function (require) {
       strokeWidth: 3,
       opacity: 1,
       interpolate: interpolate,
-      tension:  0.7,
-      defined: function () { return true; }
+      tension:  0.7
     };
 
     function chart(selection) {
-      selection.each(function (data) {
+      selection.each(function (data, index) {
         width = width - margin.left - margin.right;
         height = height - margin.top - margin.bottom;
 
@@ -191,11 +190,11 @@ define(function (require) {
 
         var area = d3.svg.area().x(X).y0(Y0).y1(Y1)
           .interpolate(interpolate)
-          .defined(areas.defined);
+          .defined(defined);
 
         var line = d3.svg.line().x(X).y(Y1)
           .interpolate(interpolate)
-          .defined(lines.defined);
+          .defined(defined);
 
         var areaPath = path()
           .pathGenerator(area)
@@ -206,8 +205,8 @@ define(function (require) {
           .opacity(areas.opacity)
           .events(areas.events);
 
-        g.call(clippath);
-        g.append("g")
+        g.call(clippath)
+          .append("g")
           .attr("clip-path", "url(#" + clippath.id() + ")")
           .attr("class", areas.groupClass)
           .call(areaPath);
@@ -295,6 +294,12 @@ define(function (require) {
     chart.dispatch = function (_) {
       if (!arguments.length) { return dispatch; }
       dispatch = _;
+      return chart;
+    };
+
+    chart.defined = function (_) {
+      if (!arguments.length) { return defined; }
+      defined = _;
       return chart;
     };
 

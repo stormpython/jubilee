@@ -6,7 +6,6 @@ define(function (require) {
     area.areaClass = typeof _.areaClass !== "undefined" ? _.areaClass : area.areaClass;
     area.interpolate = typeof _.interpolate !== "undefined" ? _.interpolate : area.interpolate;
     area.tension = typeof _.tension !== "undefined" ? _.tension : area.tension;
-    area.defined = typeof _.defined !== "undefined" ? _.defined : area.defined;
     area.stroke = typeof _.stroke !== "undefined" ? _.stroke : area.stroke;
     area.strokeWidth = typeof _.stroke !== "undefined" ? _.strokeWidth : area.strokeWidth;
     area.fill = typeof _.fill !== "undefined" ? _.fill : area.fill;

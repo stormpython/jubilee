@@ -25,12 +25,13 @@ define(function (require) {
 
   return function lineChart() {
     // Chart options
-    var margin = marginOptions;
+    var margin = deepCopy(marginOptions, {});
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
+    var defined = function () { return true; };
     var dispatch = d3.dispatch("brush");
 
     // Scale options
@@ -54,7 +55,6 @@ define(function (require) {
       opacity: 1,
       interpolate: "linear",
       tension:  0.7,
-      defined: function () { return true; },
       events: deepCopy(eventOptions, {})
     };
 
@@ -71,7 +71,7 @@ define(function (require) {
     };
 
     function chart(selection) {
-      selection.each(function (data) {
+      selection.each(function (data, index) {
         width = width - margin.left - margin.right;
         height = height - margin.top - margin.bottom;
 
@@ -105,7 +105,7 @@ define(function (require) {
         var line = d3.svg.line().x(X).y(Y)
           .interpolate(lines.interpolate)
           .tension(lines.tension)
-          .defined(lines.defined);
+          .defined(defined);
 
         var linePath = path()
           .pathGenerator(line)
@@ -219,9 +219,8 @@ define(function (require) {
             .strokeWidth(circles.strokeWidth)
             .events(circles.events);
 
-          g.call(clippath);
-
-          g.append("g")
+          g.call(clippath)
+            .append("g")
             .attr("clip-path", "url(#" + clippath.id() + ")")
             .selectAll("gCircles")
             .data(function (d) { return d; })
@@ -267,6 +266,12 @@ define(function (require) {
     chart.y = function (_) {
       if (!arguments.length) { return yValue; }
       yValue = _;
+      return chart;
+    };
+
+    chart.defined = function (_) {
+      if (!arguments.length) { return defined; }
+      defined = _;
       return chart;
     };
 
