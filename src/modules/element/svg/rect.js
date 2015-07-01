@@ -15,6 +15,7 @@ define(function (require) {
     var values = null;
 
     // Options
+    var accessor = function (d) { return d; }
     var color = d3.scale.category10();
     var cssClass = "bar";
     var fill = null;

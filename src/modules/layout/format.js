@@ -3,13 +3,14 @@ define(function (require) {
   var getFormat = require("src/modules/helpers/format_options");
 
   return function rows() {
+    // type: 'rows'(default), 'columns', 'grid'
     var type = "rows";
     var size = [500, 500]; // [width, height]
     var rowScale = d3.scale.linear();
     var columnScale = d3.scale.linear();
 
     function layout(data) {
-      var format = getFormat(data, type);
+      var format = getFormat(data.length, type);
       var rows = format.rows;
       var columns = format.columns;
       var cellWidth = size[0] / columns;

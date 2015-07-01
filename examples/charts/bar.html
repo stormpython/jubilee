@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SVG Rect</title>
+  </head>
+  <body>
+    <style>
+      body {
+        font: 10px sans-serif;
+      }
+
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+    </style>
+    <div id="bar"></div>
+    <script data-main="../../src/require.config.js" src="../../../node_modules/requirejs/require.js"></script>
+    <script>
+      require(["../../src/index"], function (jubilee) {
+        var data = {
+          series: [
+            {
+              values: [
+                { x: 1411761450000, y: 41, label: "a" },
+                { x: 1411761480000, y: 18, label: "a" },
+                { x: 1411761510000, y: 22, label: "a" },
+                { x: 1411761540000, y: 17, label: "a" },
+                { x: 1411761570000, y: 17, label: "a" }
+              ]
+            },
+            {
+              values: [
+                { x: 1411761450000, y: 51, label: "b" },
+                { x: 1411761480000, y: 8, label: "b" },
+                { x: 1411761510000, y: 42, label: "b" },
+                { x: 1411761540000, y: 7, label: "b" },
+                { x: 1411761570000, y: 7, label: "b" }
+              ]
+            },
+            {
+              values: [
+                { x: 1411761450000, y: -141, label: "c" },
+                { x: 1411761480000, y: -118, label: "c" },
+                { x: 1411761510000, y: -122, label: "c" },
+                { x: 1411761540000, y: -117, label: "c" },
+                { x: 1411761570000, y: -117, label: "c" }
+              ]
+            }
+          ]
+        };
+
+        var color = d3.scale.category10(["a", "b", "c", "d", "e"]);
+        var bar = jubilee.chart.bar()
+          .width(760)
+          .height(500)
+          .color(color)
+          .zeroLine({ add: false })
+          .xScale({
+            nice: true,
+            domain: [1411761450000, 1411761600000]
+          })
+          .yScale({
+            nice: true,
+            domain: [-141, 93]
+          })
+          .values(function (d) { return d.values; })
+          .rects({
+            fill: function (d) { return d.label; },
+            y: function (d, i, j, scale) {
+              if (d.y < 0) {
+                d.y0 = 0;
+                return scale(d.y0);
+              }
+              return scale(d.y0 + d.y);
+            },
+            width: function (d, i, j, scale) {
+              return (scale.range()[1] / 5) - 2;
+            },
+            height: function (d, i, j, scale) {
+              if (d.y < 0) return (scale.range()[0] - (scale(0)) - scale(d.y));
+              return scale(d.y0) - scale(d.y0 + d.y);
+            }
+          });
+
+        d3.select("#bar")
+          .datum(data.series)
+          .call(bar);
+      });
+    </script>
+  </body>
+</html>
