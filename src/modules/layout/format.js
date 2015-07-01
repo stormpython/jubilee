@@ -3,8 +3,7 @@ define(function (require) {
   var getFormat = require("src/modules/helpers/format_options");
 
   return function rows() {
-    // type: 'rows'(default), 'columns', 'grid'
-    var type = "rows";
+    var type = "rows"; // type: 'rows', 'columns', 'grid'
     var size = [500, 500]; // [width, height]
     var rowScale = d3.scale.linear();
     var columnScale = d3.scale.linear();
@@ -35,6 +34,7 @@ define(function (require) {
       return data;
     }
 
+    // Public API
     layout.type = function (_) {
       if (!arguments.length) { return type; }
       type = _;

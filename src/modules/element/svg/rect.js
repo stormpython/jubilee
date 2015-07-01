@@ -52,9 +52,10 @@ define(function (require) {
     }
 
     function colorFill(d, i) {
-      return color(d, i);
+      return color(i);
     }
 
+    // Public API
     element.data = function (_) {
       if (!arguments.length) { return values; }
       values = _;

@@ -45,6 +45,7 @@ define(function (require) {
       });
     }
 
+    // Public API
     element.data = function (_) {
       if (!arguments.length) { return values; }
       values = _;
