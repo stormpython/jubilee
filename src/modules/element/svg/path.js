@@ -22,10 +22,10 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
+        var pathEvents = attachEvents(events);
+
         var path = d3.select(this).selectAll("paths")
           .data(values ? values.map(accessor) : accessor);
-
-        var pathEvents = attachEvents(events);
 
         path.exit().remove();
 

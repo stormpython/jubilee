@@ -23,10 +23,10 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
+        var ellipseEvents = attachEvents(events);
+
         var ellipses = d3.select(this).selectAll("ellipses")
           .data(values ? values : data);
-
-        var ellipseEvents = attachEvents(events);
 
         // Exit
         ellipses.exit().remove();

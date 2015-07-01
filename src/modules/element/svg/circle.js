@@ -22,10 +22,10 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
+        var circleEvents = attachEvents(events);
+
         var circles = d3.select(this).selectAll("circles")
           .data(values ? values : data);
-
-        var circleEvents = attachEvents(events);
 
         // Exit
         circles.exit().remove();

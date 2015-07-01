@@ -15,7 +15,6 @@ define(function (require) {
     var values = null;
 
     // Options
-    var accessor = function (d) { return d; }
     var color = d3.scale.category10();
     var cssClass = "bar";
     var fill = null;
@@ -26,10 +25,10 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
+        var rectEvents = attachEvents(events);
+
         var bars = d3.select(this).selectAll("rects")
           .data(values ? values : data);
-
-        var rectEvents = attachEvents(events);
 
         bars.exit().remove();
 

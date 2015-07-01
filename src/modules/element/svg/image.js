@@ -20,10 +20,10 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
+        var imageEvents = attachEvents(events);
+
         var images = d3.select(this).selectAll("images")
           .data(values ? values : data);
-
-        var imageEvents = attachEvents(events);
 
         // Exit
         images.exit().remove();

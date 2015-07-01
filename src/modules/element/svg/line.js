@@ -21,10 +21,10 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
+        var lineEvents = attachEvents(events);
+
         var lines = d3.select(this).selectAll("lines")
           .data(values ? values : data);
-
-        var lineEvents = attachEvents(events);
 
         // Exit
         lines.exit().remove();
