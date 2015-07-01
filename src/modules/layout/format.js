@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
   var getFormat = require("src/modules/helpers/format_options");
 
-  return function rows() {
+  return function format() {
     var type = "rows"; // type: 'rows', 'columns', 'grid'
     var size = [500, 500]; // [width, height]
     var rowScale = d3.scale.linear();
