@@ -4,8 +4,8 @@ define(function () {
 
     switch (type) {
       case "grid":
-        output.rows = Math.ceil(Math.sqrt(length));
-        output.columns = output.rows;
+        output.rows = Math.round(Math.sqrt(length));
+        output.columns = Math.ceil(Math.sqrt(length));
         break;
 
       case "columns":
