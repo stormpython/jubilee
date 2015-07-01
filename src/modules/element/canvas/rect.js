@@ -3,8 +3,8 @@ define(function (require) {
 
   return function rect() {
     // Private variables
-    var x = function (d) { return d.x; }
-    var y = function (d) { return d.y; }
+    var x = function (d) { return d.x; };
+    var y = function (d) { return d.y; };
     var width = 10;
     var height = 10;
 
@@ -19,6 +19,10 @@ define(function (require) {
         var canvas = d3.select(this);
         var context = canvas.node().getContext("2d");
         // var container = canvas.append("custom");
+
+        canvas.node().addEventListener("click", function (event) {
+          console.log(event);
+        });
 
         // Clear Canvas
         context.fillStyle = "#fff";
@@ -140,5 +144,5 @@ define(function (require) {
     };
 
     return element;
-  }
+  };
 });

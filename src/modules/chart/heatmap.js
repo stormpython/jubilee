@@ -49,6 +49,8 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data, index) {
+        var canvas;
+
         var xScale = d3.scale.ordinal()
           .domain(getDomain(data, "x"))
           .rangeBands([0, width], rect.padding);
@@ -67,30 +69,9 @@ define(function (require) {
           d.opacity = rect.opacity.call(data, d, i);
         });
 
-        if (isCanvas) {
-          var padding = Object.keys(margin).map(function (key) {
-            return margin[key];
-          }).join("px ") + "px";
-
-          var canvas = d3.select(this).append("canvas")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .style("padding", padding);
-        }
-
-        var svg = d3.select(this).append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          .on("mousemove", function (d, i) {
-            var x = d3.event.clientX;
-            var y = d3.event.clientY;
-            console.log(xScale.domain().filter(function (d) {
-              return (x <= xScale(d) && yScale(d) <= y);
-            }), x, y);
-          });
-
-        var g = svg.append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var padding = Object.keys(margin).map(function (key) {
+          return margin[key];
+        }).join("px ") + "px";
 
         if (isCanvas) {
           var canvasRects = canvasRect()
@@ -104,8 +85,28 @@ define(function (require) {
             .strokeStyle(function (d) { return color(d.fill); })
             .lineWidth(rect.strokeWidth);
 
+          canvas = d3.select(this).append("canvas")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .style("padding", padding);
+
           canvas.datum(data).call(canvasRects);
-        } else {
+        }
+
+        var svg = d3.select(this).append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .style("padding", padding)
+          .on("mousemove", function (d, i) {
+            var x = d3.event.clientX;
+            var y = d3.event.clientY;
+          });
+
+        var g = svg.append("g")
+          .attr("transform", "translate(0,0)");
+          //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        if (!isCanvas) {
           var svgRects = svgRect()
             .cssClass(rect.cssClass)
             .x(function (d) { return xScale(d.x); })
@@ -123,17 +124,21 @@ define(function (require) {
         if (axisX.show) {
           var xAxis = axis()
             .scale(xScale)
-            .tickValues(
-              xScale.domain()
-                .filter(function (d, i) { return !(i % axisX.filterTicksBy); })
-            )
-            .gClass(axisX.axisClass)
             .transform("translate(0," + height + ")")
-            .titleX(axisX.x)
-            .titleY(axisY.y)
-            .titleDY(axisX.dy)
-            .titleAnchor(axisX.textAnchor)
-            .title(axisX.title);
+            .gClass(axisX.axisClass)
+            .tick({
+              values: xScale.domain()
+                .filter(function (d, i) {
+                  return !(i % axisX.filterTicksBy);
+                })
+            })
+            .title({
+              x: axisX.x,
+              y: axisY.y,
+              dy: axisX.dy,
+              anchor: axisX.textAnchor,
+              text: axisX.title
+            });
 
           g.call(xAxis);
 
@@ -148,18 +153,22 @@ define(function (require) {
         if (axisY.show) {
           var yAxis = axis()
             .scale(yScale)
-            .tickValues(
-              yScale.domain()
-                .filter(function (d, i) { return !(i % axisY.filterTicksBy); })
-            )
-            .orient("left")
             .gClass(axisY.axisClass)
-            .titleClass(axisY.titleClass)
-            .titleX(axisY.x)
-            .titleY(axisY.y)
-            .titleDY(axisY.dy)
-            .titleAnchor(axisY.textAnchor)
-            .title(axisY.title);
+            .orient("left")
+            .tick({
+              values: yScale.domain()
+                .filter(function (d, i) {
+                  return !(i % axisY.filterTicksBy);
+                })
+            })
+            .title({
+              titleClass: axisY.titleClass,
+              x: axisY.x,
+              y: axisY.y,
+              dy: axisY.dy,
+              anchor: axisY.textAnchor,
+              text: axisY.title
+            });
 
           g.call(yAxis);
         }
