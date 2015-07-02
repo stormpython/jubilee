@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var axis = require("src/modules/component/axis/axis");
+  var axis = require("src/modules/component/axis");
   var clip = require("src/modules/element/svg/clipPath");
   var clippathAPI = require("src/modules/helpers/api/clippath");
   var clipPathOptions = require("src/modules/helpers/options/clippath");

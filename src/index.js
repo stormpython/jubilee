@@ -24,10 +24,11 @@ define(function (require) {
       grid: require("src/modules/layout/grid")
     },
     component: {
-      axis: require("src/modules/component/axis/axis"),
-      boxplot: require("src/modules/component/boxplot/boxplot"),
-      chart: require("src/modules/component/chart/chart"),
-      events: require("src/modules/component/events/events")
+      axis: require("src/modules/component/axis"),
+      boxplot: require("src/modules/component/boxplot"),
+      brush: require("src/modules/components/brush"),
+      chart: require("src/modules/component/chart"),
+      events: require("src/modules/component/events")
     },
     svg: {
       circle: require("src/modules/element/svg/circle"),

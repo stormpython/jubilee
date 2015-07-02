@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
   var svgRect = require("src/modules/element/svg/rect");
   var canvasRect = require("src/modules/element/canvas/rect");
-  var axis = require("src/modules/component/axis/axis");
+  var axis = require("src/modules/component/axis");
 
   return function heatmap() {
     // Private variables

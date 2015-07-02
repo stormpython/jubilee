@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
-  var axis = require("src/modules/component/axis/axis");
+  var axis = require("src/modules/component/axis");
   var clip = require("src/modules/element/svg/clipPath");
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");

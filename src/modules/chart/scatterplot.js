@@ -1,8 +1,8 @@
 define(function (require) {
   var d3 = require("d3");
+  var axis = require("src/modules/component/axis");
   var circle = require("src/modules/element/svg/circle");
   var clipPath = require("src/modules/element/svg/clipPath");
-  var axis = require("src/modules/component/axis/axis");
 
   return function scatterPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};

@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
-  var axis = require("src/modules/component/axis/axis");
-  var graphFunc = require("src/modules/component/chart/chart");
+  var axis = require("src/modules/component/axis");
+  var graphFunc = require("src/modules/component/chart");
 
   return function xzyPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
