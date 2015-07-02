@@ -1,5 +1,5 @@
 define(function (require) {
-  var event = require("src/modules/component/events/events");
+  var event = require("src/modules/component/events");
 
   return function (events) {
     return event()

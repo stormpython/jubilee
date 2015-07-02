@@ -26,7 +26,7 @@ define(function (require) {
     component: {
       axis: require("src/modules/component/axis"),
       boxplot: require("src/modules/component/boxplot"),
-      brush: require("src/modules/components/brush"),
+      brush: require("src/modules/component/brush"),
       chart: require("src/modules/component/chart"),
       events: require("src/modules/component/events")
     },
