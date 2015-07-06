@@ -1,9 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var deepCopy = require("src/modules/helpers/deep_copy");
-  var eventOptions = require("src/modules/helpers/options/events");
-  var eventAPI = require("src/modules/helpers/api/events");
-  var attachEvents = require("src/modules/helpers/attach_events");
+  var events = require("src/modules/component/events");
 
   return function ellipse() {
     var cx = function (d) { return d.x; };
@@ -19,11 +16,12 @@ define(function (require) {
     var stroke = null;
     var strokeWidth = 0;
     var opacity = null;
-    var events = deepCopy(eventOptions, {});
+    var listeners = {};
 
     function element(selection) {
       selection.each(function (data, index) {
-        var ellipseEvents = attachEvents(events);
+        var ellipseEvents = events()
+          .listeners(listeners);
 
         var ellipses = d3.select(this).selectAll("ellipses")
           .data(values ? values : data);
@@ -121,9 +119,9 @@ define(function (require) {
       return element;
     };
 
-    element.events = function (_) {
-      if (!arguments.length) { return events; }
-      events = eventAPI(_, events);
+    element.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
       return element;
     };
 

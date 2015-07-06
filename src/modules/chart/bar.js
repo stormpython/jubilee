@@ -6,7 +6,6 @@ define(function (require) {
   var clipPathOptions = require("src/modules/helpers/options/clippath");
   var deepCopy = require("src/modules/helpers/deep_copy");
   var rect = require("src/modules/element/svg/rect");
-  var eventOptions = require("src/modules/helpers/options/events");
   var mapDomain = require("src/modules/helpers/map_domain");
   var marginOptions = require("src/modules/helpers/options/margin");
   var scaleOptions = require("src/modules/helpers/options/scale");
@@ -21,6 +20,8 @@ define(function (require) {
   var zeroAxisLine = require("src/modules/element/svg/line");
   var zeroLineOptions = require("src/modules/helpers/options/zero_line");
   var zeroLineAPI = require("src/modules/helpers/api/zero_line");
+  var addEventListener = require("src/modules/helpers/add_event_listener");
+  var removeEventListener = require("src/modules/helpers/remove_event_listener");
 
   return function barChart() {
     // Private variables
@@ -69,8 +70,9 @@ define(function (require) {
       stroke: function (d, i) { return color(i); },
       strokeWidth: 0,
       opacity: 1,
-      events: deepCopy(eventOptions, {})
     };
+
+    var listeners = {};
 
     function chart(selection) {
       selection.each(function (data, index) {
@@ -131,7 +133,6 @@ define(function (require) {
           .opacity(rects.opacity)
           .rx(rects.rx)
           .ry(rects.ry)
-          .events(rects.events)
           .x(function (d, i, j) {
             return rects.x.call(null, d, i, j, xScale, data);
           })
@@ -143,7 +144,8 @@ define(function (require) {
           })
           .height(function (d, i, j) {
             return rects.height.call(null, d, i, j, yScale, data);
-          });
+          })
+          .listeners(listeners);
 
         g.call(clippath)
           .append("g")
@@ -348,7 +350,15 @@ define(function (require) {
       return chart;
     };
 
-    d3.rebind(chart, dispatch, "on");
+    chart.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return chart;
+    };
+
+    chart.on = addEventListener(listeners, chart);
+    chart.off = removeEventListener(listeners, chart);
+
     return chart;
   };
 });

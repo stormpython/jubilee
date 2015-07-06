@@ -1,6 +1,4 @@
-define(function (require) {
-  var eventAPI = require("src/modules/helpers/api/events");
-
+define(function () {
   return function (_, circles) {
     circles.show = typeof _.show !== "undefined" ? _.show : circles.show;
     circles.groupClass = typeof _.groupClass !== "undefined" ? _.groupClass : circles.groupClass;
@@ -9,9 +7,6 @@ define(function (require) {
     circles.fill = typeof _.fill !== "undefined" ? _.fill : circles.fill;
     circles.stroke = typeof _.stroke !== "undefined" ? _.stroke : circles.stroke;
     circles.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : circles.strokeWidth;
-
-    circles.events = typeof _.events !== "undefined" ? _.events : {};
-    circles.events = eventAPI(_, circles.events);
 
     return circles;
   };

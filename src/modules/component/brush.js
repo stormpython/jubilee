@@ -3,10 +3,11 @@ define(function (require) {
 
   return function brush() {
     // Private variables
-    var margin = { top: 0, right: 0, bottom: 0, left: 0 };
-    var width = 760;
-    var height = 120;
     var cssClass = "brush";
+    var margin = { top: 0, right: 0, bottom: 0, left: 0 };
+    var width = null;
+    var height = null;
+    var opacity = 0.2;
 
     var xScale = null;
     var yScale = null;
@@ -31,6 +32,7 @@ define(function (require) {
           })
           .on("brushend", function () {
             brushEndCallback.call(this, brush, data);
+            d3.selectAll("g.brush").call(brush.clear());
           });
 
         var svg = d3.select(this);
@@ -42,12 +44,12 @@ define(function (require) {
 
         var brushG = svg.append("g")
           .attr("class", cssClass)
+          .attr("opacity", opacity)
           .call(brush)
-          .selectAll("rect")
-          .attr("width", width)
-          .attr("height", height);
+          .selectAll("rect");
 
-        brush.event(svg.select(brushG));
+        if (width) { brushG.attr("width", width); }
+        if (height) { brushG.attr("height", height); }
       });
     }
 
@@ -70,6 +72,12 @@ define(function (require) {
     component.height = function (_) {
       if (!arguments.length) { return height; }
       height = _;
+      return component;
+    };
+
+    component.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
       return component;
     };
 

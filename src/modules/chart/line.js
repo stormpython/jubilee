@@ -6,7 +6,6 @@ define(function (require) {
   var circle = require("src/modules/element/svg/circle");
   var zeroAxisLine = require("src/modules/element/svg/line");
   var deepCopy = require("src/modules/helpers/deep_copy");
-  var eventOptions = require("src/modules/helpers/options/events");
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
   var marginOptions = require("src/modules/helpers/options/margin");
@@ -22,6 +21,8 @@ define(function (require) {
   var clippathAPI = require("src/modules/helpers/api/clippath");
   var scaleAPI = require("src/modules/helpers/api/scale");
   var zeroLineAPI = require("src/modules/helpers/api/zero_line");
+  var addEventListener = require("src/modules/helpers/add_event_listener");
+  var removeEventListener = require("src/modules/helpers/remove_event_listener");
 
   return function lineChart() {
     // Chart options
@@ -54,8 +55,7 @@ define(function (require) {
       strokeWidth: 3,
       opacity: 1,
       interpolate: "linear",
-      tension:  0.7,
-      events: deepCopy(eventOptions, {})
+      tension:  0.7
     };
 
     // Circle Options
@@ -66,9 +66,10 @@ define(function (require) {
       fill: function (d, i, j) { return color(j); },
       stroke: null,
       radius: 5,
-      strokeWidth: 3,
-      events: deepCopy(eventOptions, {})
+      strokeWidth: 3
     };
+
+    var listeners = {};
 
     function chart(selection) {
       selection.each(function (data, index) {
@@ -113,7 +114,7 @@ define(function (require) {
           .stroke(lines.stroke)
           .strokeWidth(lines.strokeWidth)
           .opacity(lines.opacity)
-          .events(lines.events);
+          .listeners(listeners);
 
         if (axisX.show) {
           var xAxis = axis()
@@ -217,7 +218,7 @@ define(function (require) {
             .fill(circles.fill)
             .stroke(circles.stroke ? circles.stroke : circles.fill)
             .strokeWidth(circles.strokeWidth)
-            .events(circles.events);
+            .listeners(listeners);
 
           g.call(clippath)
             .append("g")
@@ -329,7 +330,15 @@ define(function (require) {
       return chart;
     };
 
-    d3.rebind(chart, dispatch, "on");
+    chart.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return chart;
+    };
+
+    chart.on = addEventListener(listeners, chart);
+    chart.off = removeEventListener(listeners, chart);
+
     return chart;
   };
 });

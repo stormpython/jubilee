@@ -66,6 +66,8 @@
           .yScale({ scale: d3.scale.log(), domain: [1, 323] })
           .interpolate("cardinal");
 
+        var clickFunction = function (e) { console.log(e); };
+
         // Example normal area chart configuration
         var myChart = jubilee.chart.area()
           .width(width)
@@ -73,13 +75,9 @@
           .yScale({ nice: true })
           .zeroLine({ add: true })
           .stack({ offset: "overlap" })
-          .area({
-            opacity: 0.5,
-            events: {
-              click: function (e) { console.log(e); }
-            }
-          })
-          .interpolate("cardinal");
+          .area({ opacity: 0.5 })
+          .interpolate("cardinal")
+          .on("click", clickFunction);
 
         d3.select("#chart")
           .datum(data.series)

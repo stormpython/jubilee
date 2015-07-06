@@ -2,12 +2,12 @@ define(function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
   var axis = require("src/modules/component/axis");
+  var brushComponent = require("src/modules/component/brush");
   var clip = require("src/modules/element/svg/clipPath");
   var mapDomain = require("src/modules/helpers/map_domain");
   var scaleValue = require("src/modules/helpers/scale_value");
   var deepCopy = require("src/modules/helpers/deep_copy");
   var zeroAxisLine = require("src/modules/element/svg/line");
-  var eventOptions = require("src/modules/helpers/options/events");
   var marginOptions = require("src/modules/helpers/options/margin");
   var scaleOptions = require("src/modules/helpers/options/scale");
   var stackOptions = require("src/modules/helpers/options/stack");
@@ -23,6 +23,8 @@ define(function (require) {
   var stackAPI = require("src/modules/helpers/api/stack");
   var clippathAPI = require("src/modules/helpers/api/clippath");
   var zeroLineAPI = require("src/modules/helpers/api/zero_line");
+  var addEventListener = require("src/modules/helpers/add_event_listener");
+  var removeEventListener = require("src/modules/helpers/remove_event_listener");
 
   return function areaChart() {
     // Chart options
@@ -34,7 +36,6 @@ define(function (require) {
     var yValue = function (d) { return d.y; };
     var interpolate = "linear";
     var defined = function () { return true; };
-    var dispatch = d3.dispatch("brush");
 
     // Scale options
     var xScaleOpts = deepCopy(scaleOptions, {});
@@ -48,6 +49,7 @@ define(function (require) {
     var axisY = deepCopy(yAxisOptions, {});
     var clipPath = deepCopy(clipPathOptions, {});
     var zeroLine = deepCopy(zeroLineOptions, {});
+    var brushCallback = null;
 
     // Area options
     var areas = {
@@ -56,8 +58,7 @@ define(function (require) {
       fill: function (d, i) { return color(i); },
       stroke: function (d, i) { return color(i); },
       strokeWidth: 0,
-      opacity: 1,
-      events: deepCopy(eventOptions, {})
+      opacity: 1
     };
 
     // Line options
@@ -71,6 +72,8 @@ define(function (require) {
       interpolate: interpolate,
       tension:  0.7
     };
+
+    var listeners = {};
 
     function chart(selection) {
       selection.each(function (data, index) {
@@ -111,6 +114,15 @@ define(function (require) {
 
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+        if (brushCallback) {
+          var brush = brushComponent()
+            .height(height)
+            .xScale(xScale)
+            .brushend(brushCallback);
+
+          g.call(brush);
+        }
 
         if (axisX.show) {
           var xAxis = axis()
@@ -203,7 +215,7 @@ define(function (require) {
           .strokeWidth(areas.strokeWidth)
           .fill(areas.fill)
           .opacity(areas.opacity)
-          .events(areas.events);
+          .listeners(listeners);
 
         g.call(clippath)
           .append("g")
@@ -235,6 +247,7 @@ define(function (require) {
 
           g.append("g").call(linePath);
         }
+
       });
     }
 
@@ -339,6 +352,12 @@ define(function (require) {
       return chart;
     };
 
+    chart.brush = function (_) {
+      if (!arguments.length) { return brushCallback; }
+      brushCallback = _;
+      return chart;
+    };
+
     chart.clipPath = function (_) {
       if (!arguments.lenth) { return clipPath; }
       clipPath = clippathAPI(_, clipPath);
@@ -363,7 +382,15 @@ define(function (require) {
       return chart;
     };
 
-    d3.rebind(chart, dispatch, "on");
+    chart.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return chart;
+    };
+
+    chart.on = addEventListener(listeners, chart);
+    chart.off = removeEventListener(listeners, chart);
+
     return chart;
   };
 });

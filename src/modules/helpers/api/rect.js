@@ -1,6 +1,4 @@
-define(function (require) {
-  var eventAPI = require("src/modules/helpers/api/events");
-
+define(function () {
   return function (_, rects) {
     rects.show = typeof _.show !== "undefined" ? _.show : rects.show;
     rects.x = typeof _.x !== "undefined" ? _.x : rects.x;
@@ -13,9 +11,6 @@ define(function (require) {
     rects.stroke = typeof _.stroke !== "undefined" ? _.stroke : rects.stroke;
     rects.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : rects.strokeWidth;
     rects.opacity = typeof _.opacity !== "undefined" ? _.opacity : rects.opacity;
-
-    rects.events = typeof _.events !== "undefined" ? _.events : {};
-    rects.events = eventAPI(_, rects.events);
 
     return rects;
   };

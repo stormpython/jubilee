@@ -1,6 +1,4 @@
-define(function (require) {
-  var eventAPI = require("src/modules/helpers/api/events");
-
+define(function () {
   return function (_, area) {
     area.show = typeof _.show !== "undefined" ? _.show : area.show;
     area.areaClass = typeof _.areaClass !== "undefined" ? _.areaClass : area.areaClass;
@@ -10,9 +8,6 @@ define(function (require) {
     area.strokeWidth = typeof _.stroke !== "undefined" ? _.strokeWidth : area.strokeWidth;
     area.fill = typeof _.fill !== "undefined" ? _.fill : area.fill;
     area.opacity = typeof _.opacity !== "undefined" ? _.opacity : area.opacity;
-
-    area.events = typeof _.events !== "undefined" ? _.events : {};
-    area.events = eventAPI(_, area.events);
 
     return area;
   };
