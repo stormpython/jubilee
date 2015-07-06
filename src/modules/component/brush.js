@@ -14,9 +14,9 @@ define(function (require) {
     var extent = null;
     var clamp = null;
 
-    var brushStartCallback = function () {};
-    var brushCallback = function () {};
-    var brushEndCallback = function () {};
+    var brushStartCallback = [];
+    var brushCallback = [];
+    var brushEndCallback = [];
 
     function component(selection) {
       selection.each(function (data, index) {
@@ -25,14 +25,20 @@ define(function (require) {
 
         var brush = d3.svg.brush()
           .on("brushstart", function () {
-            brushStartCallback.call(this, brush, data);
+            brushStartCallback.forEach(function (listener) {
+              listener.call(this, brush, data);
+            });
           })
           .on("brush", function () {
-            brushCallback.call(this, brush, data);
+            brushCallback.forEach(function (listener) {
+              listener.call(this, brush, data);
+            });
           })
           .on("brushend", function () {
-            brushEndCallback.call(this, brush, data);
-            d3.selectAll("g.brush").call(brush.clear());
+            brushEndCallback.forEach(function (listener) {
+              listener.call(this, brush, data);
+              d3.selectAll("g.brush").call(brush.clear());
+            });
           });
 
         var svg = d3.select(this);
@@ -107,18 +113,21 @@ define(function (require) {
 
     component.brushstart = function (_) {
       if (!arguments.length) { return brushStartCallback; }
+      if (typeof _ === "function") { brushStartCallback.push(_); }
       brushStartCallback = _;
       return component;
     };
 
     component.brush = function (_) {
       if (!arguments.length) { return brushCallback; }
+      if (typeof _ === "function") { brushCallback.push(_); }
       brushCallback = _;
       return component;
     };
 
     component.brushend = function (_) {
       if (!arguments.length) { return brushEndCallback; }
+      if (typeof _ === "function") { brushEndCallback.push(_); }
       brushEndCallback = _;
       return component;
     };

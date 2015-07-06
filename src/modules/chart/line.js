@@ -337,6 +337,7 @@ define(function (require) {
     };
 
     chart.on = addEventListener(listeners, chart);
+
     chart.off = removeEventListener(listeners, chart);
 
     return chart;

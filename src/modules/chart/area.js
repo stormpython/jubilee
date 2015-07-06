@@ -49,7 +49,6 @@ define(function (require) {
     var axisY = deepCopy(yAxisOptions, {});
     var clipPath = deepCopy(clipPathOptions, {});
     var zeroLine = deepCopy(zeroLineOptions, {});
-    var brushCallback = null;
 
     // Area options
     var areas = {
@@ -74,6 +73,7 @@ define(function (require) {
     };
 
     var listeners = {};
+    var brushCallback = null;
 
     function chart(selection) {
       selection.each(function (data, index) {
@@ -115,11 +115,11 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        if (brushCallback) {
+        if (listeners.brush.length) {
           var brush = brushComponent()
             .height(height)
             .xScale(xScale)
-            .brushend(brushCallback);
+            .brushend(listeners.brush);
 
           g.call(brush);
         }
@@ -389,6 +389,7 @@ define(function (require) {
     };
 
     chart.on = addEventListener(listeners, chart);
+
     chart.off = removeEventListener(listeners, chart);
 
     return chart;

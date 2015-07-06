@@ -67,6 +67,7 @@
           .interpolate("cardinal");
 
         var clickFunction = function (e) { console.log(e); };
+        var brushFunction = function (brush) { console.log(brush.extent()); };
 
         // Example normal area chart configuration
         var myChart = jubilee.chart.area()
@@ -77,7 +78,8 @@
           .stack({ offset: "overlap" })
           .area({ opacity: 0.5 })
           .interpolate("cardinal")
-          .on("click", clickFunction);
+          .on("click", clickFunction)
+          .on("brush", brushFunction);
 
         d3.select("#chart")
           .datum(data.series)
