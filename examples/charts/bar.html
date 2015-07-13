@@ -42,11 +42,11 @@
             },
             {
               values: [
-                { x: 1411761450000, y: -141, label: "c" },
-                { x: 1411761480000, y: -118, label: "c" },
-                { x: 1411761510000, y: -122, label: "c" },
-                { x: 1411761540000, y: -117, label: "c" },
-                { x: 1411761570000, y: -117, label: "c" }
+                { x: 1411761450000, y: 141, label: "c" },
+                { x: 1411761480000, y: 118, label: "c" },
+                { x: 1411761510000, y: 122, label: "c" },
+                { x: 1411761540000, y: 117, label: "c" },
+                { x: 1411761570000, y: 117, label: "c" }
               ]
             }
           ]
@@ -58,14 +58,8 @@
           .height(500)
           .color(color)
           .zeroLine({ add: false })
-          .xScale({
-            nice: true,
-            domain: [1411761450000, 1411761600000]
-          })
-          .yScale({
-            nice: true,
-            domain: [-141, 93]
-          })
+          .xScale({ nice: true })
+          .yScale({ nice: true })
           .values(function (d) { return d.values; })
           .rects({
             fill: function (d) { return d.label; },
@@ -83,7 +77,8 @@
               if (d.y < 0) return (scale.range()[0] - (scale(0)) - scale(d.y));
               return scale(d.y0) - scale(d.y0 + d.y);
             }
-          });
+          })
+          .on("brush", function (brush) { console.log(brush.extent()); });
 
         d3.select("#bar")
           .datum(data.series)

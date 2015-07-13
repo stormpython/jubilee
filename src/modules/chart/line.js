@@ -276,12 +276,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.dispatch = function (_) {
-      if (!arguments.length) { return dispatch; }
-      dispatch = _;
-      return chart;
-    };
-
     chart.xScale = function (_) {
       if (!arguments.length) { return xScaleOpts; }
       xScaleOpts = scaleAPI(_, xScaleOpts);

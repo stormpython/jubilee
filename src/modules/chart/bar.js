@@ -1,30 +1,31 @@
 define(function (require) {
   var d3 = require("d3");
+  var addEventListener = require("src/modules/helpers/add_event_listener");
   var axis = require("src/modules/component/axis");
+  var brushComponent = require("src/modules/component/brush");
   var clip = require("src/modules/element/svg/clipPath");
+  var deepCopy = require("src/modules/helpers/deep_copy");
+  var mapDomain = require("src/modules/helpers/map_domain");
+  var rect = require("src/modules/element/svg/rect");
+  var removeEventListener = require("src/modules/helpers/remove_event_listener");
+  var zeroAxisLine = require("src/modules/element/svg/line");
+
+  var axisAPI = require("src/modules/helpers/api/axis");
   var clippathAPI = require("src/modules/helpers/api/clippath");
   var clipPathOptions = require("src/modules/helpers/options/clippath");
-  var deepCopy = require("src/modules/helpers/deep_copy");
-  var rect = require("src/modules/element/svg/rect");
-  var mapDomain = require("src/modules/helpers/map_domain");
-  var marginOptions = require("src/modules/helpers/options/margin");
-  var scaleOptions = require("src/modules/helpers/options/scale");
-  var xAxisOptions = require("src/modules/helpers/options/x_axis");
-  var yAxisOptions = require("src/modules/helpers/options/y_axis");
-  var axisAPI = require("src/modules/helpers/api/axis");
   var marginAPI = require("src/modules/helpers/api/margin");
+  var marginOptions = require("src/modules/helpers/options/margin");
   var rectAPI = require("src/modules/helpers/api/rect");
   var scaleAPI = require("src/modules/helpers/api/scale");
+  var scaleOptions = require("src/modules/helpers/options/scale");
   var stackAPI = require("src/modules/helpers/api/stack");
   var stackOptions = require("src/modules/helpers/options/stack");
-  var zeroAxisLine = require("src/modules/element/svg/line");
-  var zeroLineOptions = require("src/modules/helpers/options/zero_line");
+  var xAxisOptions = require("src/modules/helpers/options/x_axis");
+  var yAxisOptions = require("src/modules/helpers/options/y_axis");
   var zeroLineAPI = require("src/modules/helpers/api/zero_line");
-  var addEventListener = require("src/modules/helpers/add_event_listener");
-  var removeEventListener = require("src/modules/helpers/remove_event_listener");
+  var zeroLineOptions = require("src/modules/helpers/options/zero_line");
 
   return function barChart() {
-    // Private variables
     var margin = deepCopy(marginOptions, {});
     var width = 760;
     var height = 120;
@@ -33,7 +34,6 @@ define(function (require) {
     var yValue = function (d) { return d.y; };
     var values = function (d) { return d; };
     var stacked = "true";
-    var dispatch = d3.dispatch("brush");
 
     // Scale options
     var xScaleOpts = deepCopy(scaleOptions, {});
@@ -47,6 +47,7 @@ define(function (require) {
     var axisY = deepCopy(yAxisOptions, {});
     var clipPath = deepCopy(clipPathOptions, {});
     var zeroLine = deepCopy(zeroLineOptions, {});
+    var listeners = {};
 
     // Rect options
     var rects = {
@@ -69,10 +70,8 @@ define(function (require) {
       fill: function (d, i) { return color(i); },
       stroke: function (d, i) { return color(i); },
       strokeWidth: 0,
-      opacity: 1,
+      opacity: 1
     };
-
-    var listeners = {};
 
     function chart(selection) {
       selection.each(function (data, index) {
@@ -99,8 +98,8 @@ define(function (require) {
 
         yScale = yScaleOpts.scale || d3.scale.linear();
         yScale.domain(yScaleOpts.domain || [
-            Math.min(0, d3.min(mapDomain(newData), yValue)),
-            Math.max(0, d3.max(mapDomain(newData), yValue))
+            Math.min(0, d3.min(mapDomain(newData), yStackValue)),
+            Math.max(0, d3.max(mapDomain(newData), yStackValue))
           ])
           .range([height, 0]);
 
@@ -115,6 +114,16 @@ define(function (require) {
 
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+        // Brush
+        if (listeners.brush.length) {
+          var brush = brushComponent()
+            .height(height)
+            .xScale(xScale)
+            .brushend(listeners.brush);
+
+          g.call(brush);
+        }
 
         var clippath = clip()
           .width(clipPath.width || width)
@@ -247,6 +256,10 @@ define(function (require) {
       });
     }
 
+    function yStackValue (d, i) {
+      return d.y0 + d.y;
+    }
+
     // Public API
     chart.margin = function (_) {
       if (!arguments.length) { return margin; }
@@ -293,12 +306,6 @@ define(function (require) {
     chart.stacked = function (_) {
       if (!arguments.length) { return stacked; }
       stacked = _;
-      return chart;
-    };
-
-    chart.dispatch = function (_) {
-      if (!arguments.length) { return dispatch; }
-      dispatch = _;
       return chart;
     };
 
@@ -357,6 +364,7 @@ define(function (require) {
     };
 
     chart.on = addEventListener(listeners, chart);
+
     chart.off = removeEventListener(listeners, chart);
 
     return chart;

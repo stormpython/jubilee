@@ -1,20 +1,27 @@
 define(function (require) {
   var d3 = require("d3");
-  var path = require("src/modules/element/svg/path");
+
+  var addEventListener = require("src/modules/helpers/add_event_listener");
   var axis = require("src/modules/component/axis");
   var brushComponent = require("src/modules/component/brush");
   var clip = require("src/modules/element/svg/clipPath");
-  var mapDomain = require("src/modules/helpers/map_domain");
-  var scaleValue = require("src/modules/helpers/scale_value");
   var deepCopy = require("src/modules/helpers/deep_copy");
+  var mapDomain = require("src/modules/helpers/map_domain");
+  var path = require("src/modules/element/svg/path");
+  var scaleValue = require("src/modules/helpers/scale_value");
+  var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var zeroAxisLine = require("src/modules/element/svg/line");
+
+  // Options
+  var clipPathOptions = require("src/modules/helpers/options/clippath");
   var marginOptions = require("src/modules/helpers/options/margin");
   var scaleOptions = require("src/modules/helpers/options/scale");
   var stackOptions = require("src/modules/helpers/options/stack");
-  var clipPathOptions = require("src/modules/helpers/options/clippath");
   var xAxisOptions = require("src/modules/helpers/options/x_axis");
   var yAxisOptions = require("src/modules/helpers/options/y_axis");
   var zeroLineOptions = require("src/modules/helpers/options/zero_line");
+
+  // API
   var axisAPI = require("src/modules/helpers/api/axis");
   var areaAPI = require("src/modules/helpers/api/area");
   var linesAPI = require("src/modules/helpers/api/lines");
@@ -23,8 +30,6 @@ define(function (require) {
   var stackAPI = require("src/modules/helpers/api/stack");
   var clippathAPI = require("src/modules/helpers/api/clippath");
   var zeroLineAPI = require("src/modules/helpers/api/zero_line");
-  var addEventListener = require("src/modules/helpers/add_event_listener");
-  var removeEventListener = require("src/modules/helpers/remove_event_listener");
 
   return function areaChart() {
     // Chart options
@@ -44,10 +49,11 @@ define(function (require) {
     var yScale;
 
     // Other options
-    var stackOpts = deepCopy(stackOptions, {});
     var axisX = deepCopy(xAxisOptions, {});
     var axisY = deepCopy(yAxisOptions, {});
     var clipPath = deepCopy(clipPathOptions, {});
+    var listeners = {};
+    var stackOpts = deepCopy(stackOptions, {});
     var zeroLine = deepCopy(zeroLineOptions, {});
 
     // Area options
@@ -72,21 +78,21 @@ define(function (require) {
       tension:  0.7
     };
 
-    var listeners = {};
-    var brushCallback = null;
-
     function chart(selection) {
       selection.each(function (data, index) {
         width = width - margin.left - margin.right;
         height = height - margin.top - margin.bottom;
 
-        var stack = d3.layout.stack().x(xValue).y(yValue)
+        var stack = d3.layout.stack()
+          .x(xValue)
+          .y(yValue)
           .offset(stackOpts.offset)
           .order(stackOpts.order)
           .out(stackOpts.out);
 
         var layers = stack(data);
 
+        // Scales
         xScale = xScaleOpts.scale || d3.time.scale.utc();
         xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(layers), xValue));
 
@@ -106,6 +112,7 @@ define(function (require) {
         if (xScaleOpts.nice) { xScale.nice(); }
         if (yScaleOpts.nice) { yScale.nice(); }
 
+        // Canvas
         var svg = d3.select(this).selectAll("svg")
           .data([layers])
           .enter().append("svg")
@@ -115,6 +122,7 @@ define(function (require) {
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
+        // Brush
         if (listeners.brush.length) {
           var brush = brushComponent()
             .height(height)
@@ -124,6 +132,7 @@ define(function (require) {
           g.call(brush);
         }
 
+        // X axis
         if (axisX.show) {
           var xAxis = axis()
             .scale(xScale)
@@ -159,6 +168,7 @@ define(function (require) {
           g.call(xAxis);
         }
 
+        // Y axis
         if (axisY.show) {
           var yAxis = axis()
             .scale(yScale)
@@ -168,7 +178,9 @@ define(function (require) {
             .tick({
               number: axisY.tick.number,
               values: axisY.tick.values,
-              size: axisY.tick.size, padding: axisY.tick.padding, format: axisY.tick.format,
+              size: axisY.tick.size,
+              padding: axisY.tick.padding,
+              format: axisY.tick.format,
               rotate: axisY.tick.rotate,
               innerTickSize: axisY.tick.innerTickSize,
               outerTickSize: axisY.tick.outerTickSize,
@@ -194,17 +206,14 @@ define(function (require) {
           g.call(yAxis);
         }
 
+        // Add clippath and areas
+        var X = scaleValue(xScale, xValue);
+
         var clippath = clip()
           .width(clipPath.width || width)
           .height(clipPath.height || height);
 
-        var X = scaleValue(xScale, xValue);
-
         var area = d3.svg.area().x(X).y0(Y0).y1(Y1)
-          .interpolate(interpolate)
-          .defined(defined);
-
-        var line = d3.svg.line().x(X).y(Y1)
           .interpolate(interpolate)
           .defined(defined);
 
@@ -223,6 +232,23 @@ define(function (require) {
           .attr("class", areas.groupClass)
           .call(areaPath);
 
+        // Add Lines
+        if (lines.show) {
+          var line = d3.svg.line().x(X).y(Y1)
+            .interpolate(interpolate)
+            .defined(defined);
+
+          var linePath = path()
+            .pathGenerator(line)
+            .cssClass(lines.lineClass)
+            .stroke(lines.stroke)
+            .strokeWidth(lines.strokeWidth)
+            .opacity(lines.opacity);
+
+          g.append("g").call(linePath);
+        }
+
+        // Zero-line
         if (zeroLine.add) {
           var zLine = zeroAxisLine()
             .cssClass(zeroLine.lineClass)
@@ -236,18 +262,6 @@ define(function (require) {
 
           g.call(zLine);
         }
-
-        if (lines.show) {
-          var linePath = path()
-            .pathGenerator(line)
-            .cssClass(lines.lineClass)
-            .stroke(lines.stroke)
-            .strokeWidth(lines.strokeWidth)
-            .opacity(lines.opacity);
-
-          g.append("g").call(linePath);
-        }
-
       });
     }
 
@@ -304,12 +318,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.dispatch = function (_) {
-      if (!arguments.length) { return dispatch; }
-      dispatch = _;
-      return chart;
-    };
-
     chart.defined = function (_) {
       if (!arguments.length) { return defined; }
       defined = _;
@@ -352,21 +360,9 @@ define(function (require) {
       return chart;
     };
 
-    chart.brush = function (_) {
-      if (!arguments.length) { return brushCallback; }
-      brushCallback = _;
-      return chart;
-    };
-
     chart.clipPath = function (_) {
-      if (!arguments.lenth) { return clipPath; }
+      if (!arguments.length) { return clipPath; }
       clipPath = clippathAPI(_, clipPath);
-      return chart;
-    };
-
-    chart.zeroLine = function (_) {
-      if (!arguments.length) { return zeroLine; }
-      zeroLine = zeroLineAPI(_, zeroLine);
       return chart;
     };
 
@@ -379,6 +375,12 @@ define(function (require) {
     chart.lines = function (_) {
       if (!arguments.length) { return lines; }
       lines = linesAPI(_, lines);
+      return chart;
+    };
+
+    chart.zeroLine = function (_) {
+      if (!arguments.length) { return zeroLine; }
+      zeroLine = zeroLineAPI(_, zeroLine);
       return chart;
     };
 
