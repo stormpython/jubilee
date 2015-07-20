@@ -28,6 +28,10 @@ define(function (require) {
       objectCopy = null;
     });
 
+    it("should be a function", function () {
+      chai.assert.isFunction(deepCopy);
+    });
+
     it("should return a copy of the object", function () {
       chai.assert.equal(object.x, objectCopy.x);
       chai.assert.equal(object.nested.x, objectCopy.nested.x);
