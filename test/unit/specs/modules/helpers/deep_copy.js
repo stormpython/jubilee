@@ -33,20 +33,13 @@ define(function (require) {
     });
 
     it("should return a copy of the object", function () {
-      chai.assert.equal(object.x, objectCopy.x);
-      chai.assert.equal(object.nested.x, objectCopy.nested.x);
-      chai.assert.equal(object.nested.y, objectCopy.nested.y);
-      chai.assert.equal(object.nested.arr[1], objectCopy.nested.arr[1]);
-      chai.assert.equal(object.nested.nested.x, objectCopy.nested.nested.x);
-      chai.assert.equal(object.arr[0], objectCopy.arr[0]);
+      chai.assert.deepEqual(object, objectCopy);
     });
 
     it("should return a stand alone copy", function () {
       object.y = 1;
       object.arr = [16, 17, 18, 19, 20];
-
-      chai.assert.notEqual(object.y, objectCopy.y);
-      chai.assert.notEqual(object.arr[0], objectCopy.arr[0]);
+      chai.assert.notDeepEqual(object, objectCopy);
     });
   });
 });
