@@ -33,7 +33,7 @@ define(function (require) {
     it("should simply return", function () {
       var brushFunction = function (e) { console.log(e); };
       removeListener("brush", brushFunction);
-      chai.assert.isUndefined(chart.listeners.brush, "is not defined");
+      chai.assert.isUndefined(chart.listeners.brush);
     });
 
     it("should remove event listener from listeners array", function () {

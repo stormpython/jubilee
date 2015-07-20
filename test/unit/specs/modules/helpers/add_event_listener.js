@@ -22,7 +22,7 @@ define(function (require) {
       var clickFunction = function (e) { return e; };
       addListener("click", clickFunction);
 
-      chai.assert.equal(chart.listeners.click instanceof Array, true);
+      chai.assert.isArray(chart.listeners.click);
       chai.assert.equal(chart.listeners.click[0], clickFunction);
     });
 
@@ -31,7 +31,7 @@ define(function (require) {
       chart.listeners.click = null;
       addListener("click", clickFunction);
 
-      chai.assert.equal(chart.listeners.click instanceof Array, true);
+      chai.assert.isArray(chart.listeners.click);
       chai.assert.equal(chart.listeners.click[0], clickFunction);
     });
 
@@ -39,7 +39,7 @@ define(function (require) {
       var brushFunction = function (e) { return e; };
       addListener("brush", brushFunction);
 
-      chai.assert.equal(addListener("brush") instanceof Array, true);
+      chai.assert.isArray(addListener("brush"));
       chai.assert.equal(addListener("brush").length, chart.listeners.brush.length);
     });
   });
