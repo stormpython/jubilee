@@ -1,12 +1,17 @@
+/**
+ * Returns a function that adds an eventType, e.g. click, brush, mouseover
+ * and event listener, e.g. function (e) { console.log(e); }
+ * to an event object, e.g. { "click": [ listener1, listener2], "brush": [ listener1 ], ... }.
+ */
 define(function () {
   return function (listeners, chart) {
-    return function (event, listener) {
-      if (arguments.length === 1 && listeners[event]) {
-        return listeners[event];
+    return function (eventType, listener) {
+      if (arguments.length === 1 && listeners[eventType]) {
+        return listeners[eventType];
       }
       if (arguments.length === 2 && typeof listener === "function") {
-        if (!listeners[event]) { listeners[event] = []; }
-        listeners[event].push(listener);
+        if (!listeners[eventType]) { listeners[eventType] = []; }
+        listeners[eventType].push(listener);
       }
       return chart;
     };

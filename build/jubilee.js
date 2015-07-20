@@ -10007,250 +10007,93 @@ define("src/require.config", function(){});
   return tile;
 };
 
-define('src/modules/element/circle',['require','d3'],function (require) {
-  var d3 = require("d3");
-
-  return function circle() {
-    var cx = function (d) { return d.x; };
-    var cy = function (d) { return d.y; };
-    var radius = 5;
-    var color = d3.scale.category20c();
-
-    // Options
-    var gClass = "layer";
-    var circleClass = "circles";
-    var fill = function (d, i, j) { return color(j); };
-    var stroke = function (d, i, j) { return color(j); };
-    var strokeWidth = 3;
-
-    function element(selection) {
-      selection.each(function (data, i) {
-        var layer = d3.select(this).selectAll("circleG")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .attr("class", gClass);
-
-        var circles = layer.selectAll("circlePoints")
-          .data(function (d) { return d; });
-
-        // Exit
-        circles.exit().remove();
-
-        // Enter
-        circles
-          .enter().append("circle")
-          .attr("class", circleClass);
-
-        // Update
-        circles
-          .attr("fill", fill)
-          .attr("stroke", stroke)
-          .attr("stroke-width", strokeWidth)
-          .attr("r", radius)
-          .attr("cx", cx)
-          .attr("cy", cy);
-      });
-    }
-
-    element.cx = function (_) {
-      if (!arguments.length) { return cx; }
-      cx = _;
-      return element;
+define('src/modules/helpers/add_event_listener',[],function () {
+  return function (listeners, chart) {
+    return function (event, listener) {
+      if (arguments.length === 1 && listeners[event]) {
+        return listeners[event];
+      }
+      if (arguments.length === 2 && typeof listener === "function") {
+        if (!listeners[event]) { listeners[event] = []; }
+        listeners[event].push(listener);
+      }
+      return chart;
     };
-
-    element.cy = function (_) {
-      if (!arguments.length) { return cy; }
-      cy = _;
-      return element;
-    };
-
-    element.radius = function (_) {
-      if (!arguments.length) { return radius; }
-      radius = _;
-      return element;
-    };
-
-    element.gClass = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
-      return element;
-    };
-
-    element.circleClass = function (_) {
-      if (!arguments.length) { return circleClass; }
-      circleClass = _;
-      return element;
-    };
-
-    element.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
-      return element;
-    };
-
-    element.fill = function (_) {
-      if (!arguments.length) { return fill; }
-      fill = _;
-      return element;
-    };
-
-    element.stroke = function (_) {
-      if (!arguments.length) { return stroke; }
-      stroke = _;
-      return element;
-    };
-
-    element.strokeWidth = function (_) {
-      if (!arguments.length) { return strokeWidth; }
-      strokeWidth = _;
-      return element;
-    };
-
-    return element;
   };
 });
-
-define('src/modules/element/path',['require','d3'],function (require) {
-  var d3 = require("d3");
-
-  return function path() {
-    var pathGenerator = null;
-    var color = d3.scale.category10();
-    var accessor = function (d) { return d; };
-
-    // Options
-    var gClass = "layer";
-    var pathClass = "path";
-    var transform = "translate(0,0)";
-    var fill = "none";
-    var stroke = function (d, i) { return color(i); };
-    var strokeWidth = 1;
-
-    function element(selection) {
-      selection.each(function (data, i) {
-        var layer = d3.select(this).selectAll("pathG")
-          .data(accessor)
-          .enter().append("g")
-          .attr("class", gClass);
-
-        layer.append("path")
-          .attr("transform", transform)
-          .attr("class", pathClass)
-          .attr("fill", fill)
-          .attr("stroke", stroke)
-          .attr("stroke-width", strokeWidth)
-          .attr("d", pathGenerator);
-      });
-    }
-
-    element.pathGenerator = function (_) {
-      if (!arguments.length) { return pathGenerator; }
-      pathGenerator = _;
-      return element;
-    };
-
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
-      return element;
-    };
-
-    element.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
-      return element;
-    };
-
-    element.gClass = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
-      return element;
-    };
-
-    element.pathClass = function (_) {
-      if (!arguments.length) { return pathClass; }
-      pathClass = _;
-      return element;
-    };
-
-    element.transform = function (_) {
-      if (!arguments.length) { return transform; }
-      transform = _;
-      return element;
-    };
-
-    element.fill = function (_) {
-      if (!arguments.length) { return fill; }
-      fill = _;
-      return element;
-    };
-
-    element.stroke = function (_) {
-      if (!arguments.length) { return stroke; }
-      stroke = _;
-      return element;
-    };
-
-    element.strokeWidth = function (_) {
-      if (!arguments.length) { return strokeWidth; }
-      strokeWidth = _;
-      return element;
-    };
-
-    return element;
-  };
-});
-
-define('src/modules/component/axis/axis',['require','d3'],function (require) {
+define('src/modules/component/axis',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function axes() {
     var scale = d3.scale.linear();
     var orient = "bottom";
-    var ticks = 10;
-    var tickValues = null;
-    var tickSize = 6;
-    var innerTickSize = 6;
-    var outerTickSize = 6;
-    var tickPadding = 3;
-    var tickFormat = null;
+    var tick = {
+      number: 10,
+      values: null,
+      size: 6,
+      innerTickSize: 6,
+      outerTickSize: 6,
+      padding: 3,
+      format: null,
+      rotate: 0,
+      text: {
+        anchor: "middle",
+        x: 0,
+        y: 9,
+        dx: "",
+        dy: ".71em"
+      }
+    };
 
     var transform = "translate(0,0)";
     var gClass = "axis";
-    var title = "";
-    var titleClass = "axis title";
-    var titleX = 6;
-    var titleY = 6;
-    var titleDX = "";
-    var titleDY = ".71em";
-    var titleAnchor = "end";
+
+    var title = {
+      titleClass: "axis title",
+      x: 6,
+      y: 6,
+      dx: "",
+      dy: ".71em",
+      anchor: "end",
+      transform: "translate(0,0)",
+      text: ""
+    };
 
     function component(selection) {
       selection.each(function () {
         var axis = d3.svg.axis()
           .scale(scale)
           .orient(orient)
-          .ticks(ticks)
-          .tickValues(tickValues)
-          .tickSize(tickSize)
-          .innerTickSize(innerTickSize)
-          .outerTickSize(outerTickSize)
-          .tickPadding(tickPadding)
-          .tickFormat(tickFormat);
+          .ticks(tick.number)
+          .tickValues(tick.values)
+          .tickSize(tick.size)
+          .innerTickSize(tick.innerTickSize)
+          .outerTickSize(tick.outerTickSize)
+          .tickPadding(tick.padding)
+          .tickFormat(tick.format);
 
         var g = d3.select(this).append("g")
           .attr("class", gClass)
           .attr("transform", transform)
           .call(axis);
 
+        g.selectAll(".tick text")
+          .attr("transform", "rotate(" + tick.rotate + ")")
+          .attr("x", tick.text.x)
+          .attr("y", tick.text.y)
+          .attr("dx", tick.text.dx)
+          .attr("dy", tick.text.dy)
+          .style("text-anchor", tick.text.anchor);
+
         g.append("text")
-          .attr("class", titleClass)
-          .attr("x", titleX)
-          .attr("y", titleY)
-          .attr("dx", titleDX)
-          .attr("dy", titleDY)
-          .style("title-anchor", titleAnchor)
-          .text(title);
+          .attr("class", title.titleClass)
+          .attr("x", title.x)
+          .attr("y", title.y)
+          .attr("dx", title.dx)
+          .attr("dy", title.dy)
+          .attr("transform", title.transform)
+          .style("title-anchor", title.anchor)
+          .text(title.text);
       });
     }
 
@@ -10266,45 +10109,21 @@ define('src/modules/component/axis/axis',['require','d3'],function (require) {
       return component;
     };
 
-    component.ticks = function (_) {
-      if (!arguments.length) { return ticks; }
-      ticks = _;
-      return component;
-    };
-
-    component.tickValues = function (_) {
-      if (!arguments.length) { return tickValues; }
-      tickValues = _;
-      return component;
-    };
-
-    component.tickSize = function (_) {
-      if (!arguments.length) { return tickSize; }
-      tickSize = _;
-      return component;
-    };
-
-    component.innerTickSize = function (_) {
-      if (!arguments.length) { return innerTickSize; }
-      innerTickSize = _;
-      return component;
-    };
-
-    component.outerTickSize = function (_) {
-      if (!arguments.length) { return outerTickSize; }
-      outerTickSize = _;
-      return component;
-    };
-
-    component.tickPadding = function (_) {
-      if (!arguments.length) { return tickPadding; }
-      tickPadding = _;
-      return component;
-    };
-
-    component.tickFormat = function (_) {
-      if (!arguments.length) { return tickFormat; }
-      tickFormat = _;
+    component.tick = function (_) {
+      if (!arguments.length) { return tick; }
+      tick.number = typeof _.number !== "undefined" ? _.number : tick.number;
+      tick.values = typeof _.values !== "undefined" ? _.values : tick.values;
+      tick.size = typeof _.size !== "undefined" ? _.size : tick.size;
+      tick.padding = typeof _.padding !== "undefined" ? _.padding : tick.padding;
+      tick.format = typeof _.format !== "undefined" ? _.format : tick.format;
+      tick.rotate = typeof _.rotate !== "undefined" ? _.rotate : tick.rotate;
+      tick.innerTickSize = typeof _.innerTickSize !== "undefined" ? _.innerTickSize : tick.innerTickSize;
+      tick.outerTickSize = typeof _.outerTickSize !== "undefined" ? _.outerTickSize : tick.outerTickSize;
+      tick.text.anchor = typeof _.text.anchor !== "undefined" ? _.text.anchor : tick.text.anchor;
+      tick.text.x = typeof _.text.x !== "undefined" ? _.text.x : tick.text.x;
+      tick.text.y = typeof _.text.y !== "undefined" ? _.text.y : tick.text.y;
+      tick.text.dx = typeof _.text.dx !== "undefined" ? _.text.dx : tick.text.dx;
+      tick.text.dy = typeof _.text.dy !== "undefined" ? _.text.dy : tick.text.dy;
       return component;
     };
 
@@ -10322,42 +10141,14 @@ define('src/modules/component/axis/axis',['require','d3'],function (require) {
 
     component.title = function (_) {
       if (!arguments.length) { return title; }
-      title = _;
-      return component;
-    };
-
-    component.titleClass = function (_) {
-      if (!arguments.length) { return titleClass; }
-      titleClass = _;
-      return component;
-    };
-
-    component.titleX = function (_) {
-      if (!arguments.length) { return titleX; }
-      titleX = _;
-      return component;
-    };
-    component.titleY = function (_) {
-      if (!arguments.length) { return titleY; }
-      titleY = _;
-      return component;
-    };
-
-    component.titleDX = function (_) {
-      if (!arguments.length) { return titleDX; }
-      titleDX = _;
-      return component;
-    };
-
-    component.titleDY = function (_) {
-      if (!arguments.length) { return titleDY; }
-      titleDY = _;
-      return component;
-    };
-
-    component.titleAnchor = function (_) {
-      if (!arguments.length) { return titleAnchor; }
-      titleAnchor = _;
+      title.titleClass = typeof _.titleClass !== "undefined" ? _.titleClass : title.titleClass;
+      title.x = typeof _.x !== "undefined" ? _.x : title.x;
+      title.y = typeof _.y !== "undefined" ? _.y : title.y;
+      title.dx = typeof _.dx !== "undefined" ? _.dx : title.dx;
+      title.dy = typeof _.dy !== "undefined" ? _.dy : title.dy;
+      title.transform = typeof _.transform !== "undefined" ? _.transform : title.transform;
+      title.anchor = typeof _.anchor !== "undefined" ? _.anchor : title.anchor;
+      title.text = typeof _.text !== "undefined" ? _.text : title.text;
       return component;
     };
 
@@ -10365,7 +10156,144 @@ define('src/modules/component/axis/axis',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/element/clipPath',['require','d3'],function (require) {
+define('src/modules/component/brush',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function brush() {
+    // Private variables
+    var cssClass = "brush";
+    var margin = { top: 0, right: 0, bottom: 0, left: 0 };
+    var width = null;
+    var height = null;
+    var opacity = 0.2;
+
+    var xScale = null;
+    var yScale = null;
+    var extent = null;
+    var clamp = null;
+
+    var brushStartCallback = [];
+    var brushCallback = [];
+    var brushEndCallback = [];
+
+    function component(selection) {
+      selection.each(function (data, index) {
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
+
+        var brush = d3.svg.brush()
+          .on("brushstart", function () {
+            brushStartCallback.forEach(function (listener) {
+              listener.call(this, brush, data);
+            });
+          })
+          .on("brush", function () {
+            brushCallback.forEach(function (listener) {
+              listener.call(this, brush, data);
+            });
+          })
+          .on("brushend", function () {
+            brushEndCallback.forEach(function (listener) {
+              listener.call(this, brush, data);
+              d3.selectAll("g.brush").call(brush.clear());
+            });
+          });
+
+        var svg = d3.select(this);
+
+        if (xScale) { brush.x(xScale); }
+        if (yScale) { brush.y(yScale); }
+        if (extent) { brush.extent(extent); }
+        if (clamp) { brush.clamp(clamp); }
+
+        var brushG = svg.append("g")
+          .attr("class", cssClass)
+          .attr("opacity", opacity)
+          .call(brush)
+          .selectAll("rect");
+
+        if (width) { brushG.attr("width", width); }
+        if (height) { brushG.attr("height", height); }
+      });
+    }
+
+    // Public API
+    component.margin = function (_) {
+      if (!arguments.length) { return margin; }
+      margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
+      margin.right = typeof _.right !== "undefined" ? _.right : margin.right;
+      margin.bottom = typeof _.bottom !== "undefined" ? _.bottom : margin.bottom;
+      margin.left = typeof _.left !== "undefined" ? _.left : margin.left;
+      return component;
+    };
+
+    component.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return component;
+    };
+
+    component.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return component;
+    };
+
+    component.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
+      return component;
+    };
+
+    component.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale = _;
+      return component;
+    };
+
+    component.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale = _;
+      return component;
+    };
+
+    component.extent = function (_) {
+      if (!arguments.length) { return extent; }
+      extent = _;
+      return component;
+    };
+
+    component.clamp = function (_) {
+      if (!arguments.length) { return clamp; }
+      clamp = _;
+      return component;
+    };
+
+    component.brushstart = function (_) {
+      if (!arguments.length) { return brushStartCallback; }
+      if (typeof _ === "function") { brushStartCallback.push(_); }
+      brushStartCallback = _;
+      return component;
+    };
+
+    component.brush = function (_) {
+      if (!arguments.length) { return brushCallback; }
+      if (typeof _ === "function") { brushCallback.push(_); }
+      brushCallback = _;
+      return component;
+    };
+
+    component.brushend = function (_) {
+      if (!arguments.length) { return brushEndCallback; }
+      if (typeof _ === "function") { brushEndCallback.push(_); }
+      brushEndCallback = _;
+      return component;
+    };
+
+    return component;
+  };
+});
+define('src/modules/element/svg/clipPath',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function clipPath() {
@@ -10373,17 +10301,19 @@ define('src/modules/element/clipPath',['require','d3'],function (require) {
     var transform = "translate(0,0)";
     var x = 0;
     var y = 0;
-    var width = 50;
-    var height = 50;
+    var width = 0;
+    var height = 0;
 
     function element(selection) {
-      selection.each(function (data, i) {
-        d3.select("this")
-          .append("clipPath")
+      selection.each(function (data, index) {
+        var clipPath = d3.select(this)
+          .append("clipPath");
+
+        // Update
+        clipPath
           .attr("id", id)
           .attr("transform", transform)
           .append("rect")
-          .attr("clip-path", "url(#" + id + ")")
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)
@@ -10392,7 +10322,7 @@ define('src/modules/element/clipPath',['require','d3'],function (require) {
     }
 
     function uniqueID() {
-      var randomNumber = Math.floor(Math.random * 100);
+      var randomNumber = Math.floor(Math.random() * 100);
       return "uniqueId_" + randomNumber;
     }
 
@@ -10436,350 +10366,668 @@ define('src/modules/element/clipPath',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/chart/line',['require','d3','src/modules/element/circle','src/modules/element/path','src/modules/component/axis/axis','src/modules/element/clipPath'],function (require) {
-  var d3 = require("d3");
-  var circle = require("src/modules/element/circle");
-  var path = require("src/modules/element/path");
-  var axis = require("src/modules/component/axis/axis");
-  var clipPath = require("src/modules/element/clipPath");
+define('src/modules/helpers/deep_copy',[],function () {
+  return function deepCopy(parent, child) {
+    child = child || {};
 
-  return function lineChart() {
-    // Chart options
-    var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760 - margin.left - margin.right;
-    var height = 120 - margin.top - margin.bottom;
-    var color = d3.scale.category20c();
-    var interpolate = "linear";
-    var xValue = function (d) { return d.x; };
-    var yValue = function (d) { return d.y; };
-    var xScale = d3.time.scale.utc().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]).nice();
-    var xDomain = function (data) {
-      return d3.extent(data, xValue);
-    };
-    var yDomain = function (data) {
-      return [
-        Math.min(0, d3.min(data, yValue)),
-        Math.max(0, d3.max(data, yValue))
-      ];
-    };
-    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
-
-    // Axis options
-    var showXAxis = true;
-    var showYAxis = true;
-    var xAxisTitle = "";
-    var yAxisTitle = "";
-
-    // Line Options
-    var lineClass = "line";
-    var lineStroke = function (d, i) { return color(i); };
-
-    // Circle Options
-    var addCircles = true;
-    var circleGroupClass = "circle layer";
-    var circleClass = "circle";
-    var circleFill = function (d, i, j) { return color(j); };
-    var circleStroke = function (d, i, j) { return color(j); };
-    var circleRadius = 5;
-    var circleStrokeWidth = 3;
-
-    function chart(selection) {
-      selection.each(function (data) {
-        var svg = d3.select(this).selectAll("svg")
-          .data([data])
-          .enter().append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom);
-
-        var g = svg.append("g")
-          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
-
-        var line = d3.svg.line().x(X).y(Y).interpolate(interpolate);
-
-        var clippath = clipPath().width(width).height(height);
-
-        var linePath = path()
-          .pathGenerator(line)
-          .pathClass(lineClass)
-          .stroke(lineStroke);
-
-        xScale.domain(xDomain && xDomain.call(this, mapDomain(data)));
-        yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
-
-        g.call(clippath);
-        g.call(linePath);
-
-        if (showXAxis) {
-          var xAxis = axis()
-            .scale(xScale)
-            .gClass("x axis")
-            .transform("translate(0," + yScale.range()[0] + ")")
-            .titleY(6)
-            .titleDY(".71em")
-            .titleAnchor("end")
-            .title(xAxisTitle);
-
-          g.call(xAxis);
+    for (var i in parent) {
+      if (parent.hasOwnProperty(i)) {
+        if (typeof parent[i] === "object" && parent[i] !== null) {
+          child[i] = (parent[i].constructor === Array) ? [] : {};
+          deepCopy(parent[i], child[i]);
+        } else {
+          child[i] = parent[i];
         }
-
-        if (showYAxis) {
-          var yAxis = axis()
-            .scale(yScale)
-            .orient("left")
-            .gClass("y axis")
-            .titleY(6)
-            .titleDY(".71em")
-            .titleAnchor("end")
-            .title(yAxisTitle);
-
-          g.call(yAxis);
-        }
-
-        if (addCircles) {
-          var points = circle()
-            .cx(X)
-            .cy(Y)
-            .color(color)
-            .radius(circleRadius)
-            .gClass(circleGroupClass)
-            .circleClass(circleClass)
-            .fill(circleFill)
-            .stroke(circleStroke)
-            .strokeWidth(circleStrokeWidth);
-
-          g.call(points);
-        }
-      });
+      }
     }
 
-    function mapDomain(data) {
-      return data.reduce(function (a, b) {
-        return a.concat(b);
-      });
-    }
-
-    function X(d, i) {
-      return xScale(xValue.call(null, d, i));
-    }
-
-    function Y(d, i) {
-      return yScale(yValue.call(null, d, i));
-    }
-
-    chart.margin = function (_) {
-      if (!arguments.length) { return margin; }
-      margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
-      margin.right = typeof _.right !== "undefined" ? _.right : margin.right;
-      margin.bottom = typeof _.bottom !== "undefined" ? _.bottom : margin.bottom;
-      margin.left = typeof _.left !== "undefined" ? _.left : margin.left;
-      return chart;
-    };
-
-    chart.width = function (_) {
-      if (!arguments.length) { return width; }
-      width = _;
-      return chart;
-    };
-
-    chart.height = function (_) {
-      if (!arguments.length) { return height; }
-      height = _;
-      return chart;
-    };
-
-    chart.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
-      return chart;
-    };
-
-    chart.x = function (_) {
-      if (!arguments.length) { return xValue; }
-      xValue = _;
-      return chart;
-    };
-
-    chart.y = function (_) {
-      if (!arguments.length) { return yValue; }
-      yValue = _;
-      return chart;
-    };
-
-    chart.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
-      return chart;
-    };
-
-    chart.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
-      return chart;
-    };
-
-    chart.xDomain = function (_) {
-      if (!arguments.length) { return xDomain; }
-      xDomain = _;
-      return chart;
-    };
-
-    chart.yDomain = function (_) {
-      if (!arguments.length) { return yDomain; }
-      yDomain = _;
-      return chart;
-    };
-
-    chart.lineX = function (_) {
-      if (!arguments.length) { return lineX; }
-      lineX = _;
-      return chart;
-    };
-
-    chart.dispatch = function (_) {
-      if (!arguments.length) { return dispatch; }
-      dispatch = _;
-      return chart;
-    };
-
-    chart.showXAxis = function (_) {
-      if (!arguments.length) { return showXAxis; }
-      showXAxis = _;
-      return chart;
-    };
-
-    chart.showYAxis = function (_) {
-      if (!arguments.length) { return showYAxis; }
-      showYAxis = _;
-      return chart;
-    };
-
-    chart.xAxisTitle = function (_) {
-      if (!arguments.length) { return xAxisTitle; }
-      xAxisTitle = _;
-      return chart;
-    };
-
-    chart.yAxisTitle = function (_) {
-      if (!arguments.length) { return yAxisTitle; }
-      yAxisTitle = _;
-      return chart;
-    };
-
-    chart.interpolate = function (_) {
-      if (!arguments.length) { return interpolate; }
-      interpolate = _;
-      return chart;
-    };
-
-    chart.lineStroke = function (_) {
-      if (!arguments.length) { return lineStroke; }
-      lineStroke = _;
-      return chart;
-    };
-
-    chart.lineClass = function (_) {
-      if (!arguments.length) { return lineClass; }
-      lineClass = _;
-      return chart;
-    };
-
-    chart.addCircles = function (_) {
-      if (!arguments.length) { return addCircles; }
-      addCircles = _;
-      return chart;
-    };
-
-    chart.circleGroupClass = function (_) {
-      if (!arguments.length) { return circleGroupClass; }
-      circleGroupClass = _;
-      return chart;
-    };
-
-    chart.circleClass = function (_) {
-      if (!arguments.length) { return circleClass; }
-      circleClass = _;
-      return chart;
-    };
-
-    chart.circleRadius = function (_) {
-      if (!arguments.length) { return circleRadius; }
-      circleRadius = _;
-      return chart;
-    };
-
-    chart.circleFill = function (_) {
-      if (!arguments.length) { return circleFill; }
-      circleFill = _;
-      return chart;
-    };
-
-    chart.circleStroke = function (_) {
-      if (!arguments.length) { return circleStroke; }
-      circleStroke = _;
-      return chart;
-    };
-
-    chart.circleStrokeWidth = function (_) {
-      if (!arguments.length) { return circleStrokeWidth; }
-      circleStrokeWidth = _;
-      return chart;
-    };
-
-    d3.rebind(chart, dispatch, "on");
-    return chart;
+    return child;
+  };
+});
+define('src/modules/helpers/map_domain',[],function () {
+  return function (data) {
+    return data.reduce(function (a, b) {
+      return a.concat(b);
+    });
   };
 });
 
-define('src/modules/chart/area',['require','d3','src/modules/element/path','src/modules/component/axis/axis'],function (require) {
+define('src/modules/component/events',['require','d3'],function (require) {
   var d3 = require("d3");
-  var path = require("src/modules/element/path");
-  var axis = require("src/modules/component/axis/axis");
+
+  return function events() {
+    var listeners = {};
+
+    function component(selection) {
+      selection.each(function (data, index) {
+        var element = d3.select(this);
+
+        Object.keys(listeners).forEach(function (event) {
+          if (!listeners[event] || !listeners[event].length) {
+            return element.on(event, null);
+          }
+
+          element.on(event, function (d, i) {
+            d3.event.stopPropagation();
+            listeners[event].forEach(function (listener) {
+              listener.call(this, d3.event, d, i);
+            });
+          });
+        });
+      });
+    }
+
+    // Public API
+    component.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return component;
+    };
+
+    return component;
+  };
+});
+define('src/modules/element/svg/path',['require','d3','src/modules/component/events'],function (require) {
+  var d3 = require("d3");
+  var events = require("src/modules/component/events");
+
+  return function path() {
+    var pathGenerator = null;
+    var color = d3.scale.category10();
+    var accessor = function (d) { return d; };
+    var values = null;
+
+    // Options
+    var cssClass = "path";
+    var transform = "translate(0,0)";
+    var fill = "none";
+    var stroke = function (d, i) { return color(i); };
+    var strokeWidth = 1;
+    var opacity = null;
+    var listeners = {};
+
+    function element(selection) {
+      selection.each(function (data, index) {
+        var pathEvents = events().listeners(listeners);
+
+        var path = d3.select(this).selectAll("paths")
+          .data(values ? values.map(accessor) : accessor);
+
+        path.exit().remove();
+
+        path.enter().append("path");
+
+        path
+          .attr("transform", transform)
+          .attr("class", cssClass)
+          .attr("fill", fill)
+          .attr("stroke", stroke)
+          .attr("stroke-width", strokeWidth)
+          .attr("d", pathGenerator)
+          .style("opacity", opacity);
+
+        path.call(pathEvents);
+      });
+    }
+
+    // Public API
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
+
+    element.pathGenerator = function (_) {
+      if (!arguments.length) { return pathGenerator; }
+      pathGenerator = _;
+      return element;
+    };
+
+    element.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
+      return element;
+    };
+
+    element.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return element;
+    };
+
+    element.cssClass = function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
+      return element;
+    };
+
+    element.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
+      return element;
+    };
+
+    element.fill = function (_) {
+      if (!arguments.length) { return fill; }
+      fill = _;
+      return element;
+    };
+
+    element.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
+      return element;
+    };
+
+    element.stroke = function (_) {
+      if (!arguments.length) { return stroke; }
+      stroke = _;
+      return element;
+    };
+
+    element.strokeWidth = function (_) {
+      if (!arguments.length) { return strokeWidth; }
+      strokeWidth = _;
+      return element;
+    };
+
+    element.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return element;
+    };
+
+    return element;
+  };
+});
+
+define('src/modules/helpers/scale_value',[],function () {
+  return function (scale, func) {
+    return function (d, i) {
+      return scale(func.call(null, d, i));
+    };
+  };
+});
+define('src/modules/helpers/remove_event_listener',[],function () {
+  return function (listeners, chart) {
+    return function (event, listener) {
+      if (arguments.length === 1 && listeners[event]) {
+        listeners[event] = null;
+      }
+      if (arguments.length === 2 && typeof listener === "function") {
+        if (!listeners[event]) { return; }
+
+        listeners[event] = listeners[event].filter(function (handler) {
+          return handler !== listener;
+        });
+      }
+
+      return chart;
+    };
+  };
+});
+define('src/modules/element/svg/line',['require','d3','src/modules/component/events'],function (require) {
+  var d3 = require("d3");
+  var events = require("src/modules/component/events");
+
+  return function line() {
+    var x1 = null;
+    var x2 = null;
+    var y1 = null;
+    var y2 = null;
+    var color = d3.scale.category10();
+    var values = null;
+
+    var cssClass = "line";
+    var stroke = null;
+    var strokeWidth = 2;
+    var opacity = null;
+    var listeners = {};
+
+    function element(selection) {
+      selection.each(function (data, index) {
+        var lineEvents = events().listeners(listeners);
+
+        var lines = d3.select(this).selectAll("lines")
+          .data(values ? values : data);
+
+        // Exit
+        lines.exit().remove();
+
+        // Enter
+        lines.enter().append("line");
+
+        // Update
+        lines
+          .attr("class", cssClass)
+          .attr("x1", x1)
+          .attr("x2", x2)
+          .attr("y1", y1)
+          .attr("y2", y2)
+          .attr("stroke", stroke ? stroke : colorFill)
+          .attr("stroke-width", strokeWidth)
+          .style("opacity", opacity);
+
+        lines.call(lineEvents);
+      });
+    }
+
+    function colorFill(d, i) {
+      return color(i);
+    }
+
+    // Public API
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
+    
+    element.x1 = function (_) {
+      if (!arguments.length) { return x1; }
+      x1 = _;
+      return element;
+    };
+
+    element.x2 = function (_) {
+      if (!arguments.length) { return x2; }
+      x2 = _;
+      return element;
+    };
+
+    element.y1 = function (_) {
+      if (!arguments.length) { return y1; }
+      y1 = _;
+      return element;
+    };
+
+    element.y2 = function (_) {
+      if (!arguments.length) { return y2; }
+      y2 = _;
+      return element;
+    };
+
+    element.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return element;
+    };
+
+    element.cssClass = function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
+      return element;
+    };
+
+    element.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
+      return element;
+    };
+
+    element.stroke = function (_) {
+      if (!arguments.length) { return stroke; }
+      stroke = _;
+      return element;
+    };
+
+    element.strokeWidth = function (_) {
+      if (!arguments.length) { return strokeWidth; }
+      strokeWidth = _;
+      return element;
+    };
+
+    element.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return element;
+    };
+
+    return element;
+  };
+});
+define('src/modules/helpers/options/clippath',[],function () {
+  return {
+    width: null,
+    height: null
+  };
+});
+define('src/modules/helpers/options/margin',[],function () {
+  return {
+    top: 20,
+    right: 20,
+    bottom: 20,
+    left: 50
+  };
+});
+define('src/modules/helpers/options/scale',[],function () {
+  return {
+    scale: null,
+    domain: null,
+    nice: false,
+    clamp: false
+  };
+});
+define('src/modules/helpers/options/stack',[],function () {
+  return {
+    offset: "zero",
+    order: "default",
+    out: function (d, y0, y) {
+      d.y0 = y0;
+      d.y = y;
+    }
+  };
+});
+
+define('src/modules/helpers/options/x_axis',[],function () {
+  return {
+    show: true,
+    gClass: "x axis",
+    tick: {
+      number: 10,
+      values: null,
+      size: 6,
+      padding: 3,
+      format: null,
+      rotate: 0,
+      innerTickSize: 6,
+      outerTickSize: 6,
+      text: {
+        anchor: "middle",
+        x: 0,
+        y: 9,
+        dx: "",
+        dy: ".71em"
+      }
+    },
+    title: {
+      titleClass: "axis title",
+      x: 6,
+      y: 6,
+      dx: "",
+      dy: ".71em",
+      anchor: "middle",
+      text: ""
+    }
+  };
+});
+define('src/modules/helpers/options/y_axis',[],function () {
+  return {
+    show: true,
+    gClass: "y axis",
+    tick: {
+      number: 10,
+      values: null,
+      size: 6,
+      padding: 3,
+      format: null,
+      rotate: 0,
+      innerTickSize: 6,
+      outerTickSize: 6,
+      text: {
+        anchor: "end",
+        x: -9,
+        y: 0,
+        dx: "",
+        dy: ".32em"
+      }
+    },
+    title: {
+      titleClass: "axis title",
+      x: 0,
+      y: -40,
+      dx: "",
+      dy: ".71em",
+      anchor: "middle",
+      rotate: 270,
+      text: ""
+    }
+  };
+});
+define('src/modules/helpers/options/zero_line',[],function () {
+  return {
+    add: true,
+    lineClass: "zero-line",
+    stroke: "black",
+    strokeWidth: 1,
+    opacity: 0.5
+  };
+});
+define('src/modules/helpers/api/axis',[],function () {
+  return function (_, axis) {
+    axis.show = typeof _.show !== "undefined" ? _.show : axis.show;
+    axis.gClass = typeof _.gClass !== "undefined" ? _.gClass : axis.gClass;
+    axis.transform = typeof _.transform !== "undefined" ? _.transform : axis.transform;
+
+    axis.tick = typeof _.tick !== "undefined" ? _.tick : {};
+    axis.tick.number = _.tick && typeof _.tick.number !== "undefined" ? _.tick.number : axis.tick.number;
+    axis.tick.values = _.tick && typeof _.tick.values !== "undefined" ? _.tick.values : axis.tick.values;
+    axis.tick.size = _.tick && typeof _.tick.size !== "undefined" ? _.tick.size : axis.tick.size;
+    axis.tick.padding = _.tick && typeof _.tick.padding !== "undefined" ? _.tick.padding : axis.tick.padding;
+    axis.tick.format = _.tick && typeof _.tick.format !== "undefined" ? _.tick.format : axis.tick.format;
+    axis.tick.rotate = _.tick && typeof _.tick.rotate !== "undefined" ? _.tick.rotate : axis.tick.rotate;
+    axis.tick.innerTickSize = _.tick && typeof _.tick.innerTickSize !== "undefined" ?
+      _.tick.innerTickSize : axis.tick.innerTickSize;
+    axis.tick.outerTickSize = _.tick && typeof _.tick.outerTickSize !== "undefined" ?
+      _.tick.outerTickSize : axis.tick.outerTickSize;
+
+    axis.tick.text = _.tick && typeof _.tick.text !== "undefined" ? _.tick.text : {};
+    axis.tick.text.anchor = _.tick && _.tick.text && typeof _.tick.text.anchor !== "undefined" ?
+      _.tick.text.anchor : axis.tick.text.anchor;
+    axis.tick.text.x = _.tick && _.tick.text && typeof _.tick.text.x !== "undefined" ?
+      _.tick.text.x : axis.tick.text.x;
+    axis.tick.text.y = _.tick && _.tick.text && typeof _.tick.text.y !== "undefined" ?
+      _.tick.text.y : axis.tick.text.y;
+    axis.tick.text.dx = _.tick && _.tick.text && typeof _.tick.text.dx !== "undefined" ?
+      _.tick.text.dx : axis.tick.text.dx;
+    axis.tick.text.dy = _.tick && _.tick.text && typeof _.tick.text.dy !== "undefined" ?
+      _.tick.text.dy : axis.tick.text.dy;
+
+    axis.title = typeof _.title !== "undefined" ? _.title : {};
+    axis.title.titleClass = _.title && typeof _.title.titleClass !== "undefined" ?
+      _.title.titleClass : axis.title.titleClass;
+    axis.title.x = _.title && typeof _.title.x !== "undefined" ? _.title.x : axis.title.x;
+    axis.title.y = _.title && typeof _.title.y !== "undefined" ? _.title.y : axis.title.y;
+    axis.title.dx = _.title && typeof _.title.dx !== "undefined" ? _.title.dx : axis.title.dx;
+    axis.title.dy = _.title && typeof _.title.dy !== "undefined" ? _.title.dy : axis.title.dy;
+    axis.title.anchor = _.title && typeof _.title.anchor !== "undefined" ? _.title.anchor : axis.title.anchor;
+    axis.title.text = _.title && typeof _.title.text !== "undefined" ? _.title.text : axis.title.text;
+
+    return axis;
+  };
+});
+
+define('src/modules/helpers/api/area',[],function () {
+  return function (_, area) {
+    area.show = typeof _.show !== "undefined" ? _.show : area.show;
+    area.areaClass = typeof _.areaClass !== "undefined" ? _.areaClass : area.areaClass;
+    area.interpolate = typeof _.interpolate !== "undefined" ? _.interpolate : area.interpolate;
+    area.tension = typeof _.tension !== "undefined" ? _.tension : area.tension;
+    area.stroke = typeof _.stroke !== "undefined" ? _.stroke : area.stroke;
+    area.strokeWidth = typeof _.stroke !== "undefined" ? _.strokeWidth : area.strokeWidth;
+    area.fill = typeof _.fill !== "undefined" ? _.fill : area.fill;
+    area.opacity = typeof _.opacity !== "undefined" ? _.opacity : area.opacity;
+
+    return area;
+  };
+});
+define('src/modules/helpers/api/lines',[],function () {
+  return function (_, lines) {
+    lines.show = typeof _.show !== "undefined" ? _.show : lines.show;
+    lines.lineClass = typeof _.lineClass !== "undefined" ? _.lineClass : lines.lineClass;
+    lines.interpolate = typeof _.interpolate !== "undefined" ? _.interpolate : lines.interpolate;
+    lines.tension = typeof _.tension !== "undefined" ? _.tension : lines.tension;
+    lines.stroke = typeof _.stroke !== "undefined" ? _.stroke : lines.stroke;
+    lines.strokeWidth = typeof _.stroke !== "undefined" ? _.strokeWidth : lines.strokeWidth;
+    lines.opacity = typeof _.opacity !== "undefined" ? _.opacity : lines.opacity;
+
+    return lines;
+  };
+});
+define('src/modules/helpers/api/margin',[],function () {
+  return function (_, margin) {
+    margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
+    margin.right = typeof _.right !== "undefined" ? _.right : margin.right;
+    margin.bottom = typeof _.bottom !== "undefined" ? _.bottom : margin.bottom;
+    margin.left = typeof _.left !== "undefined" ? _.left : margin.left;
+
+    return margin;
+  };
+});
+define('src/modules/helpers/api/scale',[],function () {
+  return function (_, scale) {
+    scale.scale = typeof _.scale !== "undefined" ? _.scale : scale.scale;
+    scale.domain = typeof _.domain !== "undefined" ? _.domain : scale.domain;
+    scale.nice = typeof _.nice !== "undefined" ? _.nice : scale.nice;
+    scale.clamp = typeof _.clamp !== "undefined" ? _.clamp : scale.clamp;
+
+    return scale;
+  };
+});
+define('src/modules/helpers/api/stack',[],function () {
+  return function (_, stack) {
+    stack.offset = typeof _.offset !== "undefined" ? _.offset : stack.offset;
+    stack.order = typeof _.order !== "undefined" ? _.order : stack.order;
+    stack.out = typeof _.out !== "undefined" ? _.out : stack.out;
+
+    return stack;
+  };
+});
+define('src/modules/helpers/api/clippath',[],function () {
+  return function (_, clipPath) {
+    clipPath.width = typeof _.width !== "undefined" ? _.width : clipPath.width;
+    clipPath.height = typeof _.height !== "undefined" ? _.height : clipPath.height;
+
+    return clipPath;
+  };
+});
+define('src/modules/helpers/api/zero_line',[],function () {
+  return function (_, line) {
+    line.add = typeof _.add !== "undefined" ? _.add : line.add;
+    line.lineClass = typeof _.lineClass !== "undefined" ? _.lineClass : line.lineClass;
+    line.stroke = typeof _.stroke !== "undefined" ? _.stroke : line.stroke;
+    line.strokeWidth = typeof _.stroke !== "undefined" ? _.strokeWidth : line.strokeWidth;
+    line.opacity = typeof _.opacity !== "undefined" ? _.opacity : line.opacity;
+
+    return line;
+  };
+});
+
+define('src/modules/chart/area',['require','d3','src/modules/helpers/add_event_listener','src/modules/component/axis','src/modules/component/brush','src/modules/element/svg/clipPath','src/modules/helpers/deep_copy','src/modules/helpers/map_domain','src/modules/element/svg/path','src/modules/helpers/scale_value','src/modules/helpers/remove_event_listener','src/modules/element/svg/line','src/modules/helpers/options/clippath','src/modules/helpers/options/margin','src/modules/helpers/options/scale','src/modules/helpers/options/stack','src/modules/helpers/options/x_axis','src/modules/helpers/options/y_axis','src/modules/helpers/options/zero_line','src/modules/helpers/api/axis','src/modules/helpers/api/area','src/modules/helpers/api/lines','src/modules/helpers/api/margin','src/modules/helpers/api/scale','src/modules/helpers/api/stack','src/modules/helpers/api/clippath','src/modules/helpers/api/zero_line'],function (require) {
+  var d3 = require("d3");
+
+  var addEventListener = require("src/modules/helpers/add_event_listener");
+  var axis = require("src/modules/component/axis");
+  var brushComponent = require("src/modules/component/brush");
+  var clip = require("src/modules/element/svg/clipPath");
+  var deepCopy = require("src/modules/helpers/deep_copy");
+  var mapDomain = require("src/modules/helpers/map_domain");
+  var path = require("src/modules/element/svg/path");
+  var scaleValue = require("src/modules/helpers/scale_value");
+  var removeEventListener = require("src/modules/helpers/remove_event_listener");
+  var zeroAxisLine = require("src/modules/element/svg/line");
+
+  // Options
+  var clipPathOptions = require("src/modules/helpers/options/clippath");
+  var marginOptions = require("src/modules/helpers/options/margin");
+  var scaleOptions = require("src/modules/helpers/options/scale");
+  var stackOptions = require("src/modules/helpers/options/stack");
+  var xAxisOptions = require("src/modules/helpers/options/x_axis");
+  var yAxisOptions = require("src/modules/helpers/options/y_axis");
+  var zeroLineOptions = require("src/modules/helpers/options/zero_line");
+
+  // API
+  var axisAPI = require("src/modules/helpers/api/axis");
+  var areaAPI = require("src/modules/helpers/api/area");
+  var linesAPI = require("src/modules/helpers/api/lines");
+  var marginAPI = require("src/modules/helpers/api/margin");
+  var scaleAPI = require("src/modules/helpers/api/scale");
+  var stackAPI = require("src/modules/helpers/api/stack");
+  var clippathAPI = require("src/modules/helpers/api/clippath");
+  var zeroLineAPI = require("src/modules/helpers/api/zero_line");
 
   return function areaChart() {
     // Chart options
-    var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760 - margin.left - margin.right;
-    var height = 120 - margin.top - margin.bottom;
+    var margin = deepCopy(marginOptions, {});
+    var width = 760;
+    var height = 120;
     var color = d3.scale.category20c();
-    var interpolate = "linear";
-    var offset = "zero";
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
-    var xScale = d3.time.scale.utc().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]).nice();
-    var xDomain = function (domainData) {
-      return d3.extent(domainData, xValue);
-    };
-    var yDomain = function (domainData) {
-      return [
-        Math.min(0, d3.min(domainData, Y)),
-        Math.max(0, d3.max(domainData, Y))
-      ];
-    };
-    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
+    var interpolate = "linear";
+    var defined = function () { return true; };
 
-    // Axis options
-    var showXAxis = true;
-    var showYAxis = true;
-    var xAxisTitle = "";
-    var yAxisTitle = "";
+    // Scale options
+    var xScaleOpts = deepCopy(scaleOptions, {});
+    var yScaleOpts = deepCopy(scaleOptions, {});
+    var xScale;
+    var yScale;
+
+    // Other options
+    var axisX = deepCopy(xAxisOptions, {});
+    var axisY = deepCopy(yAxisOptions, {});
+    var clipPath = deepCopy(clipPathOptions, {});
+    var listeners = {};
+    var stackOpts = deepCopy(stackOptions, {});
+    var zeroLine = deepCopy(zeroLineOptions, {});
 
     // Area options
-    var areaClass = "area";
-    var areaStroke = function (d, i) { return color(i); };
-    var areaFill = function (d, i) { return color(i); };
+    var areas = {
+      groupClass: "paths",
+      areaClass: "area",
+      fill: function (d, i) { return color(i); },
+      stroke: function (d, i) { return color(i); },
+      strokeWidth: 0,
+      opacity: 1
+    };
 
     // Line options
-    var addLines = true;
-    var lineClass = "line";
-    var lineStroke = function (d, i) { return color(i); };
+    var lines = {
+      show: false,
+      groupClass: "paths",
+      lineClass: "line",
+      stroke: function (d, i) { return color(i); },
+      strokeWidth: 3,
+      opacity: 1,
+      interpolate: interpolate,
+      tension:  0.7
+    };
 
     function chart(selection) {
-      selection.each(function (data) {
-        var stack = d3.layout.stack().x(xValue).y(yValue).offset(offset);
+      selection.each(function (data, index) {
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
+
+        var stack = d3.layout.stack()
+          .x(xValue)
+          .y(yValue)
+          .offset(stackOpts.offset)
+          .order(stackOpts.order)
+          .out(stackOpts.out);
+
         var layers = stack(data);
 
+        // Scales
+        xScale = xScaleOpts.scale || d3.time.scale.utc();
+        xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(layers), xValue));
+
+        if (xScale.rangeBands) {
+          xScale.rangeBands([0, width], 0.1);
+        } else {
+          xScale.range([0, width]);
+        }
+
+        yScale = yScaleOpts.scale || d3.scale.linear();
+        yScale.domain(yScaleOpts.domain || [
+            Math.min(0, d3.min(mapDomain(layers), Y)),
+            Math.max(0, d3.max(mapDomain(layers), Y))
+          ])
+          .range([height, 0]);
+
+        if (xScaleOpts.nice) { xScale.nice(); }
+        if (yScaleOpts.nice) { yScale.nice(); }
+
+        // Canvas
         var svg = d3.select(this).selectAll("svg")
           .data([layers])
           .enter().append("svg")
@@ -10789,88 +11037,169 @@ define('src/modules/chart/area',['require','d3','src/modules/element/path','src/
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-        var area = d3.svg.area().x(X).y0(Y0).y1(Y1).interpolate(interpolate);
-        var line = d3.svg.line().x(X).y(Y1).interpolate(interpolate);
+        // Brush
+        if (listeners.brush.length) {
+          var brush = brushComponent()
+            .height(height)
+            .xScale(xScale)
+            .brushend(listeners.brush);
 
-        var areaPath = path()
-          .pathGenerator(area)
-          .pathClass(areaClass)
-          .stroke(areaStroke)
-          .fill(areaFill);
-
-        xScale.domain(xDomain && xDomain.call(this, mapDomain(layers)));
-        yScale.domain(yDomain && yDomain.call(this, mapDomain(layers)));
-
-        g.call(areaPath);
-
-        if (addLines) {
-          var linePath = path()
-            .pathGenerator(line)
-            .pathClass(lineClass)
-            .stroke(lineStroke);
-
-          g.call(linePath);
+          g.call(brush);
         }
 
-        if (showXAxis) {
+        // X axis
+        if (axisX.show) {
           var xAxis = axis()
             .scale(xScale)
-            .gClass("x axis")
-            .transform("translate(0," + yScale.range()[0] + ")")
-            .titleY(6)
-            .titleDY(".71em")
-            .titleAnchor("end")
-            .title(xAxisTitle);
+            .gClass(axisX.gClass)
+            .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
+            .tick({
+              number: axisX.tick.number,
+              values: axisX.tick.values,
+              size: axisX.tick.size,
+              padding: axisX.tick.padding,
+              format: axisX.tick.format,
+              rotate: axisX.tick.rotate,
+              innerTickSize: axisX.tick.innerTickSize,
+              outerTickSize: axisX.tick.outerTickSize,
+              text: {
+                x: axisX.tick.text.x,
+                y: axisX.tick.text.y,
+                dx: axisX.tick.text.dx,
+                dy: axisX.tick.text.dy,
+                anchor: axisX.tick.text.anchor
+              }
+            })
+            .title({
+              titleClass: axisX.title.titleClass,
+              x: width / 2,
+              y: axisX.title.y,
+              dx: axisX.title.dx,
+              dy: axisX.title.dy,
+              anchor: axisX.title.anchor,
+              text: axisX.title.text
+            });
 
           g.call(xAxis);
         }
 
-        if (showYAxis) {
+        // Y axis
+        if (axisY.show) {
           var yAxis = axis()
             .scale(yScale)
             .orient("left")
-            .gClass("y axis")
-            .titleY(6)
-            .titleDY(".71em")
-            .titleAnchor("end")
-            .title(yAxisTitle);
+            .gClass(axisY.gClass)
+            .transform(axisY.transform || "translate(-1,0)")
+            .tick({
+              number: axisY.tick.number,
+              values: axisY.tick.values,
+              size: axisY.tick.size,
+              padding: axisY.tick.padding,
+              format: axisY.tick.format,
+              rotate: axisY.tick.rotate,
+              innerTickSize: axisY.tick.innerTickSize,
+              outerTickSize: axisY.tick.outerTickSize,
+              text: {
+                x: axisY.tick.text.x,
+                y: axisY.tick.text.y,
+                dx: axisY.tick.text.dx,
+                dy: axisY.tick.text.dy,
+                anchor: axisY.tick.text.anchor
+              }
+            })
+            .title({
+              titleClass: axisY.title.titleClass,
+              x: axisY.title.x,
+              y: axisY.title.y,
+              dx: axisY.title.dx,
+              dy: axisY.title.dy,
+              transform: "translate(0," + height / 2 + ")rotate(" + axisY.title.rotate + ")",
+              anchor: axisY.title.anchor,
+              text: axisY.title.text
+            });
 
           g.call(yAxis);
+        }
+
+        // Add clippath and areas
+        var X = scaleValue(xScale, xValue);
+
+        var clippath = clip()
+          .width(clipPath.width || width)
+          .height(clipPath.height || height);
+
+        var area = d3.svg.area().x(X).y0(Y0).y1(Y1)
+          .interpolate(interpolate)
+          .defined(defined);
+
+        var areaPath = path()
+          .pathGenerator(area)
+          .cssClass(areas.areaClass)
+          .stroke(areas.stroke)
+          .strokeWidth(areas.strokeWidth)
+          .fill(areas.fill)
+          .opacity(areas.opacity)
+          .listeners(listeners);
+
+        g.call(clippath)
+          .append("g")
+          .attr("clip-path", "url(#" + clippath.id() + ")")
+          .attr("class", areas.groupClass)
+          .call(areaPath);
+
+        // Add Lines
+        if (lines.show) {
+          var line = d3.svg.line().x(X).y(Y1)
+            .interpolate(interpolate)
+            .defined(defined);
+
+          var linePath = path()
+            .pathGenerator(line)
+            .cssClass(lines.lineClass)
+            .stroke(lines.stroke)
+            .strokeWidth(lines.strokeWidth)
+            .opacity(lines.opacity);
+
+          g.append("g").call(linePath);
+        }
+
+        // Zero-line
+        if (zeroLine.add) {
+          var zLine = zeroAxisLine()
+            .cssClass(zeroLine.lineClass)
+            .x1(function () { return xScale.range()[0]; })
+            .x2(function () { return xScale.range()[1]; })
+            .y1(function () { return yScale(0); })
+            .y2(function () { return yScale(0); })
+            .stroke(zeroLine.stroke)
+            .strokeWidth(zeroLine.strokeWidth)
+            .opacity(zeroLine.opacity);
+
+          g.call(zLine);
         }
       });
     }
 
-    function X(d, i) {
-      return xScale(xValue.call(null, d, i));
-    }
-
     function Y(d, i) {
-      if (offset === "overlap") { return d.y; }
+      if (stackOpts.offset === "overlap") { return d.y; }
       return d.y0 + yValue.call(null, d, i);
     }
 
     function Y0(d) {
-      if (offset ==="overlap") { return yScale(0); }
+      var min = Math.max(0, yScale.domain()[0]);
+      if (stackOpts.offset === "overlap") { return yScale(min); }
       return yScale(d.y0);
     }
 
     function Y1(d, i) {
-      if (offset === "overlap") { return yScale(d.y); }
+      if (stackOpts.offset === "overlap") { return yScale(d.y); }
       return yScale(d.y0 + yValue.call(null, d, i));
     }
 
-    function mapDomain (data) {
-      return data.reduce(function (a, b) {
-        return a.concat(b);
-      });
-    }
-
+    // Public API
     chart.margin = function (_) {
       if (!arguments.length) { return margin; }
-      margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
-      margin.right = typeof _.right !== "undefined" ? _.right : margin.right;
-      margin.bottom = typeof _.bottom !== "undefined" ? _.bottom : margin.bottom;
-      margin.left = typeof _.left !== "undefined" ? _.left : margin.left;
+      margin = marginAPI(_, margin);
       return chart;
     };
 
@@ -10904,57 +11233,9 @@ define('src/modules/chart/area',['require','d3','src/modules/element/path','src/
       return chart;
     };
 
-    chart.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
-      return chart;
-    };
-
-    chart.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
-      return chart;
-    };
-
-    chart.xDomain = function (_) {
-      if (!arguments.length) { return xDomain; }
-      xDomain = _;
-      return chart;
-    };
-
-    chart.yDomain = function (_) {
-      if (!arguments.length) { return yDomain; }
-      yDomain = _;
-      return chart;
-    };
-
-    chart.dispatch = function (_) {
-      if (!arguments.length) { return dispatch; }
-      dispatch = _;
-      return chart;
-    };
-
-    chart.showXAxis = function (_) {
-      if (!arguments.length) { return showXAxis; }
-      showXAxis = _;
-      return chart;
-    };
-
-    chart.showYAxis = function (_) {
-      if (!arguments.length) { return showYAxis; }
-      showYAxis = _;
-      return chart;
-    };
-
-    chart.xAxisTitle = function (_) {
-      if (!arguments.length) { return xAxisTitle; }
-      xAxisTitle = _;
-      return chart;
-    };
-
-    chart.yAxisTitle = function (_) {
-      if (!arguments.length) { return yAxisTitle; }
-      yAxisTitle = _;
+    chart.defined = function (_) {
+      if (!arguments.length) { return defined; }
+      defined = _;
       return chart;
     };
 
@@ -10964,49 +11245,603 @@ define('src/modules/chart/area',['require','d3','src/modules/element/path','src/
       return chart;
     };
 
-    chart.offset = function (_) {
-      if (!arguments.length) { return offset; }
-      offset = _;
+    chart.xScale = function (_) {
+      if (!arguments.length) { return xScaleOpts; }
+      xScaleOpts = scaleAPI(_, xScaleOpts);
       return chart;
     };
 
-    chart.areaClass = function (_) {
-      if (!arguments.length) { return areaClass; }
-      areaClass = _;
+    chart.yScale = function (_) {
+      if (!arguments.length) { return yScaleOpts; }
+      yScaleOpts = scaleAPI(_, yScaleOpts);
       return chart;
     };
 
-    chart.areaStroke = function (_) {
-      if (!arguments.length) { return areaStroke; }
-      areaStroke = _;
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return axisX; }
+      axisX = axisAPI(_, axisX);
       return chart;
     };
 
-    chart.areaFill = function (_) {
-      if (!arguments.length) { return areaFill; }
-      areaFill = _;
+    chart.yAxis = function (_) {
+      if (!arguments.length) { return axisY; }
+      axisY = axisAPI(_, axisY);
       return chart;
     };
 
-    chart.addLines = function (_) {
-      if (!arguments.length) { return addLines; }
-      addLines = _;
+    chart.stack = function (_) {
+      if (!arguments.length) { return stackOpts; }
+      stackOpts = stackAPI(_, stackOpts);
       return chart;
     };
 
-    chart.lineStroke = function (_) {
-      if (!arguments.length) { return lineStroke; }
-      lineStroke = _;
+    chart.clipPath = function (_) {
+      if (!arguments.length) { return clipPath; }
+      clipPath = clippathAPI(_, clipPath);
       return chart;
     };
 
-    chart.lineClass = function (_) {
-      if (!arguments.length) { return lineClass; }
-      lineClass = _;
+    chart.area = function (_) {
+      if (!arguments.length) { return areas; }
+      areas = areaAPI(_, areas);
       return chart;
     };
 
-    d3.rebind(chart, dispatch, "on");
+    chart.lines = function (_) {
+      if (!arguments.length) { return lines; }
+      lines = linesAPI(_, lines);
+      return chart;
+    };
+
+    chart.zeroLine = function (_) {
+      if (!arguments.length) { return zeroLine; }
+      zeroLine = zeroLineAPI(_, zeroLine);
+      return chart;
+    };
+
+    chart.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return chart;
+    };
+
+    chart.on = addEventListener(listeners, chart);
+
+    chart.off = removeEventListener(listeners, chart);
+
+    return chart;
+  };
+});
+define('src/modules/element/svg/rect',['require','d3','src/modules/component/events'],function (require) {
+  var d3 = require("d3");
+  var events = require("src/modules/component/events");
+
+  return function rect() {
+    var x = function (d) { return d.x; };
+    var y = function (d) { return d.y; };
+    var rx = 0;
+    var ry = 0;
+    var width = null;
+    var height = null;
+    var values = null;
+
+    // Options
+    var color = d3.scale.category10();
+    var cssClass = "bar";
+    var fill = null;
+    var stroke = null;
+    var strokeWidth = 0;
+    var opacity = null;
+    var listeners = {};
+
+    function element(selection) {
+      selection.each(function (data, index) {
+        var rectEvents = events().listeners(listeners);
+
+        var bars = d3.select(this).selectAll("rects")
+          .data(values ? values : data);
+
+        bars.exit().remove();
+
+        bars.enter().append("rect");
+
+        bars
+          .attr("class", cssClass)
+          .attr("fill", fill ? fill : colorFill)
+          .attr("stroke", stroke ? stroke : colorFill)
+          .attr("stroke-width", strokeWidth)
+          .attr("x", x)
+          .attr("y", y)
+          .attr("rx", rx)
+          .attr("ry", ry)
+          .attr("width", width)
+          .attr("height", height)
+          .style("opacity", opacity);
+
+        bars.call(rectEvents);
+      });
+    }
+
+    function colorFill(d, i) {
+      return color(i);
+    }
+
+    // Public API
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
+
+    element.x = function (_) {
+      if (!arguments.length) { return x; }
+      x = _;
+      return element;
+    };
+
+    element.y = function (_) {
+      if (!arguments.length) { return y; }
+      y = _;
+      return element;
+    };
+
+    element.rx = function (_) {
+      if (!arguments.length) { return rx; }
+      rx = _;
+      return element;
+    };
+
+    element.ry = function (_) {
+      if (!arguments.length) { return ry; }
+      ry = _;
+      return element;
+    };
+
+    element.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return element;
+    };
+
+    element.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return element;
+    };
+
+    element.cssClass= function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
+      return element;
+    };
+
+    element.fill = function (_) {
+      if (!arguments.length) { return fill; }
+      fill = _;
+      return element;
+    };
+
+    element.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
+      return element;
+    };
+
+    element.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return element;
+    };
+
+    element.stroke = function (_) {
+      if (!arguments.length) { return stroke; }
+      stroke = _;
+      return element;
+    };
+
+    element.strokeWidth = function (_) {
+      if (!arguments.length) { return strokeWidth; }
+      strokeWidth = _;
+      return element;
+    };
+
+    element.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return element;
+    };
+
+    return element;
+  };
+});
+
+define('src/modules/helpers/api/rect',[],function () {
+  return function (_, rects) {
+    rects.show = typeof _.show !== "undefined" ? _.show : rects.show;
+    rects.x = typeof _.x !== "undefined" ? _.x : rects.x;
+    rects.y = typeof _.y !== "undefined" ? _.y : rects.y;
+    rects.width = typeof _.width !== "undefined" ? _.width : rects.width;
+    rects.height = typeof _.height !== "undefined" ? _.height : rects.height;
+    rects.groupClass = typeof _.groupClass !== "undefined" ? _.groupClass : rects.groupClass;
+    rects.cssClass = typeof _.cssClass !== "undefined" ? _.cssClass : rects.cssClass;
+    rects.fill = typeof _.fill !== "undefined" ? _.fill : rects.fill;
+    rects.stroke = typeof _.stroke !== "undefined" ? _.stroke : rects.stroke;
+    rects.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : rects.strokeWidth;
+    rects.opacity = typeof _.opacity !== "undefined" ? _.opacity : rects.opacity;
+
+    return rects;
+  };
+});
+
+define('src/modules/chart/bar',['require','d3','src/modules/helpers/add_event_listener','src/modules/component/axis','src/modules/component/brush','src/modules/element/svg/clipPath','src/modules/helpers/deep_copy','src/modules/helpers/map_domain','src/modules/element/svg/rect','src/modules/helpers/remove_event_listener','src/modules/element/svg/line','src/modules/helpers/api/axis','src/modules/helpers/api/clippath','src/modules/helpers/options/clippath','src/modules/helpers/api/margin','src/modules/helpers/options/margin','src/modules/helpers/api/rect','src/modules/helpers/api/scale','src/modules/helpers/options/scale','src/modules/helpers/api/stack','src/modules/helpers/options/stack','src/modules/helpers/options/x_axis','src/modules/helpers/options/y_axis','src/modules/helpers/api/zero_line','src/modules/helpers/options/zero_line'],function (require) {
+  var d3 = require("d3");
+  var addEventListener = require("src/modules/helpers/add_event_listener");
+  var axis = require("src/modules/component/axis");
+  var brushComponent = require("src/modules/component/brush");
+  var clip = require("src/modules/element/svg/clipPath");
+  var deepCopy = require("src/modules/helpers/deep_copy");
+  var mapDomain = require("src/modules/helpers/map_domain");
+  var rect = require("src/modules/element/svg/rect");
+  var removeEventListener = require("src/modules/helpers/remove_event_listener");
+  var zeroAxisLine = require("src/modules/element/svg/line");
+
+  var axisAPI = require("src/modules/helpers/api/axis");
+  var clippathAPI = require("src/modules/helpers/api/clippath");
+  var clipPathOptions = require("src/modules/helpers/options/clippath");
+  var marginAPI = require("src/modules/helpers/api/margin");
+  var marginOptions = require("src/modules/helpers/options/margin");
+  var rectAPI = require("src/modules/helpers/api/rect");
+  var scaleAPI = require("src/modules/helpers/api/scale");
+  var scaleOptions = require("src/modules/helpers/options/scale");
+  var stackAPI = require("src/modules/helpers/api/stack");
+  var stackOptions = require("src/modules/helpers/options/stack");
+  var xAxisOptions = require("src/modules/helpers/options/x_axis");
+  var yAxisOptions = require("src/modules/helpers/options/y_axis");
+  var zeroLineAPI = require("src/modules/helpers/api/zero_line");
+  var zeroLineOptions = require("src/modules/helpers/options/zero_line");
+
+  return function barChart() {
+    var margin = deepCopy(marginOptions, {});
+    var width = 760;
+    var height = 120;
+    var color = d3.scale.category20c();
+    var xValue = function (d) { return d.x; };
+    var yValue = function (d) { return d.y; };
+    var values = function (d) { return d; };
+    var stacked = "true";
+
+    // Scale options
+    var xScaleOpts = deepCopy(scaleOptions, {});
+    var yScaleOpts = deepCopy(scaleOptions, {});
+    var xScale;
+    var yScale;
+
+    // Other options
+    var stackOpts = deepCopy(stackOptions, {});
+    var axisX = deepCopy(xAxisOptions, {});
+    var axisY = deepCopy(yAxisOptions, {});
+    var clipPath = deepCopy(clipPathOptions, {});
+    var zeroLine = deepCopy(zeroLineOptions, {});
+    var listeners = {};
+
+    // Rect options
+    var rects = {
+      groupClass: "rects",
+      cssClass: "bars",
+      x: function (d, i, j, scale) {
+        return scale(xValue.call(null, d, i));
+      },
+      y: function (d, i, j, scale) {
+        return scale(yValue.call(null, d, i));
+      },
+      width: function (d, i, j, scale, data) {
+        return scale.range()[1] / data.length;
+      },
+      height: function (d, i, j, scale) {
+        return scale.range()[0] - scale(yValue.call(null, d, i));
+      },
+      rx: 0,
+      ry: 0,
+      fill: function (d, i) { return color(i); },
+      stroke: function (d, i) { return color(i); },
+      strokeWidth: 0,
+      opacity: 1
+    };
+
+    function chart(selection) {
+      selection.each(function (data, index) {
+        var stack = d3.layout.stack().x(xValue).y(yValue).values(values)
+          .offset(stackOpts.offset)
+          .order(stackOpts.order)
+          .out(stackOpts.out);
+
+        if (stacked) { data = stack(data); }
+
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
+
+        var newData = data.map(values);
+
+        xScale = xScaleOpts.scale || d3.time.scale.utc();
+        xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(newData), xValue));
+
+        if (typeof xScale.rangeBands === "function") {
+          xScale.rangeBands([0, width, 0.1]);
+        } else {
+          xScale.range([0, width]);
+        }
+
+        yScale = yScaleOpts.scale || d3.scale.linear();
+        yScale.domain(yScaleOpts.domain || [
+            Math.min(0, d3.min(mapDomain(newData), yStackValue)),
+            Math.max(0, d3.max(mapDomain(newData), yStackValue))
+          ])
+          .range([height, 0]);
+
+        if (xScaleOpts.nice) { xScale.nice(); }
+        if (yScaleOpts.nice) { yScale.nice(); }
+
+        var svg = d3.select(this).selectAll("svg")
+          .data([data])
+          .enter().append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom);
+
+        var g = svg.append("g")
+          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+        // Brush
+        if (listeners.brush.length) {
+          var brush = brushComponent()
+            .height(height)
+            .xScale(xScale)
+            .brushend(listeners.brush);
+
+          g.call(brush);
+        }
+
+        var clippath = clip()
+          .width(clipPath.width || width)
+          .height(clipPath.height || height);
+
+        var bars = rect()
+          .data(values)
+          .cssClass(rects.cssClass)
+          .fill(function (d, i, j) {
+            return color(rects.fill.call(this, d, i, j));
+          })
+          .stroke(function (d, i, j) {
+            return color(rects.stroke.call(this, d, i, j));
+          })
+          .strokeWidth(rects.strokeWidth)
+          .opacity(rects.opacity)
+          .rx(rects.rx)
+          .ry(rects.ry)
+          .x(function (d, i, j) {
+            return rects.x.call(null, d, i, j, xScale, data);
+          })
+          .width(function (d, i, j) {
+            return rects.width.call(null, d, i, j, xScale, data);
+          })
+          .y(function (d, i, j) {
+            return rects.y.call(null, d, i, j, yScale, data);
+          })
+          .height(function (d, i, j) {
+            return rects.height.call(null, d, i, j, yScale, data);
+          })
+          .listeners(listeners);
+
+        g.call(clippath)
+          .append("g")
+          .attr("clip-path", "url(#" + clippath.id() + ")");
+
+        if (stacked) {
+          g.selectAll("rectGroup")
+            .data(data)
+            .enter().append("g")
+            .attr("class", rects.groupClass)
+            .call(bars);
+        } else {
+          g.call(bars);
+        }
+
+        if (axisX.show) {
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass(axisX.gClass)
+            .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
+            .tick({
+              number: axisX.tick.number,
+              values: axisX.tick.values,
+              size: axisX.tick.size,
+              padding: axisX.tick.padding,
+              format: axisX.tick.format,
+              rotate: axisX.tick.rotate,
+              innerTickSize: axisX.tick.innerTickSize,
+              outerTickSize: axisX.tick.outerTickSize,
+              text: {
+                x: axisX.tick.text.x,
+                y: axisX.tick.text.y,
+                dx: axisX.tick.text.dx,
+                dy: axisX.tick.text.dy,
+                anchor: axisX.tick.text.anchor
+              }
+            })
+            .title({
+              titleClass: axisX.title.titleClass,
+              x: width / 2,
+              y: axisX.title.y,
+              dx: axisX.title.dx,
+              dy: axisX.title.dy,
+              anchor: axisX.title.anchor,
+              text: axisX.title.text
+            });
+
+          g.call(xAxis);
+        }
+
+        if (axisY.show) {
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass(axisY.gClass)
+            .transform(axisY.transform || "translate(-1,0)")
+            .tick({
+              number: axisY.tick.number,
+              values: axisY.tick.values,
+              size: axisY.tick.size, padding: axisY.tick.padding, format: axisY.tick.format,
+              rotate: axisY.tick.rotate,
+              innerTickSize: axisY.tick.innerTickSize,
+              outerTickSize: axisY.tick.outerTickSize,
+              text: {
+                x: axisY.tick.text.x,
+                y: axisY.tick.text.y,
+                dx: axisY.tick.text.dx,
+                dy: axisY.tick.text.dy,
+                anchor: axisY.tick.text.anchor
+              }
+            })
+            .title({
+              titleClass: axisY.title.titleClass,
+              x: axisY.title.x,
+              y: axisY.title.y,
+              dx: axisY.title.dx,
+              dy: axisY.title.dy,
+              transform: "translate(0," + height / 2 + ")rotate(" + axisY.title.rotate + ")",
+              anchor: axisY.title.anchor,
+              text: axisY.title.text
+            });
+
+          g.call(yAxis);
+        }
+
+        if (zeroLine.add) {
+          var zLine = zeroAxisLine()
+            .cssClass(zeroLine.lineClass)
+            .x1(function () { return xScale.range()[0]; })
+            .x2(function () { return xScale.range()[1]; })
+            .y1(function () { return yScale(0); })
+            .y2(function () { return yScale(0); })
+            .stroke(zeroLine.stroke)
+            .strokeWidth(zeroLine.strokeWidth)
+            .opacity(zeroLine.opacity);
+
+          g.call(zLine);
+        }
+      });
+    }
+
+    function yStackValue (d, i) {
+      return d.y0 + d.y;
+    }
+
+    // Public API
+    chart.margin = function (_) {
+      if (!arguments.length) { return margin; }
+      margin = marginAPI(_, margin);
+      return chart;
+    };
+
+    chart.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return chart;
+    };
+
+    chart.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return chart;
+    };
+
+    chart.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return chart;
+    };
+
+    chart.x = function (_) {
+      if (!arguments.length) { return xValue; }
+      xValue = _;
+      return chart;
+    };
+
+    chart.y = function (_) {
+      if (!arguments.length) { return yValue; }
+      yValue = _;
+      return chart;
+    };
+
+    chart.values = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return chart;
+    };
+
+    chart.stacked = function (_) {
+      if (!arguments.length) { return stacked; }
+      stacked = _;
+      return chart;
+    };
+
+    chart.xScale = function (_) {
+      if (!arguments.length) { return xScaleOpts; }
+      xScaleOpts = scaleAPI(_, xScaleOpts);
+      return chart;
+    };
+
+    chart.yScale = function (_) {
+      if (!arguments.length) { return yScaleOpts; }
+      yScaleOpts = scaleAPI(_, yScaleOpts);
+      return chart;
+    };
+
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return axisX; }
+      axisX = axisAPI(_, axisX);
+      return chart;
+    };
+
+    chart.yAxis = function (_) {
+      if (!arguments.length) { return axisY; }
+      axisY = axisAPI(_, axisY);
+      return chart;
+    };
+
+    chart.stack = function (_) {
+      if (!arguments.length) { return stackOptions; }
+      stackOptions = stackAPI(_, stackOptions);
+      return chart;
+    };
+
+    chart.clipPath = function (_) {
+      if (!arguments.length) { return clipPath; }
+      clipPath = clippathAPI(_, clipPath);
+      return chart;
+    };
+
+    chart.zeroLine = function (_) {
+      if (!arguments.length) { return zeroLine; }
+      zeroLine = zeroLineAPI(_, zeroLine);
+      return chart;
+    };
+
+    chart.rects = function (_) {
+      if (!arguments.length) { return rects; }
+      rects = rectAPI(_, rects);
+      return chart;
+    };
+
+    chart.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return chart;
+    };
+
+    chart.on = addEventListener(listeners, chart);
+
+    chart.off = removeEventListener(listeners, chart);
+
     return chart;
   };
 });
@@ -11046,116 +11881,126 @@ define('src/modules/layout/box',['require','d3'],function (require) {
     return layout;
   };
 });
-define('src/modules/component/boxplot/boxplot',['require','d3'],function (require) {
+define('src/modules/component/boxplot',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function boxplot() {
     var gClass = "box";
-    var gTransform = null;
+    var transform = null;
 
     // Box
-    var boxWidth = 20;
-    var boxHeight = null;
-    var boxY = null;
-    var boxClass = "range";
-    var boxFill = "white";
-    var boxStroke = "black";
-    var boxStrokeWidth = "2px";
+    var box = {
+      width: 20,
+      height: null,
+      y: null,
+      boxClass: "range",
+      fill: "white",
+      stroke: "black",
+      strokeWidth: "2px"
+    };
 
     // Range
-    var rangeX1 = 0;
-    var rangeX2 = 0;
-    var rangeY1 = null;
-    var rangeY2 = null;
-    var rangeClass = "range";
-    var rangeStroke = "black";
-    var rangeStrokeWidth = "4px";
+    var range = {
+      x1: 0,
+      x2: 0,
+      y1: null,
+      y2: null,
+      rangeClass: "range",
+      stroke: "black",
+      strokeWidth: "4px"
+    };
 
     // Max
-    var maxY1 = null;
-    var maxY2 = null;
-    var maxClass = "max";
-    var maxStroke = "black";
-    var maxStrokeWidth = "4px";
+    var max = {
+      y1: null,
+      y2: null,
+      maxClass: "max",
+      stroke: "black",
+      strokeWidth: "4px"
+    };
 
     // Min
-    var minY1 = null;
-    var minY2 = null;
-    var minClass = "min";
-    var minStroke = "black";
-    var minStrokeWidth = "4px";
+    var min = {
+      y1: null,
+      y2: null,
+      minClass: "min",
+      stroke: "black",
+      strokeWidth: "4px"
+    };
 
     // Median
-    var medianY1 = 0;
-    var medianY2 = 0;
-    var medianClass = "median";
-    var medianStroke = "darkgrey";
-    var medianStrokeWidth = "4px";
+    var median = {
+      y1: 0,
+      y2: 0,
+      medianClass: "median",
+      stroke: "darkgrey",
+      strokeWidth: "4px"
+    };
 
     function component(selection) {
       selection.each(function () {
-        var boxX = - (boxWidth / 2);
-        var maxX1 = - (boxWidth / 2);
-        var maxX2 = boxWidth / 2;
-        var minX1 = - (boxWidth / 2);
-        var minX2 = boxWidth / 2;
-        var medianX1 = - (boxWidth / 2);
-        var medianX2 = boxWidth / 2;
+        var boxX = - (box.width / 2);
+        var maxX1 = - (box.width / 2);
+        var maxX2 = box.width / 2;
+        var minX1 = - (box.width / 2);
+        var minX2 = box.width / 2;
+        var medianX1 = - (box.width / 2);
+        var medianX2 = box.width / 2;
 
         var g = d3.select(this).selectAll("g.box")
           .data(function (d) { return d; })
           .enter().append("g")
           .attr("class", gClass);
 
-        g.attr("transform", gTransform)
+        g.attr("transform", transform)
           .each(function (d, i) {
             var g = d3.select(this);
 
             g.append("line")
-              .attr("class", rangeClass)
-              .attr("x1", rangeX1)
-              .attr("x2", rangeX2)
-              .attr("y1", rangeY1)
-              .attr("y2", rangeY2)
-              .style("stroke", rangeStroke)
-              .style("stroke-boxWidth", rangeStrokeWidth);
+              .attr("class", range.rangeClass)
+              .attr("x1", range.x1)
+              .attr("x2", range.x2)
+              .attr("y1", range.y1)
+              .attr("y2", range.y2)
+              .style("stroke", range.stroke)
+              .style("stroke-boxWidth", range.strokeWidth);
 
             g.append("line")
-              .attr("class", maxClass)
+              .attr("class", max.maxClass)
               .attr("x1", maxX1)
               .attr("x2", maxX2)
-              .attr("y1", maxY1)
-              .attr("y2", maxY2)
-              .style("stroke", maxStroke)
-              .style("stroke-boxWidth", maxStrokeWidth);
+              .attr("y1", max.y1)
+              .attr("y2", max.y2)
+              .style("stroke", max.stroke)
+              .style("stroke-boxWidth", max.strokeWidth);
 
             g.append("line")
-              .attr("class", minClass)
+              .attr("class", min.minClass)
               .attr("x1", minX1)
               .attr("x2", minX2)
-              .attr("y1", minY1)
-              .attr("y2", minY2)
-              .style("stroke", minStroke)
-              .style("stroke-boxWidth", minStrokeWidth);
+              .attr("y1", min.y1)
+              .attr("y2", min.y2)
+              .style("stroke", min.stroke)
+              .style("stroke-boxWidth", min.strokeWidth);
 
             g.append("rect")
-              .attr("class", boxClass)
+              .attr("class", box.boxClass)
               .attr("x", boxX)
-              .attr("y", boxY)
-              .attr("width", boxWidth)
-              .attr("height", boxHeight)
-              .style("fill", boxFill)
-              .style("stroke", boxStroke)
-              .style("stroke-boxWidth", boxStrokeWidth);
+              .attr("y", box.y)
+              .attr("width", box.width)
+              .attr("height", box.height)
+              .style("fill", box.fill)
+              .style("stroke", box.stroke)
+              .style("stroke-boxWidth", box.strokeWidth);
 
             g.append("line")
-              .attr("class", medianClass)
+              .attr("class", median.medianClass)
               .attr("x1", medianX1)
               .attr("x2", medianX2)
-              .attr("y1", medianY1)
-              .attr("y2", medianY2)
-              .style("stroke", medianStroke)
-              .style("stroke-boxWidth", medianStrokeWidth);
+              .attr("y1", median.y1)
+              .attr("y2", median.y2)
+              .style("stroke", median.stroke)
+              .style("stroke-boxWidth", median.strokeWidth);
           });
       });
     }
@@ -11166,194 +12011,74 @@ define('src/modules/component/boxplot/boxplot',['require','d3'],function (requir
       return component;
     };
 
-    component.gTransform = function (_) {
-      if (!arguments.length) { return gTransform; }
-      gTransform = _;
+    component.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
       return component;
     };
 
-    component.boxWidth = function (_) {
-      if (!arguments.length) { return boxWidth; }
-      boxWidth = _;
+    component.box = function (_) {
+      if (!arguments.length) { return box; }
+      box.width = typeof _.width !== "undefined" ? _.width : box.width;
+      box.height = typeof _.height !== "undefined" ? _.height : box.height;
+      box.y = typeof _.y !== "undefined" ? _.y : box.y;
+      box.boxClass = typeof _.boxClass !== "undefined" ? _.boxClass : box.boxClass;
+      box.fill = typeof _.fill !== "undefined" ? _.fill : box.fill;
+      box.stroke = typeof _.stroke !== "undefined" ? _.stroke : box.stroke;
+      box.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : box.strokeWidth;
       return component;
     };
 
-    component.boxHeight = function (_) {
-      if (!arguments.length) { return boxHeight; }
-      boxHeight = _;
+    component.range = function (_) {
+      if (!arguments.length) { return range; }
+      range.x1 = typeof _.x1!== "undefined" ? _.x1: range.x1;
+      range.x2 = typeof _.x2!== "undefined" ? _.x2 : range.x2;
+      range.y1 = typeof _.y1 !== "undefined" ? _.y1 : range.y1;
+      range.y2 = typeof _.y2 !== "undefined" ? _.y2 : range.y2;
+      range.rangeClass = typeof _.rangeClass !== "undefined" ? _.rangeClass : range.rangeClass;
+      range.stroke = typeof _.stroke !== "undefined" ? _.stroke : range.stroke;
+      range.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : range.strokeWidth;
       return component;
     };
 
-    component.boxY = function (_) {
-      if (!arguments.length) { return boxY; }
-      boxY = _;
+    component.max = function (_) {
+      if (!arguments.length) { return max; }
+      max.y1 = typeof _.y1 !== "undefined" ? _.y1 : max.y1;
+      max.y2 = typeof _.y2 !== "undefined" ? _.y2 : max.y2;
+      max.maxClass = typeof _.maxClass !== "undefined" ? _.maxClass : max.maxClass;
+      max.stroke = typeof _.stroke !== "undefined" ? _.stroke : max.stroke;
+      max.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : max.strokeWidth;
       return component;
     };
 
-    component.boxClass = function (_) {
-      if (!arguments.length) { return boxClass; }
-      boxClass = _;
+    component.min = function (_) {
+      if (!arguments.length) { return min; }
+      min.y1 = typeof _.y1 !== "undefined" ? _.y1 : min.y1;
+      min.y2 = typeof _.y2 !== "undefined" ? _.y2 : min.y2;
+      min.minClass = typeof _.minClass !== "undefined" ? _.minClass : min.minClass;
+      min.stroke = typeof _.stroke !== "undefined" ? _.stroke : min.stroke;
+      min.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : min.strokeWidth;
       return component;
     };
 
-    component.boxFill = function (_) {
-      if (!arguments.length) { return boxFill; }
-      boxFill = _;
-      return component;
-    };
-
-    component.boxStroke = function (_) {
-      if (!arguments.length) { return boxStroke; }
-      boxStroke = _;
-      return component;
-    };
-
-    component.boxStrokeWidth = function (_) {
-      if (!arguments.length) { return boxStrokeWidth; }
-      boxStrokeWidth = _;
-      return component;
-    };
-
-    component.rangeX1 = function (_) {
-      if (!arguments.length) { return rangeX1; }
-      rangeX1 = _;
-      return component;
-    };
-
-    component.rangeX2 = function (_) {
-      if (!arguments.length) { return rangeX2; }
-      rangeX2 = _;
-      return component;
-    };
-
-    component.rangeY1 = function (_) {
-      if (!arguments.length) { return rangeY1; }
-      rangeY1 = _;
-      return component;
-    };
-
-    component.rangeY2 = function (_) {
-      if (!arguments.length) { return rangeY2; }
-      rangeY2 = _;
-      return component;
-    };
-
-    component.rangeClass = function (_) {
-      if (!arguments.length) { return rangeClass; }
-      rangeClass = _;
-      return component;
-    };
-
-    component.rangeStroke = function (_) {
-      if (!arguments.length) { return rangeStroke; }
-      rangeStroke = _;
-      return component;
-    };
-
-    component.rangeStrokeWidth = function (_) {
-      if (!arguments.length) { return rangeStrokeWidth; }
-      rangeStrokeWidth = _;
-      return component;
-    };
-
-    component.maxY1 = function (_) {
-      if (!arguments.length) { return maxY1; }
-      maxY1 = _;
-      return component;
-    };
-
-    component.maxY2 = function (_) {
-      if (!arguments.length) { return maxY2; }
-      maxY2 = _;
-      return component;
-    };
-
-    component.maxClass = function (_) {
-      if (!arguments.length) { return maxClass; }
-      maxClass = _;
-      return component;
-    };
-
-    component.maxStroke = function (_) {
-      if (!arguments.length) { return maxStroke; }
-      maxStroke = _;
-      return component;
-    };
-
-    component.maxStrokeWidth = function (_) {
-      if (!arguments.length) { return maxStrokeWidth; }
-      maxStrokeWidth = _;
-      return component;
-    };
-
-    component.minY1 = function (_) {
-      if (!arguments.length) { return minY1; }
-      minY1 = _;
-      return component;
-    };
-
-    component.minY2 = function (_) {
-      if (!arguments.length) { return minY2; }
-      minY2 = _;
-      return component;
-    };
-
-    component.minClass = function (_) {
-      if (!arguments.length) { return minClass; }
-      minClass = _;
-      return component;
-    };
-
-    component.minStroke = function (_) {
-      if (!arguments.length) { return minStroke; }
-      minStroke = _;
-      return component;
-    };
-
-    component.minStrokeWidth = function (_) {
-      if (!arguments.length) { return minStrokeWidth; }
-      minStrokeWidth = _;
-      return component;
-    };
-
-    component.medianY1 = function (_) {
-      if (!arguments.length) { return medianY1; }
-      medianY1 = _;
-      return component;
-    };
-
-    component.medianY2 = function (_) {
-      if (!arguments.length) { return medianY2; }
-      medianY2 = _;
-      return component;
-    };
-
-    component.medianClass = function (_) {
-      if (!arguments.length) { return medianClass; }
-      medianClass = _;
-      return component;
-    };
-
-    component.medianStroke = function (_) {
-      if (!arguments.length) { return medianStroke; }
-      medianStroke = _;
-      return component;
-    };
-
-    component.medianStrokeWidth = function (_) {
-      if (!arguments.length) { return medianStrokeWidth; }
-      medianStrokeWidth = _;
+    component.median = function (_) {
+      if (!arguments.length) { return median; }
+      median.y1 = typeof _.y1 !== "undefined" ? _.y1 : median.y1;
+      median.y2 = typeof _.y2 !== "undefined" ? _.y2 : median.y2;
+      median.medianClass = typeof _.medianClass !== "undefined" ? _.medianClass : median.medianClass;
+      median.stroke = typeof _.stroke !== "undefined" ? _.stroke : median.stroke;
+      median.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : median.strokeWidth;
       return component;
     };
 
     return component;
   };
 });
-define('src/modules/chart/boxplot',['require','d3','src/modules/layout/box','src/modules/component/boxplot/boxplot','src/modules/component/axis/axis'],function (require) {
+define('src/modules/chart/boxplot',['require','d3','src/modules/layout/box','src/modules/component/boxplot','src/modules/component/axis'],function (require) {
   var d3 = require("d3");
   var box = require("src/modules/layout/box");
-  var boxPlot = require("src/modules/component/boxplot/boxplot");
-  var axis = require("src/modules/component/axis/axis");
+  var boxPlot = require("src/modules/component/boxplot");
+  var axis = require("src/modules/component/axis");
 
   return function boxplot() {
     var margin = { top:20, right: 20, bottom: 50, left: 50 };
@@ -11362,39 +12087,32 @@ define('src/modules/chart/boxplot',['require','d3','src/modules/layout/box','src
     var xValue = function (d) { return d.x; };
     var values = function (d) { return d.values; };
     var accessor = function (d) { return d; };
-    var xScale = d3.time.scale().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]);
-    var xDomain = function (domainData) {
-      return d3.extent(domainData, xValue);
-    };
-    var yDomain = function (domainData) {
-      return [
-        Math.min(0, d3.min(domainData)),
-        Math.max(0, d3.max(domainData))
-      ];
-    };
-    var gTransform = function transform(d, i) {
-      return "translate(" + xScale(xValue.call(this, d, i)) + "," + yScale(d.median) + ")";
-    };
+    var xScale = null;
+    var yScale = null;
+    var transform = null;
     var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
     // X Axis
-    var showXAxis = true;
-    var xAxisClass = "x axis";
-    var xAxisTextX = function () { return width / 2; };
-    var xAxisTextY = 30;
-    var xAxisTextDY = ".71em";
-    var xAxisTextAnchor = "middle";
-    var xAxisTitle = "";
+    var xAxis = {
+      show: true,
+      xAxisClass:  "x axis",
+      textX: function () { return width / 2; },
+      textY: 30,
+      textDY: ".71em",
+      textAnchor: "middle",
+      title: ""
+    };
 
     // Y Axis
-    var showYAxis = true;
-    var yAxisClass = "y axis";
-    var yAxisTextX = -height / 2;
-    var yAxisTextY = -60;
-    var yAxisTextDY = ".71em";
-    var yAxisTextAnchor = "middle";
-    var yAxisTitle = "";
+    var yAxis = {
+      show: true,
+      yAxisClass: "y axis",
+      textX: -height / 2,
+      textY: -60,
+      textDY: ".71em",
+      textAnchor: "middle",
+      title: ""
+    };
 
     // Box Options
     var boxWidth = 20;
@@ -11411,49 +12129,52 @@ define('src/modules/chart/boxplot',['require','d3','src/modules/layout/box','src
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        xScale.domain(xDomain && xDomain.call(this, data));
-        yScale.domain(yDomain && yDomain.call(this, mapDomain(data)));
+        xScale = xScale ? xScale : d3.time.scale()
+          .domain(d3.extent(data, xValue))
+          .range([0, width]);
+
+        yScale = yScale ? yScale : d3.scale.linear()
+          .domain([
+            Math.min(0, d3.min(mapDomain(data))),
+            Math.max(0, d3.max(mapDomain(data)))
+          ])
+          .range([height, 0]);
 
         var boxPlotFunc = boxPlot()
-          .gTransform(gTransform)
-          .boxWidth(boxWidth)
-          .boxHeight(boxHeight)
-          .boxY(boxY)
-          .rangeY1(Y1)
-          .rangeY2(Y2)
-          .maxY1(Y1)
-          .maxY2(Y1)
-          .minY1(Y2)
-          .minY2(Y2);
+          .transform(transform ? transform : gTransform)
+          .box({ width: boxWidth, height: boxHeight, y: boxY })
+          .range({ y1: Y1, y2: Y2 })
+          .max({ y1: Y1, y2: Y1 })
+          .min({ y1: Y2, y2: Y2});
 
         g.call(boxPlotFunc);
 
-        if (showXAxis) {
-          var xAxis = axis()
+        if (xAxis.show) {
+          var axisX = axis()
             .scale(xScale)
-            .gClass(xAxisClass)
+            .gClass(xAxis.xAxisClass)
             .transform("translate(0," + yScale.range()[0] + ")")
-            .titleX(xAxisTextX)
-            .titleY(xAxisTextY)
-            .titleDY(xAxisTextDY)
-            .titleAnchor(xAxisTextAnchor)
-            .title(xAxisTitle);
+            .titleX(xAxis.textX)
+            .titleY(xAxis.textY)
+            .titleDY(xAxis.textDY)
+            .titleAnchor(xAxis.textAnchor)
+            .title(xAxis.title);
 
-          g.call(xAxis);
+          g.call(axisX);
         }
 
-        if (showYAxis) {
-          var yAxis = axis()
+        if (yAxis.show) {
+          var axisY = axis()
             .scale(yScale)
             .orient("left")
-            .gClass(yAxisClass)
-            .titleX(yAxisTextX)
-            .titleY(yAxisTextY)
-            .titleDY(yAxisTextDY)
-            .titleAnchor(yAxisTextAnchor)
-            .title(yAxisTitle);
+            .gClass(yAxis.yAxisClass)
+            .titleX(yAxis.textX)
+            .titleY(yAxis.textY)
+            .titleDY(yAxis.textDY)
+            .titleAnchor(yAxis.textAnchor)
+            .title(yAxis.title);
 
-          g.call(yAxis);
+          g.call(axisY);
         }
       });
     }
@@ -11480,6 +12201,10 @@ define('src/modules/chart/boxplot',['require','d3','src/modules/layout/box','src
       }).reduce(function (a, b) {
         return a.concat(b);
       });
+    }
+
+    function gTransform(d, i) {
+      return "translate(" + xScale(xValue.call(this, d, i)) + "," + yScale(d.median) + ")";
     }
 
     chart.margin = function (_) {
@@ -11533,21 +12258,9 @@ define('src/modules/chart/boxplot',['require','d3','src/modules/layout/box','src
       return chart;
     };
 
-    chart.xDomain = function (_) {
-      if (!arguments.length) { return xDomain; }
-      xDomain = _;
-      return chart;
-    };
-
-    chart.yDomain = function (_) {
-      if (!arguments.length) { return yDomain; }
-      yDomain = _;
-      return chart;
-    };
-
-    chart.gTransform = function (_) {
-      if (!arguments.length) { return gTransform; }
-      gTransform = _;
+    chart.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
       return chart;
     };
 
@@ -11557,87 +12270,27 @@ define('src/modules/chart/boxplot',['require','d3','src/modules/layout/box','src
       return chart;
     };
 
-    chart.showXAxis = function (_) {
-      if (!arguments.length) { return showXAxis; }
-      showXAxis = _;
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return xAxis; }
+      xAxis.show = typeof _.show !== "undefined" ? _.show: xAxis.show;
+      xAxis.xAxisClass = typeof _.xAxisClass !== "undefined" ? _.xAxisClass : xAxis.xAxisClass;
+      xAxis.textX = typeof _.textX !== "undefined" ? _.textX : xAxis.textX;
+      xAxis.textY = typeof _.textY !== "undefined" ? _.textY : xAxis.textY;
+      xAxis.textDY = typeof _.textDY !== "undefined" ? _.textDY : xAxis.textDY;
+      xAxis.textAnchor = typeof _.textAnchor !== "undefined" ? _.textAnchor : xAxis.textAnchor;
+      xAxis.title = typeof _.title !== "undefined" ? _.title : xAxis.title;
       return chart;
     };
 
-    chart.showYAxis = function (_) {
-      if (!arguments.length) { return showYAxis; }
-      showYAxis = _;
-      return chart;
-    };
-
-    chart.xAxisTitle = function (_) {
-      if (!arguments.length) { return xAxisTitle; }
-      xAxisTitle = _;
-      return chart;
-    };
-
-    chart.yAxisTitle = function (_) {
-      if (!arguments.length) { return yAxisTitle; }
-      yAxisTitle = _;
-      return chart;
-    };
-
-    chart.xAxisClass = function (_) {
-      if (!arguments.length) { return xAxisClass; }
-      xAxisClass = _;
-      return chart;
-    };
-
-    chart.yAxisClass = function (_) {
-      if (!arguments.length) { return yAxisClass; }
-      yAxisClass = _;
-      return chart;
-    };
-
-    chart.xAxisTextX = function (_) {
-      if (!arguments.length) { return xAxisTextX; }
-      xAxisTextX = _;
-      return chart;
-    };
-
-    chart.yAxisTextX = function (_) {
-      if (!arguments.length) { return yAxisTextX; }
-      yAxisTextX = _;
-      return chart;
-    };
-
-    chart.xAxisTextY = function (_) {
-      if (!arguments.length) { return xAxisTextY; }
-      xAxisTextY = _;
-      return chart;
-    };
-
-    chart.yAxisTextY = function (_) {
-      if (!arguments.length) { return yAxisTextY; }
-      yAxisTextY = _;
-      return chart;
-    };
-
-    chart.xAxisTextDY = function (_) {
-      if (!arguments.length) { return xAxisTextDY; }
-      xAxisTextDY = _;
-      return chart;
-    };
-
-    chart.yAxisTextDY = function (_) {
-      if (!arguments.length) { return yAxisTextDY; }
-      yAxisTextDY = _;
-      return chart;
-    };
-
-    chart.xAxisTextAnchor = function (_) {
-      if (!arguments.length) { return xAxisTextAnchor; }
-      xAxisTextAnchor = _;
-      return chart;
-    };
-
-    chart.yAxisTextAnchor = function (_) {
-      if (!arguments.length) { return yAxisTextAnchor; }
-      yAxisTextAnchor = _;
+    chart.yAxis = function (_) {
+      if (!arguments.length) { return yAxis; }
+      yAxis.show = typeof _.show !== "undefined" ? _.show: yAxis.show;
+      yAxis.yAxisClass = typeof _.yAxisClass !== "undefined" ? _.yAxisClass : yAxis.yAxisClass;
+      yAxis.textX = typeof _.textX !== "undefined" ? _.textX : yAxis.textX;
+      yAxis.textY = typeof _.textY !== "undefined" ? _.textY : yAxis.textY;
+      yAxis.textDY = typeof _.textDY !== "undefined" ? _.textDY : yAxis.textDY;
+      yAxis.textAnchor = typeof _.textAnchor !== "undefined" ? _.textAnchor : yAxis.textAnchor;
+      yAxis.title = typeof _.title !== "undefined" ? _.title : yAxis.title;
       return chart;
     };
 
@@ -11651,449 +12304,6 @@ define('src/modules/chart/boxplot',['require','d3','src/modules/layout/box','src
     return chart;
   };
 });
-define('src/modules/chart/pie',['require','d3','src/modules/element/path'],function (require) {
-  var d3 = require("d3");
-  var path = require("src/modules/element/path");
-
-  return function pieChart() {
-    var width = 300;
-    var height = 300;
-    var color = d3.scale.category10();
-    var outerRadius = null;
-    var innerRadius = 0;
-    var sort = null;
-    var value = function (d) { return d.x; };
-    var label = function (d) { return d.name; };
-    var arc = d3.svg.arc();
-    var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
-
-    var pathGroupClass = "arc";
-    var pieFill = function (d, i) { return color(i); };
-    var pieClass = "pie";
-
-    // Text options
-    var textFill = "white";
-    var textAnchor = "middle";
-    var textDY = ".35em";
-    var textTransform = function (d) { return "translate(" + arc.centroid(d) + ")"; };
-
-    function chart (selection) {
-      selection.each(function (data) {
-        var pie = d3.layout.pie().sort(sort).value(value);
-        var radius = Math.min(width, height) / 2;
-
-        var svg = d3.select(this).append("svg")
-          .attr("width", width)
-          .attr("height", height)
-          .append("g")
-          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-        arc.outerRadius(outerRadius || radius).innerRadius(innerRadius);
-
-        var piePath = path()
-          .pathGenerator(arc)
-          .accessor(pie(data))
-          .gClass(pathGroupClass)
-          .pathClass(pieClass)
-          .fill(pieFill);
-
-        svg.call(piePath);
-
-        svg.selectAll("g.arc")
-          .data(pie(data))
-          .append("text")
-          .attr("transform", textTransform)
-          .attr("dy", textDY)
-          .style("text-anchor", textAnchor)
-          .style("fill", textFill)
-          .text(function (d) {
-            return label.call(this, d.data);
-          });
-      });
-    }
-
-    chart.width = function (_) {
-      if (!arguments.length) { return width; }
-      width = _;
-      return chart;
-    };
-
-    chart.height = function (_) {
-      if (!arguments.length) { return height; }
-      height = _;
-      return chart;
-    };
-
-    chart.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
-      return chart;
-    };
-
-    chart.outerRadius = function (_) {
-      if (!arguments.length) { return outerRadius; }
-      outerRadius = _;
-      return chart;
-    };
-
-    chart.innerRadius = function (_) {
-      if (!arguments.length) { return innerRadius; }
-      innerRadius = _;
-      return chart;
-    };
-
-    chart.sort = function (_) {
-      if (!arguments.length) { return sort; }
-      sort = _;
-      return chart;
-    };
-
-    chart.value = function (_) {
-      if (!arguments.length) { return value; }
-      value = _;
-      return chart;
-    };
-
-    chart.label = function (_) {
-      if (!arguments.length) { return label; }
-      label = _;
-      return chart;
-    };
-
-    chart.dispatch = function (_) {
-      if (!arguments.length) { return dispatch; }
-      dispatch = _;
-      return chart;
-    };
-
-    chart.pieFill = function (_) {
-      if (!arguments.length) { return pieFill; }
-      pieFill = _;
-      return chart;
-    };
-
-    chart.pathGroupClass = function (_) {
-      if (!arguments.length) { return pathGroupClass; }
-      pathGroupClass = _;
-      return chart;
-    };
-
-    chart.pieClass = function (_) {
-      if (!arguments.length) { return pieClass; }
-      pieClass = _;
-      return chart;
-    };
-
-    chart.textFill = function (_) {
-      if (!arguments.length) { return textFill; }
-      textFill = _;
-      return chart;
-    };
-
-    chart.textAnchor = function (_) {
-      if (!arguments.length) { return textAnchor; }
-      textAnchor = _;
-      return chart;
-    };
-
-    chart.textDY = function (_) {
-      if (!arguments.length) { return textDY; }
-      textDY = _;
-      return chart;
-    };
-
-    chart.textTransform = function (_) {
-      if (!arguments.length) { return textTransform; }
-      textTransform = _;
-      return chart;
-    };
-
-    d3.rebind(chart, dispatch, "on");
-    return chart;
-  };
-});
-define('src/modules/chart/scatterplot',['require','d3','src/modules/element/circle','src/modules/component/axis/axis'],function (require) {
-  var d3 = require("d3");
-  var circle = require("src/modules/element/circle");
-  var axis = require("src/modules/component/axis/axis");
-
-  return function scatterPlot() {
-    var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760 - margin.left - margin.right;
-    var height = 620 - margin.top - margin.bottom;
-    var color = d3.scale.category20c();
-    var xValue = function (d) { return d.x; };
-    var yValue = function (d) { return d.y; };
-    var zValue = function (d) { return d.z; };
-    var xScale = d3.scale.linear().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]);
-    var xDomain = function (domainData) {
-      return d3.extent(domainData, xValue);
-    };
-    var yDomain = function (domainData) {
-      return d3.extent(domainData, yValue);
-    };
-    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
-
-    var showXAxis = true;
-    var xAxisClass = "x axis";
-    var xAxisTextClass = "x label";
-    var xAxisTextX = function () { return width / 2; };
-    var xAxisTextY = 30;
-    var xAxisTextDY = ".71em";
-    var xAxisTextAnchor = "middle";
-    var xAxisText = "";
-
-    var showYAxis = true;
-    var yAxisClass = "y axis";
-    var yAxisTextClass = "y label";
-    var yAxisTextTransform = "rotate(-90)";
-    var yAxisTextX = -height / 2;
-    var yAxisTextY = -60;
-    var yAxisTextDY = ".71em";
-    var yAxisTextAnchor = "middle";
-    var yAxisText = "";
-
-    var circleRadius = zValue;
-    var circleClass = "circle";
-    var circleFill = function (d, i) { return color(i); };
-    var circleStroke = function (d, i) { return color(i); };
-    var circleStrokeWidth = 3;
-
-    function chart(selection) {
-      selection.each(function (data, i) {
-
-        var svg = d3.select(this).append("svg")
-          .data([data])
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom);
-
-        var g = svg.append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        xScale.domain(xDomain.call(this, mapDomain(data)));
-        yScale.domain(yDomain.call(this, mapDomain(data)));
-
-        var points = circle()
-          .cx(X)
-          .cy(Y)
-          .color(color)
-          .radius(circleRadius)
-          .circleClass(circleClass)
-          .fill(circleFill)
-          .stroke(circleStroke)
-          .strokeWidth(circleStrokeWidth);
-
-        g.call(points);
-
-        if (showXAxis) {
-          var xAxis = axis()
-            .scale(xScale)
-            .gClass(xAxisClass)
-            .transform("translate(0," + yScale.range()[0] + ")")
-            .titleX(xAxisTextX)
-            .titleY(xAxisTextY)
-            .titleDY(xAxisTextDY)
-            .titleAnchor(xAxisTextAnchor)
-            .title(xAxisText);
-
-          g.call(xAxis);
-        }
-
-        if (showYAxis) {
-          var yAxis = axis()
-            .scale(yScale)
-            .orient("left")
-            .gClass(yAxisClass)
-            .titleX(yAxisTextX)
-            .titleY(yAxisTextY)
-            .titleDY(yAxisTextDY)
-            .titleAnchor(yAxisTextAnchor)
-            .title(yAxisText);
-
-          g.call(yAxis);
-        }
-      });
-    }
-
-    function mapDomain (data) {
-      return data.reduce(function (a, b) {
-        return a.concat(b);
-      });
-    }
-
-    function X(d, i) {
-      return xScale(xValue.call(null, d, i));
-    }
-
-    function Y(d, i) {
-      return yScale(yValue.call(null, d, i));
-    }
-
-    d3.rebind(chart, dispatch, "on");
-    return chart;
-  };
-});
-
-define('src/modules/chart/sunburst',['require','d3','src/modules/element/path'],function (require) {
-  var d3 = require("d3");
-  var path = require("src/modules/element/path");
-
-  return function sunburst() {
-    // Chart options
-    var width = 500;
-    var height = 500;
-    var color = d3.scale.category20c();
-    var sort = null;
-    var value = function (d) { return d.size; };
-    var xScale = d3.scale.linear().range([0, 2 * Math.PI]);
-    var yScale = d3.scale.sqrt();
-    var startAngle = function (d) {
-      return Math.max(0, Math.min(2 * Math.PI, xScale(d.x)));
-    };
-    var endAngle = function (d) {
-      return Math.max(0, Math.min(2 * Math.PI, xScale(d.x + d.dx)));
-    };
-    var innerRadius = function (d) {
-      return Math.max(0, yScale(d.y));
-    };
-    var outerRadius = function (d) {
-      return Math.max(0, yScale(d.y + d.dy));
-    };
-    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
-
-    // Pie options
-    var pieClass = "pie";
-    var pieStroke = "#fff";
-    var pieFill = function (d, i) {
-      if (d.depth === 0) { return "none"; }
-      return color(i);
-    };
-
-    function chart (selection) {
-      selection.each(function (data) {
-        var radius = Math.min(width, height) / 2;
-        var partition = d3.layout.partition().sort(sort).value(value);
-        var svg = d3.select(this).append("svg")
-          .attr("width", width)
-          .attr("height", height)
-          .append("g")
-          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-        yScale.range([0, radius]);
-
-        var arc = d3.svg.arc()
-          .startAngle(startAngle)
-          .endAngle(endAngle)
-          .innerRadius(innerRadius)
-          .outerRadius(outerRadius);
-
-        var arcPath = path()
-          .pathGenerator(arc)
-          .accessor(partition.nodes)
-          .pathClass(pieClass)
-          .stroke(pieStroke)
-          .fill(pieFill);
-
-        svg.datum(data).call(arcPath);
-      });
-    }
-
-    chart.width = function (_) {
-      if (!arguments.length) { return width; }
-      width = _;
-      return chart;
-    };
-
-    chart.height = function (_) {
-      if (!arguments.length) { return height; }
-      height = _;
-      return chart;
-    };
-
-    chart.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
-      return chart;
-    };
-
-    chart.sort = function (_) {
-      if (!arguments.length) { return sort; }
-      sort = _;
-      return chart;
-    };
-
-    chart.value = function (_) {
-      if (!arguments.length) { return value; }
-      value = _;
-      return chart;
-    };
-
-    chart.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
-      return chart;
-    };
-
-    chart.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
-      return chart;
-    };
-
-    chart.startAngle = function (_) {
-      if (!arguments.length) { return startAngle; }
-      startAngle = _;
-      return chart;
-    };
-
-    chart.endAngle = function (_) {
-      if (!arguments.length) { return endAngle; }
-      endAngle = _;
-      return chart;
-    };
-
-    chart.innerRadius = function (_) {
-      if (!arguments.length) { return innerRadius; }
-      innerRadius = _;
-      return chart;
-    };
-
-    chart.outerRadius = function (_) {
-      if (!arguments.length) { return outerRadius; }
-      outerRadius = _;
-      return chart;
-    };
-
-    chart.dispatch = function (_) {
-      if (!arguments.length) { return dispatch; }
-      dispatch = _;
-      return chart;
-    };
-
-    chart.pieClass = function (_) {
-      if (!arguments.length) { return pieClass; }
-      pieClass = _;
-      return chart;
-    };
-
-    chart.pieStroke = function (_) {
-      if (!arguments.length) { return pieStroke; }
-      pieStroke = _;
-      return chart;
-    };
-
-    chart.pieFill = function (_) {
-      if (!arguments.length) { return pieFill; }
-      pieFill= _;
-      return chart;
-    };
-
-    d3.rebind(chart, dispatch, "on");
-    return chart;
-  };
-});
-
 define('src/modules/chart/dendrogram',['require','d3'],function (require) {
   var d3 = require("d3");
 
@@ -12274,55 +12484,348 @@ define('src/modules/chart/dendrogram',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/chart/treemap',['require','d3'],function (require) {
+define('src/modules/element/canvas/rect',['require','d3'],function (require) {
   var d3 = require("d3");
 
-  return function treemap() {
-    var margin = {top: 40, right: 10, bottom: 10, left: 10};
-    var width = 960 - margin.left - margin.right;
-    var height = 500 - margin.top - margin.bottom;
-    var color = d3.scale.category20c();
-    var sticky = true;
-    var value = function (d) { return d.size; };
-    var children = function (d) { return d.children; };
-    var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
+  return function rect() {
+    // Private variables
+    var x = function (d) { return d.x; };
+    var y = function (d) { return d.y; };
+    var width = 10;
+    var height = 10;
 
-    var nodeClass = "node";
-    var nodeColor = function (d, i) { return d.children ? color(i) : null; };
-    var label = function (d) { return d.children ? null : d.name; };
+    var cssClass = "rect";
+    var fillStyle = "blue";
+    var lineWidth = 3;
+    var strokeStyle = "black";
+    var globalAlpha = 1;
 
-    function chart(selection) {
-      selection.each(function (data) {
-        var treemap = d3.layout.treemap()
-          .size([width, height])
-          .sticky(sticky)
-          .children(children)
-          .value(value);
+    function element(selection) {
+      selection.each(function (data, index) {
+        var canvas = d3.select(this);
+        var context = canvas.node().getContext("2d");
+        // var container = canvas.append("custom");
 
-        var div = d3.select(this).append("div")
-          .style("position", "relative")
-          .style("width", (width + margin.left + margin.right) + "px")
-          .style("height", (height + margin.top + margin.bottom) + "px")
-          .style("left", margin.left + "px")
-          .style("top", margin.top + "px");
+        canvas.node().addEventListener("click", function (event) {
+          console.log(event);
+        });
 
-        div.datum(data).selectAll(".node")
-          .data(treemap.nodes)
-          .enter().append("div")
-          .attr("class", nodeClass)
-          .call(position)
-          .style("background", nodeColor)
-          .text(label);
+        // Clear Canvas
+        context.fillStyle = "#fff";
+        context.rect(0, 0, canvas.attr("width"), canvas.attr("height"));
+        context.fill();
+
+        data.forEach(function (d, i) {
+          d.fillStyle = (typeof fillStyle === "function") ? fillStyle.call(data, d, i) : fillStyle;
+          d.strokeStyle = (typeof strokeStyle === "function") ? strokeStyle.call(data, d, i) : strokeStyle;
+          d.globalAlpha = (typeof globalAlpha === "function") ? globalAlpha.call(data, d, i) : globalAlpha;
+          d.lineWidth = (typeof lineWidth === "function") ? lineWidth.call(data, d, i) : lineWidth;
+          d.width = (typeof width === "function") ? width.call(data, d, i) : width;
+          d.height = (typeof height === "function") ? height.call(data, d, i) : height;
+
+          context.beginPath();
+          context.fillStyle = d.fillStyle;
+          context.strokeStyle = d.strokeStyle;
+          context.lineWidth = d.lineWidth;
+          context.globalAlpha = d.globalAlpha;
+          context.rect(x.call(data, d, i), y.call(data, d, i), d.width, d.height);
+          context.fill();
+          context.closePath();
+        });
+
+        // var rects = container.selectAll("custom.rect")
+        //   .data(data);
+
+        // // Exit
+        // rects.exit().remove();
+
+        // // Enter
+        // rects.enter().append("custom");
+
+        // // Update
+        // rects
+        //   .attr("class", cssClass)
+        //   .attr("x", x)
+        //   .attr("y", y)
+        //   .attr("width", width)
+        //   .attr("height", height)
+        //   .attr("fillStyle", fillStyle)
+        //   .attr("lineWidth", lineWidth)
+        //   .attr("globalAlpha", globalAlpha)
+        //   .attr("strokeStyle", strokeStyle);
+
+        // // Clear Canvas
+        // context.fillStyle = "#fff";
+        // context.rect(0, 0, canvas.attr("width"), canvas.attr("height"));
+        // context.fill();
+
+        // var elements = container.selectAll("custom.rect");
+
+        // elements.each(function (d, i) {
+        //   var node = d3.select(this);
+
+        //   context.beginPath();
+        //   context.fillStyle = node.attr("fillstyle");
+        //   context.globalAlpha = node.attr("globalAlpha");
+        //   context.rect(node.attr("x"), node.attr("y"), node.attr("width"), node.attr("height"));
+        //   context.fill();
+        //   context.closePath();
+        // });
       });
     }
 
-    function position() {
-      this.style("left", function(d) { return d.x + "px"; })
-        .style("top", function(d) { return d.y + "px"; })
-        .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
-        .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+    // Public API
+    element.cssClass = function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
+      return element;
+    };
+
+    element.x = function (_) {
+      if (!arguments.length) { return x; }
+      x = _;
+      return element;
+    };
+
+    element.y = function (_) {
+      if (!arguments.length) { return y; }
+      y = _;
+      return element;
+    };
+
+    element.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return element;
+    };
+
+    element.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return element;
+    };
+
+    element.fillStyle = function (_) {
+      if (!arguments.length) { return fillStyle; }
+      fillStyle = _;
+      return element;
+    };
+
+    element.opacity = function (_) {
+      if (!arguments.length) { return globalAlpha; }
+      globalAlpha = _;
+      return element;
+    };
+
+    element.lineWidth = function (_) {
+      if (!arguments.length) { return lineWidth; }
+      lineWidth = _;
+      return element;
+    };
+
+    element.strokeStyle = function (_) {
+      if (!arguments.length) { return strokeStyle; }
+      strokeStyle = _;
+      return element;
+    };
+
+    return element;
+  };
+});
+
+define('src/modules/chart/heatmap',['require','d3','src/modules/element/svg/rect','src/modules/element/canvas/rect','src/modules/component/axis'],function (require) {
+  var d3 = require("d3");
+  var svgRect = require("src/modules/element/svg/rect");
+  var canvasRect = require("src/modules/element/canvas/rect");
+  var axis = require("src/modules/component/axis");
+
+  return function heatmap() {
+    // Private variables
+    var margin = { top: 20, right: 20, bottom: 20, left: 50 };
+    var width = 960;
+    var height = 500;
+    var color = d3.scale.category10();
+    var isCanvas = false;
+
+    var rect = {
+      cssClass: "rect",
+      x: function (d) { return d.x; },
+      y: function (d) { return d.y; },
+      fill: function (d) { return d.fill; },
+      opacity: function (d) { return 1; },
+      strokeWidth: 0,
+      padding: 0.1
+    };
+
+    var axisX = { 
+      show: true,
+      axisClass: "x axis", 
+      titleClass: "x-label",
+      x: function () { return width / 2; },
+      y: 30,
+      dy: ".35em",
+      textAnchor: "start",
+      title: "",
+      filterTicksBy: 1,
+      tickRotate: 270
+    };
+
+    var axisY = {
+      show: true,
+      axisClass: "y axis", 
+      titleClass: "y-label",
+      x: function () { return -height / 2; },
+      y: -60,
+      dy: ".35em",
+      textAnchor: "start",
+      title: "",
+      filterTicksBy: 1
+    };
+
+    function chart(selection) {
+      selection.each(function (data, index) {
+        var canvas;
+
+        var xScale = d3.scale.ordinal()
+          .domain(getDomain(data, "x"))
+          .rangeBands([0, width], rect.padding);
+
+        var yScale = d3.scale.ordinal()
+          .domain(getDomain(data, "y"))
+          .rangeBands([height, 0], rect.padding);
+
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
+
+        data.forEach(function (d, i) {
+          d.x = rect.x.call(data, d, i);
+          d.y = rect.y.call(data, d, i);
+          d.fill = rect.fill.call(data, d, i);
+          d.opacity = rect.opacity.call(data, d, i);
+        });
+
+        var padding = Object.keys(margin).map(function (key) {
+          return margin[key];
+        }).join("px ") + "px";
+
+        if (isCanvas) {
+          var canvasRects = canvasRect()
+            .cssClass(rect.cssClass)
+            .x(function (d) { return xScale(d.x); })
+            .y(function (d) { return yScale(d.y); })
+            .width(xScale.rangeBand())
+            .height(yScale.rangeBand())
+            .fillStyle(function (d) { return color(d.fill); })
+            .opacity(function (d) { return d.opacity; })
+            .strokeStyle(function (d) { return color(d.fill); })
+            .lineWidth(rect.strokeWidth);
+
+          canvas = d3.select(this).append("canvas")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .style("padding", padding);
+
+          canvas.datum(data).call(canvasRects);
+        }
+
+        var svg = d3.select(this).append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .style("padding", padding)
+          .on("mousemove", function (d, i) {
+            var x = d3.event.clientX;
+            var y = d3.event.clientY;
+          });
+
+        var g = svg.append("g")
+          .attr("transform", "translate(0,0)");
+          //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        if (!isCanvas) {
+          var svgRects = svgRect()
+            .cssClass(rect.cssClass)
+            .x(function (d) { return xScale(d.x); })
+            .y(function (d) { return yScale(d.y); })
+            .width(xScale.rangeBand())
+            .height(yScale.rangeBand())
+            .fill(function (d) { return color(d.fill); })
+            .stroke(function (d) { return color(d.fill); })
+            .strokeWidth(rect.strokeWidth)
+            .opacity(function (d) { return d.opacity; });
+
+          g.datum(data).call(svgRects);
+        }
+
+        if (axisX.show) {
+          var xAxis = axis()
+            .scale(xScale)
+            .transform("translate(0," + height + ")")
+            .gClass(axisX.axisClass)
+            .tick({
+              values: xScale.domain()
+                .filter(function (d, i) {
+                  return !(i % axisX.filterTicksBy);
+                })
+            })
+            .title({
+              x: axisX.x,
+              y: axisY.y,
+              dy: axisX.dy,
+              anchor: axisX.textAnchor,
+              text: axisX.title
+            });
+
+          g.call(xAxis);
+
+          // Modifying the x axis tick labels
+          g.selectAll(".x.axis .tick text")
+            .attr("x", -10)
+            .attr("y", -4)
+            .attr("transform", "rotate(" + axisX.tickRotate + ")")
+            .style("text-anchor", "end");
+        }
+
+        if (axisY.show) {
+          var yAxis = axis()
+            .scale(yScale)
+            .gClass(axisY.axisClass)
+            .orient("left")
+            .tick({
+              values: yScale.domain()
+                .filter(function (d, i) {
+                  return !(i % axisY.filterTicksBy);
+                })
+            })
+            .title({
+              titleClass: axisY.titleClass,
+              x: axisY.x,
+              y: axisY.y,
+              dy: axisY.dy,
+              anchor: axisY.textAnchor,
+              text: axisY.title
+            });
+
+          g.call(yAxis);
+        }
+      });
     }
 
+    function getDomain(data, accessor) {
+      return data
+        .map(function (item) {
+          return item[accessor];
+        })
+        .sort(function (prev, cur) {
+          if (prev > cur) return 1;
+          if (prev < cur) return -1;
+          return 0;
+        })
+        .filter(function (item, index, array) {
+          return array.indexOf(item) === index;
+        });
+    }
+
+    // Public API
     chart.margin = function (_) {
       if (!arguments.length) { return margin; }
       margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
@@ -12333,25 +12836,75 @@ define('src/modules/chart/treemap',['require','d3'],function (require) {
     };
 
     chart.width = function (_) {
-      if (!arguments.length) { return width; }
+      if (!arguments.length) return width;
       width = _;
       return chart;
     };
 
     chart.height = function (_) {
-      if (!arguments.length) { return height; }
+      if (!arguments.length) return height;
       height = _;
       return chart;
     };
 
     chart.color = function (_) {
-      if (!arguments.length) { return color; }
+      if (!arguments.length) return color;
       color = _;
       return chart;
     };
 
+    chart.canvas = function (_) {
+      if (!arguments.length) return isCanvas;
+      isCanvas = _;
+      return chart;
+    };
+
+    chart.rect = function (_) {
+      if (!arguments.length) { return rect; }
+      rect.x = typeof _.x !== "undefined" ? _.x : rect.x;
+      rect.y = typeof _.y !== "undefined" ? _.y : rect.y;
+      rect.color = typeof _.color !== "undefined" ? _.color : rect.color;
+      rect.cssClass = typeof _.cssClass !== "undefined" ? _.cssClass : rect.cssClass;
+      rect.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : rect.strokeWidth;
+      rect.fill = typeof _.fill !== "undefined" ? _.fill : rect.fill;
+      rect.opacity = typeof _.opacity !== "undefined" ? _.opacity : rect.opacity;
+      rect.padding = typeof _.padding !== "undefined" ? _.padding : rect.padding;
+      return chart;
+    };
+
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return axisX; }
+      axisX.show = typeof _.show !== "undefined" ? _.show : axisX.show;
+      axisX.axisClass = typeof _.axisClass !== "undefined" ? _.axisClass : axisX.axisClass;
+      axisX.titleClass = typeof _.titleClass !== "undefined" ? _.titleClass : axisX.titleClass;
+      axisX.x = typeof _.x !== "undefined" ? _.x : axisX.x;
+      axisX.y = typeof _.y !== "undefined" ? _.y : axisX.y;
+      axisX.dy = typeof _.dy !== "undefined" ? _.dy : axisX.dy;
+      axisX.tickValues = typeof _.tickValues !== "undefined" ? _.tickValues: axisX.tickValues;
+      axisX.textAnchor = typeof _.textAnchor !== "undefined" ? _.textAnchor : axisX.textAnchor;
+      axisX.title = typeof _.title !== "undefined" ? _.title : axisX.title;
+      axisX.filterTicksBy = typeof _.filterTicksBy !== "undefined" ? _.filterTicksBy : axisX.filterTicksBy;
+      axisX.tickRotate = typeof _.tickRotate !== "undefined" ? _.tickRotate : axisX.tickRotate;
+      return chart;
+    };
+
+    chart.yAxis = function (_) {
+      if (!arguments.length) { return axisY; }
+      axisY.show = typeof _.show !== "undefined" ? _.show : axisY.show;
+      axisY.axisClass = typeof _.axisClass !== "undefined" ? _.axisClass : axisY.axisClass;
+      axisY.titleClass = typeof _.titleClass !== "undefined" ? _.titleClass : axisY.titleClass;
+      axisY.x = typeof _.x !== "undefined" ? _.x : axisY.x;
+      axisY.y = typeof _.y !== "undefined" ? _.y : axisY.y;
+      axisY.dy = typeof _.dy !== "undefined" ? _.dy : axisY.dy;
+      axisY.tickValues = typeof _.tickValues !== "undefined" ? _.tickValues: axisY.tickValues;
+      axisY.textAnchor = typeof _.textAnchor !== "undefined" ? _.textAnchor : axisY.textAnchor;
+      axisY.title = typeof _.title !== "undefined" ? _.title : axisY.title;
+      axisY.filterTicksBy = typeof _.filterTicksBy !== "undefined" ? _.filterTicksBy : axisY.filterTicksBy;
+      return chart;
+    };
+
     return chart;
-  };
+  }
 });
 
 define('src/modules/chart/histogram',['require','d3'],function (require) {
@@ -12620,7 +13173,996 @@ define('src/modules/chart/histogram',['require','d3'],function (require) {
     return chart;
   };
 });
-define('src/modules/component/chart/chart',['require','d3'],function (require) {
+define('src/modules/element/svg/circle',['require','d3','src/modules/component/events'],function (require) {
+  var d3 = require("d3");
+  var events = require("src/modules/component/events");
+
+  return function circle() {
+    var cx = function (d) { return d.x; };
+    var cy = function (d) { return d.y; };
+    var radius = 5;
+    var color = d3.scale.category10();
+    var values = null;
+
+    // Options
+    var cssClass = "circles";
+    var fill = null;
+    var stroke = null;
+    var strokeWidth = 0;
+    var opacity = null;
+    var listeners = {};
+
+    function element(selection) {
+      selection.each(function (data, index) {
+        var circleEvents = events()
+          .listeners(listeners);
+
+        var circles = d3.select(this).selectAll("circles")
+          .data(values ? values : data);
+
+        // Exit
+        circles.exit().remove();
+
+        // Enter
+        circles
+          .enter().append("circle");
+
+        // Update
+        circles
+          .attr("class", cssClass)
+          .attr("fill", fill ? fill : colorFill)
+          .attr("stroke", stroke ? stroke : colorFill)
+          .attr("stroke-width", strokeWidth)
+          .attr("r", radius)
+          .attr("cx", cx)
+          .attr("cy", cy)
+          .style("opacity", opacity);
+
+        circles.call(circleEvents);
+      });
+    }
+
+    function colorFill (d, i) {
+      return color(i);
+    }
+
+    // Public API
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
+
+    element.cx = function (_) {
+      if (!arguments.length) { return cx; }
+      cx = _;
+      return element;
+    };
+
+    element.cy = function (_) {
+      if (!arguments.length) { return cy; }
+      cy = _;
+      return element;
+    };
+
+    element.radius = function (_) {
+      if (!arguments.length) { return radius; }
+      radius = _;
+      return element;
+    };
+
+    element.cssClass = function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
+      return element;
+    };
+
+    element.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return element;
+    };
+
+    element.fill = function (_) {
+      if (!arguments.length) { return fill; }
+      fill = _;
+      return element;
+    };
+
+    element.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
+      return element;
+    };
+
+    element.stroke = function (_) {
+      if (!arguments.length) { return stroke; }
+      stroke = _;
+      return element;
+    };
+
+    element.strokeWidth = function (_) {
+      if (!arguments.length) { return strokeWidth; }
+      strokeWidth = _;
+      return element;
+    };
+
+    element.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return element;
+    };
+
+    return element;
+  };
+});
+
+define('src/modules/helpers/api/circles',[],function () {
+  return function (_, circles) {
+    circles.show = typeof _.show !== "undefined" ? _.show : circles.show;
+    circles.groupClass = typeof _.groupClass !== "undefined" ? _.groupClass : circles.groupClass;
+    circles.circleClass = typeof _.circleClass !== "undefined" ? _.circleClass : circles.circleClass;
+    circles.radius = typeof _.radius !== "undefined" ? _.radius : circles.radius;
+    circles.fill = typeof _.fill !== "undefined" ? _.fill : circles.fill;
+    circles.stroke = typeof _.stroke !== "undefined" ? _.stroke : circles.stroke;
+    circles.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : circles.strokeWidth;
+
+    return circles;
+  };
+});
+define('src/modules/chart/line',['require','d3','src/modules/component/axis','src/modules/element/svg/path','src/modules/element/svg/clipPath','src/modules/element/svg/circle','src/modules/element/svg/line','src/modules/helpers/deep_copy','src/modules/helpers/map_domain','src/modules/helpers/scale_value','src/modules/helpers/options/margin','src/modules/helpers/options/clippath','src/modules/helpers/options/scale','src/modules/helpers/options/x_axis','src/modules/helpers/options/y_axis','src/modules/helpers/options/zero_line','src/modules/helpers/api/axis','src/modules/helpers/api/lines','src/modules/helpers/api/circles','src/modules/helpers/api/margin','src/modules/helpers/api/clippath','src/modules/helpers/api/scale','src/modules/helpers/api/zero_line','src/modules/helpers/add_event_listener','src/modules/helpers/remove_event_listener'],function (require) {
+  var d3 = require("d3");
+  var axis = require("src/modules/component/axis");
+  var path = require("src/modules/element/svg/path");
+  var clip = require("src/modules/element/svg/clipPath");
+  var circle = require("src/modules/element/svg/circle");
+  var zeroAxisLine = require("src/modules/element/svg/line");
+  var deepCopy = require("src/modules/helpers/deep_copy");
+  var mapDomain = require("src/modules/helpers/map_domain");
+  var scaleValue = require("src/modules/helpers/scale_value");
+  var marginOptions = require("src/modules/helpers/options/margin");
+  var clipPathOptions = require("src/modules/helpers/options/clippath");
+  var scaleOptions = require("src/modules/helpers/options/scale");
+  var xAxisOptions = require("src/modules/helpers/options/x_axis");
+  var yAxisOptions = require("src/modules/helpers/options/y_axis");
+  var zeroLineOptions = require("src/modules/helpers/options/zero_line");
+  var axisAPI = require("src/modules/helpers/api/axis");
+  var linesAPI = require("src/modules/helpers/api/lines");
+  var circlesAPI = require("src/modules/helpers/api/circles");
+  var marginAPI = require("src/modules/helpers/api/margin");
+  var clippathAPI = require("src/modules/helpers/api/clippath");
+  var scaleAPI = require("src/modules/helpers/api/scale");
+  var zeroLineAPI = require("src/modules/helpers/api/zero_line");
+  var addEventListener = require("src/modules/helpers/add_event_listener");
+  var removeEventListener = require("src/modules/helpers/remove_event_listener");
+
+  return function lineChart() {
+    // Chart options
+    var margin = deepCopy(marginOptions, {});
+    var width = 760;
+    var height = 120;
+    var color = d3.scale.category20c();
+    var xValue = function (d) { return d.x; };
+    var yValue = function (d) { return d.y; };
+    var defined = function () { return true; };
+    var dispatch = d3.dispatch("brush");
+
+    // Scale options
+    var xScaleOpts = deepCopy(scaleOptions, {});
+    var yScaleOpts = deepCopy(scaleOptions, {});
+    var xScale;
+    var yScale;
+
+    // Other options
+    var axisX = deepCopy(xAxisOptions, {});
+    var axisY = deepCopy(yAxisOptions, {});
+    var clipPath = deepCopy(clipPathOptions, {});
+    var zeroLine = deepCopy(zeroLineOptions, {});
+
+    // Line Options
+    var lines = {
+      groupClass: "paths",
+      lineClass: "line",
+      stroke: function (d, i) { return color(i); },
+      strokeWidth: 3,
+      opacity: 1,
+      interpolate: "linear",
+      tension:  0.7
+    };
+
+    // Circle Options
+    var circles = {
+      show: true,
+      groupClass: "circle layer",
+      circleClass: "circle",
+      fill: function (d, i, j) { return color(j); },
+      stroke: null,
+      radius: 5,
+      strokeWidth: 3
+    };
+
+    var listeners = {};
+
+    function chart(selection) {
+      selection.each(function (data, index) {
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
+
+        xScale = xScaleOpts.scale || d3.time.scale.utc();
+        xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(data), xValue));
+
+        if (typeof xScale.rangeBands === "function") {
+          xScale.rangeBands([0, width, 0.1]);
+        } else {
+          xScale.range([0, width]);
+        }
+
+        yScale = yScaleOpts.scale || d3.scale.linear();
+        yScale.domain(yScaleOpts.domain || d3.extent(mapDomain(data), yValue))
+          .range([height, 0]);
+
+        if (xScaleOpts.nice) { xScale.nice(); }
+        if (yScaleOpts.nice) { yScale.nice(); }
+
+        var svg = d3.select(this).selectAll("svg")
+          .data([data])
+          .enter().append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom);
+
+        var g = svg.append("g")
+          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+        var X = scaleValue(xScale, xValue);
+        var Y = scaleValue(yScale, yValue);
+        var line = d3.svg.line().x(X).y(Y)
+          .interpolate(lines.interpolate)
+          .tension(lines.tension)
+          .defined(defined);
+
+        var linePath = path()
+          .pathGenerator(line)
+          .cssClass(lines.lineClass)
+          .stroke(lines.stroke)
+          .strokeWidth(lines.strokeWidth)
+          .opacity(lines.opacity)
+          .listeners(listeners);
+
+        if (axisX.show) {
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass(axisX.gClass)
+            .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
+            .tick({
+              number: axisX.tick.number,
+              values: axisX.tick.values,
+              size: axisX.tick.size,
+              padding: axisX.tick.padding,
+              format: axisX.tick.format,
+              rotate: axisX.tick.rotate,
+              innerTickSize: axisX.tick.innerTickSize,
+              outerTickSize: axisX.tick.outerTickSize,
+              text: {
+                x: axisX.tick.text.x,
+                y: axisX.tick.text.y,
+                dx: axisX.tick.text.dx,
+                dy: axisX.tick.text.dy,
+                anchor: axisX.tick.text.anchor
+              }
+            })
+            .title({
+              titleClass: axisX.title.titleClass,
+              x: width / 2,
+              y: axisX.title.y,
+              dx: axisX.title.dx,
+              dy: axisX.title.dy,
+              anchor: axisX.title.anchor,
+              text: axisX.title.text
+            });
+
+          g.call(xAxis);
+        }
+
+        if (axisY.show) {
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass(axisY.gClass)
+            .transform(axisY.transform || "translate(-1,0)")
+            .tick({
+              number: axisY.tick.number,
+              values: axisY.tick.values,
+              size: axisY.tick.size, padding: axisY.tick.padding, format: axisY.tick.format,
+              rotate: axisY.tick.rotate,
+              innerTickSize: axisY.tick.innerTickSize,
+              outerTickSize: axisY.tick.outerTickSize,
+              text: {
+                x: axisY.tick.text.x,
+                y: axisY.tick.text.y,
+                dx: axisY.tick.text.dx,
+                dy: axisY.tick.text.dy,
+                anchor: axisY.tick.text.anchor
+              }
+            })
+            .title({
+              titleClass: axisY.title.titleClass,
+              x: axisY.title.x,
+              y: axisY.title.y,
+              dx: axisY.title.dx,
+              dy: axisY.title.dy,
+              transform: "translate(0," + height / 2 + ")rotate(" + axisY.title.rotate + ")",
+              anchor: axisY.title.anchor,
+              text: axisY.title.text
+            });
+
+          g.call(yAxis);
+        }
+
+        g.append("g")
+          .attr("class", lines.groupClass)
+          .call(linePath);
+
+        if (zeroLine.add) {
+          var zLine = zeroAxisLine()
+            .cssClass(zeroLine.lineClass)
+            .x1(function () { return xScale.range()[0]; })
+            .x2(function () { return xScale.range()[1]; })
+            .y1(function () { return yScale(0); })
+            .y2(function () { return yScale(0); })
+            .stroke(zeroLine.stroke)
+            .strokeWidth(zeroLine.strokeWidth)
+            .opacity(zeroLine.opacity);
+
+          g.call(zLine);
+        }
+
+        if (circles.show) {
+          var clippath = clip()
+            .width(clipPath.width || width)
+            .height(clipPath.height || height);
+
+          var points = circle()
+            .cx(X)
+            .cy(Y)
+            .color(color)
+            .radius(circles.radius)
+            .cssClass(circles.circleClass)
+            .fill(circles.fill)
+            .stroke(circles.stroke ? circles.stroke : circles.fill)
+            .strokeWidth(circles.strokeWidth)
+            .listeners(listeners);
+
+          g.call(clippath)
+            .append("g")
+            .attr("clip-path", "url(#" + clippath.id() + ")")
+            .selectAll("gCircles")
+            .data(function (d) { return d; })
+            .enter().append("g")
+            .attr("class", circles.groupClass)
+            .datum(function (d) { return d; })
+            .call(points);
+        }
+      });
+    }
+
+    // Public API
+    chart.margin = function (_) {
+      if (!arguments.length) { return margin; }
+      margin = marginAPI(_, margin);
+      return chart;
+    };
+
+    chart.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return chart;
+    };
+
+    chart.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return chart;
+    };
+
+    chart.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return chart;
+    };
+
+    chart.x = function (_) {
+      if (!arguments.length) { return xValue; }
+      xValue = _;
+      return chart;
+    };
+
+    chart.y = function (_) {
+      if (!arguments.length) { return yValue; }
+      yValue = _;
+      return chart;
+    };
+
+    chart.defined = function (_) {
+      if (!arguments.length) { return defined; }
+      defined = _;
+      return chart;
+    };
+
+    chart.xScale = function (_) {
+      if (!arguments.length) { return xScaleOpts; }
+      xScaleOpts = scaleAPI(_, xScaleOpts);
+      return chart;
+    };
+
+    chart.yScale = function (_) {
+      if (!arguments.length) { return yScaleOpts; }
+      yScaleOpts = scaleAPI(_, yScaleOpts);
+      return chart;
+    };
+
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return axisX; }
+      axisX = axisAPI(_, axisX);
+      return chart;
+    };
+
+    chart.yAxis = function (_) {
+      if (!arguments.length) { return axisY; }
+      axisY = axisAPI(_, axisY);
+      return chart;
+    };
+
+    chart.clipPath = function (_) {
+      if (!arguments.length) { return clipPath; }
+      clipPath = clippathAPI(_, clipPath);
+      return chart;
+    };
+
+    chart.zeroLine = function (_) {
+      if (!arguments.length) { return zeroLine; }
+      zeroLine = zeroLineAPI(_, zeroLine);
+      return chart;
+    };
+
+    chart.lines = function (_) {
+      if (!arguments.length) { return lines; }
+      lines = linesAPI(_, lines);
+      return chart;
+    };
+
+    chart.circles = function (_) {
+      if (!arguments.length) { return circles; }
+      circles = circlesAPI(_, circles);
+      return chart;
+    };
+
+    chart.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return chart;
+    };
+
+    chart.on = addEventListener(listeners, chart);
+
+    chart.off = removeEventListener(listeners, chart);
+
+    return chart;
+  };
+});
+
+define('src/modules/chart/pie',['require','d3','src/modules/element/svg/path'],function (require) {
+  var d3 = require("d3");
+  var path = require("src/modules/element/svg/path");
+
+  return function pieChart() {
+    var width = 300;
+    var height = 300;
+    var color = d3.scale.category10();
+    var outerRadius = null;
+    var innerRadius = 0;
+    var sort = null;
+    var value = function (d) { return d.x; };
+    var label = function (d) { return d.name; };
+    var arc = d3.svg.arc();
+    var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
+
+    var pieFill = function (d, i) { return color(i); };
+    var pieClass = "pie";
+
+    // Text options
+    var textFill = "white";
+    var textAnchor = "middle";
+    var textDY = ".35em";
+    var textTransform = function (d) { return "translate(" + arc.centroid(d) + ")"; };
+
+    function chart (selection) {
+      selection.each(function (data, i) {
+        var pie = d3.layout.pie().sort(sort).value(value);
+        var radius = Math.min(width, height) / 2;
+
+        var svg = d3.select(this).append("svg")
+          .attr("width", width)
+          .attr("height", height);
+
+        var g = svg.append("g")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        arc.outerRadius(outerRadius || radius).innerRadius(innerRadius);
+
+        var piePath = path()
+          .pathGenerator(arc)
+          .accessor(pie(data))
+          .cssClass(pieClass)
+          .fill(pieFill);
+
+        g.call(piePath);
+
+        g.selectAll("g")
+          .data(pie(data))
+          .append("text")
+          .attr("transform", textTransform)
+          .attr("dy", textDY)
+          .style("text-anchor", textAnchor)
+          .style("fill", textFill)
+          .text(function (d) {
+            return label.call(this, d.data);
+          });
+      });
+    }
+
+    chart.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return chart;
+    };
+
+    chart.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return chart;
+    };
+
+    chart.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return chart;
+    };
+
+    chart.outerRadius = function (_) {
+      if (!arguments.length) { return outerRadius; }
+      outerRadius = _;
+      return chart;
+    };
+
+    chart.innerRadius = function (_) {
+      if (!arguments.length) { return innerRadius; }
+      innerRadius = _;
+      return chart;
+    };
+
+    chart.sort = function (_) {
+      if (!arguments.length) { return sort; }
+      sort = _;
+      return chart;
+    };
+
+    chart.value = function (_) {
+      if (!arguments.length) { return value; }
+      value = _;
+      return chart;
+    };
+
+    chart.label = function (_) {
+      if (!arguments.length) { return label; }
+      label = _;
+      return chart;
+    };
+
+    chart.dispatch = function (_) {
+      if (!arguments.length) { return dispatch; }
+      dispatch = _;
+      return chart;
+    };
+
+    chart.pieFill = function (_) {
+      if (!arguments.length) { return pieFill; }
+      pieFill = _;
+      return chart;
+    };
+
+    chart.pieClass = function (_) {
+      if (!arguments.length) { return pieClass; }
+      pieClass = _;
+      return chart;
+    };
+
+    chart.textFill = function (_) {
+      if (!arguments.length) { return textFill; }
+      textFill = _;
+      return chart;
+    };
+
+    chart.textAnchor = function (_) {
+      if (!arguments.length) { return textAnchor; }
+      textAnchor = _;
+      return chart;
+    };
+
+    chart.textDY = function (_) {
+      if (!arguments.length) { return textDY; }
+      textDY = _;
+      return chart;
+    };
+
+    chart.textTransform = function (_) {
+      if (!arguments.length) { return textTransform; }
+      textTransform = _;
+      return chart;
+    };
+
+    d3.rebind(chart, dispatch, "on");
+    return chart;
+  };
+});
+define('src/modules/chart/scatterplot',['require','d3','src/modules/component/axis','src/modules/element/svg/circle','src/modules/element/svg/clipPath'],function (require) {
+  var d3 = require("d3");
+  var axis = require("src/modules/component/axis");
+  var circle = require("src/modules/element/svg/circle");
+  var clipPath = require("src/modules/element/svg/clipPath");
+
+  return function scatterPlot() {
+    var margin = {top: 20, right: 20, bottom: 20, left: 50};
+    var width = 760;
+    var height = 500;
+    var color = d3.scale.category20c();
+    var xValue = function (d) { return d.x; };
+    var yValue = function (d) { return d.y; };
+    var zValue = function (d) { return d.z; };
+    var xScale = null;
+    var yScale = null;
+    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
+
+    var showXAxis = true;
+    var xAxisClass = "x axis";
+    var xAxisTextClass = "x label";
+    var xAxisTextX = function () { return width / 2; };
+    var xAxisTextY = 30;
+    var xAxisTextDY = ".71em";
+    var xAxisTextAnchor = "middle";
+    var xAxisText = "";
+
+    var showYAxis = true;
+    var yAxisClass = "y axis";
+    var yAxisTextClass = "y label";
+    var yAxisTextTransform = "rotate(-90)";
+    var yAxisTextX = -height / 2;
+    var yAxisTextY = -60;
+    var yAxisTextDY = ".71em";
+    var yAxisTextAnchor = "middle";
+    var yAxisText = "";
+
+    var circleRadius = zValue;
+    var circleClass = "circle";
+    var circleFill = function (d, i) { return color(i); };
+    var circleStroke = function (d, i) { return color(i); };
+    var circleStrokeWidth = 3;
+
+    function chart(selection) {
+      selection.each(function (data, i) {
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
+
+        var svg = d3.select(this).append("svg")
+          .data([data])
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom);
+
+        var g = svg.append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        xScale = xScale ? xScale : d3.scale.linear()
+          .domain(d3.extent(data, xValue))
+          .range([0, width]);
+
+        yScale = yScale ? yScale : d3.scale.linear()
+          .domain(d3.extent(data, yValue))
+          .range([height, 0]);
+
+        var points = circle()
+          .cx(X)
+          .cy(Y)
+          .color(color)
+          .radius(circleRadius)
+          .cssClass(circleClass)
+          .fill(circleFill)
+          .stroke(circleStroke)
+          .strokeWidth(circleStrokeWidth);
+
+        g.call(points);
+
+        if (showXAxis) {
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass(xAxisClass)
+            .transform("translate(0," + yScale.range()[0] + ")")
+            .titleX(xAxisTextX)
+            .titleY(xAxisTextY)
+            .titleDY(xAxisTextDY)
+            .titleAnchor(xAxisTextAnchor)
+            .title(xAxisText);
+
+          g.call(xAxis);
+        }
+
+        if (showYAxis) {
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass(yAxisClass)
+            .titleX(yAxisTextX)
+            .titleY(yAxisTextY)
+            .titleDY(yAxisTextDY)
+            .titleAnchor(yAxisTextAnchor)
+            .title(yAxisText);
+
+          g.call(yAxis);
+        }
+      });
+    }
+
+    function X(d, i) {
+      return xScale(xValue.call(null, d, i));
+    }
+
+    function Y(d, i) {
+      return yScale(yValue.call(null, d, i));
+    }
+
+    d3.rebind(chart, dispatch, "on");
+    return chart;
+  };
+});
+
+define('src/modules/chart/sunburst',['require','d3','src/modules/element/svg/path'],function (require) {
+  var d3 = require("d3");
+  var path = require("src/modules/element/svg/path");
+
+  return function sunburst() {
+    // Chart options
+    var width = 500;
+    var height = 500;
+    var color = d3.scale.category20c();
+    var sort = null;
+    var value = function (d) { return d.size; };
+    var xScale = d3.scale.linear().range([0, 2 * Math.PI]);
+    var yScale = d3.scale.sqrt();
+    var startAngle = function (d) {
+      return Math.max(0, Math.min(2 * Math.PI, xScale(d.x)));
+    };
+    var endAngle = function (d) {
+      return Math.max(0, Math.min(2 * Math.PI, xScale(d.x + d.dx)));
+    };
+    var innerRadius = function (d) {
+      return Math.max(0, yScale(d.y));
+    };
+    var outerRadius = function (d) {
+      return Math.max(0, yScale(d.y + d.dy));
+    };
+    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
+
+    // Pie options
+    var pieClass = "pie";
+    var pieStroke = "#fff";
+    var pieFill = function (d, i) {
+      if (d.depth === 0) { return "none"; }
+      return color(i);
+    };
+
+    function chart (selection) {
+      selection.each(function (data) {
+        var radius = Math.min(width, height) / 2;
+        var partition = d3.layout.partition().sort(sort).value(value);
+        var svg = d3.select(this).append("svg")
+          .attr("width", width)
+          .attr("height", height)
+          .append("g")
+          .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        yScale.range([0, radius]);
+
+        var arc = d3.svg.arc()
+          .startAngle(startAngle)
+          .endAngle(endAngle)
+          .innerRadius(innerRadius)
+          .outerRadius(outerRadius);
+
+        var arcPath = path()
+          .pathGenerator(arc)
+          .accessor(partition.nodes)
+          .cssClass(pieClass)
+          .stroke(pieStroke)
+          .fill(pieFill);
+
+        svg.datum(data).call(arcPath);
+      });
+    }
+
+    chart.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return chart;
+    };
+
+    chart.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return chart;
+    };
+
+    chart.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return chart;
+    };
+
+    chart.sort = function (_) {
+      if (!arguments.length) { return sort; }
+      sort = _;
+      return chart;
+    };
+
+    chart.value = function (_) {
+      if (!arguments.length) { return value; }
+      value = _;
+      return chart;
+    };
+
+    chart.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale = _;
+      return chart;
+    };
+
+    chart.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale = _;
+      return chart;
+    };
+
+    chart.startAngle = function (_) {
+      if (!arguments.length) { return startAngle; }
+      startAngle = _;
+      return chart;
+    };
+
+    chart.endAngle = function (_) {
+      if (!arguments.length) { return endAngle; }
+      endAngle = _;
+      return chart;
+    };
+
+    chart.innerRadius = function (_) {
+      if (!arguments.length) { return innerRadius; }
+      innerRadius = _;
+      return chart;
+    };
+
+    chart.outerRadius = function (_) {
+      if (!arguments.length) { return outerRadius; }
+      outerRadius = _;
+      return chart;
+    };
+
+    chart.dispatch = function (_) {
+      if (!arguments.length) { return dispatch; }
+      dispatch = _;
+      return chart;
+    };
+
+    chart.pieClass = function (_) {
+      if (!arguments.length) { return pieClass; }
+      pieClass = _;
+      return chart;
+    };
+
+    chart.pieStroke = function (_) {
+      if (!arguments.length) { return pieStroke; }
+      pieStroke = _;
+      return chart;
+    };
+
+    chart.pieFill = function (_) {
+      if (!arguments.length) { return pieFill; }
+      pieFill= _;
+      return chart;
+    };
+
+    d3.rebind(chart, dispatch, "on");
+    return chart;
+  };
+});
+
+define('src/modules/chart/treemap',['require','d3'],function (require) {
+  var d3 = require("d3");
+
+  return function treemap() {
+    var margin = {top: 40, right: 10, bottom: 10, left: 10};
+    var width = 960 - margin.left - margin.right;
+    var height = 500 - margin.top - margin.bottom;
+    var color = d3.scale.category20c();
+    var sticky = true;
+    var value = function (d) { return d.size; };
+    var children = function (d) { return d.children; };
+    var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
+
+    var nodeClass = "node";
+    var nodeColor = function (d, i) { return d.children ? color(i) : null; };
+    var label = function (d) { return d.children ? null : d.name; };
+
+    function chart(selection) {
+      selection.each(function (data) {
+        var treemap = d3.layout.treemap()
+          .size([width, height])
+          .sticky(sticky)
+          .children(children)
+          .value(value);
+
+        var div = d3.select(this).append("div")
+          .style("position", "relative")
+          .style("width", (width + margin.left + margin.right) + "px")
+          .style("height", (height + margin.top + margin.bottom) + "px")
+          .style("left", margin.left + "px")
+          .style("top", margin.top + "px");
+
+        div.datum(data).selectAll(".node")
+          .data(treemap.nodes)
+          .enter().append("div")
+          .attr("class", nodeClass)
+          .call(position)
+          .style("background", nodeColor)
+          .text(label);
+      });
+    }
+
+    function position() {
+      this.style("left", function(d) { return d.x + "px"; })
+        .style("top", function(d) { return d.y + "px"; })
+        .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+        .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+    }
+
+    chart.margin = function (_) {
+      if (!arguments.length) { return margin; }
+      margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
+      margin.right = typeof _.right !== "undefined" ? _.right : margin.right;
+      margin.bottom = typeof _.bottom !== "undefined" ? _.bottom : margin.bottom;
+      margin.left = typeof _.left !== "undefined" ? _.left : margin.left;
+      return chart;
+    };
+
+    chart.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return chart;
+    };
+
+    chart.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
+      return chart;
+    };
+
+    chart.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = _;
+      return chart;
+    };
+
+    return chart;
+  };
+});
+
+define('src/modules/component/chart',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function chart() {
@@ -12680,28 +14222,47 @@ define('src/modules/component/chart/chart',['require','d3'],function (require) {
     return component;
   };
 });
-define('src/modules/chart/xyzplot',['require','d3','src/modules/component/axis/axis','src/modules/component/chart/chart'],function (require) {
+define('src/modules/chart/xyzplot',['require','d3','src/modules/component/axis','src/modules/component/chart'],function (require) {
   var d3 = require("d3");
-  var axis = require("src/modules/component/axis/axis");
-  var graphFunc = require("src/modules/component/chart/chart");
+  var axis = require("src/modules/component/axis");
+  var graphFunc = require("src/modules/component/chart");
 
   return function xzyPlot() {
     var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760 - margin.left - margin.right;
-    var height = 120 - margin.top - margin.bottom;
-    var xScale = null;
-    var yScale = null;
-    var zScale = null;
+    var width = 760;
+    var height = 120;
     var elements = null;
-    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
 
     // Axis options
-    var showXAxis = true;
-    var xAxisTitle = "";
-    var showYAxis = true;
-    var yAxisTitle = "";
-    var showZAxis = true;
-    var zAxisTitle = "";
+    var xAxis = {
+      cssClass: "x axis",
+      show: true,
+      scale: null,
+      title: "",
+      y: 6,
+      dy: ".71em",
+      titleAnchor: "end"
+    };
+
+    var yAxis = {
+      cssClass: "y axis",
+      show: true,
+      scale: null,
+      title: "",
+      y: 6,
+      dy: ".71em",
+      titleAnchor: "end"
+    };
+
+    var zAxis = {
+      cssClass: "z axis",
+      show: true,
+      scale: null,
+      title: "",
+      y: 6,
+      dy: ".71em",
+      titleAnchor: "end"
+    };
 
     function chart(selection) {
       selection.each(function (data) {
@@ -12714,51 +14275,52 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/axis/a
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        if (typeof elements === "function") { g.call(elements); }
-        if (elements instanceof Array) {
-          elements.forEach(function (element) {
-            if (typeof element === "function") { g.call(element); }
-          });
+        elements = !(elements instanceof Array) ? [elements] : elements;
+
+        elements.forEach(function (element) {
+          if (typeof element === "function") {
+            g.append("g").call(element);
+          }
+        });
+
+        if (xAxis.show) {
+          var axisX = axis()
+            .scale(xAxis.scale)
+            .gClass(xAxis.cssClass)
+            .transform("translate(0," + yAxis.scale.range()[0] + ")")
+            .titleY(xAxis.y)
+            .titleDY(xAxis.dy)
+            .titleAnchor(xAxis.titleAnchor)
+            .title(xAxis.title);
+
+          g.call(axisX);
         }
 
-        if (showXAxis) {
-          var xAxis = axis()
-            .scale(xScale)
-            .gClass("x axis")
-            .transform("translate(0," + yScale.range()[0] + ")")
-            .titleY(6)
-            .titleDY(".71em")
-            .titleAnchor("end")
-            .title(xAxisTitle);
-
-          g.call(xAxis);
-        }
-
-        if (showYAxis) {
-          var yAxis = axis()
-            .scale(yScale)
+        if (yAxis.show) {
+          var axisY = axis()
+            .scale(yAxis.scale)
             .orient("left")
-            .gClass("y axis")
-            .titleY(6)
-            .titleDY(".71em")
-            .titleAnchor("end")
-            .title(yAxisTitle);
+            .gClass(yAxis.cssClass)
+            .titleY(yAxis.y)
+            .titleDY(yAxis.dy)
+            .titleAnchor(yAxis.titleAnchor)
+            .title(yAxis.title);
 
-          g.call(yAxis);
+          g.call(axisY);
         }
 
-        if (showZAxis) {
-          var zAxis = axis()
-            .scale(zScale)
+        if (zAxis.show) {
+          var axisZ = axis()
+            .scale(zAxis.scale)
             .orient("right")
-            .gClass("z axis")
-            .transform("translate(" + xScale.range()[1] + "," + "0)")
-            .titleY(6)
-            .titleDY(".71em")
-            .titleAnchor("end")
-            .title(zAxisTitle);
+            .gClass(zAxis.cssClass)
+            .transform("translate(" + xAxis.scale.range()[1] + "," + "0)")
+            .titleY(zAxis.y)
+            .titleDY(zAxis.dy)
+            .titleAnchor(zAxis.titleAnchor)
+            .title(zAxis.title);
 
-          g.call(zAxis);
+          g.call(axisZ);
         }
       });
     }
@@ -12784,21 +14346,36 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/axis/a
       return chart;
     };
 
-    chart.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return xAxis; }
+      xAxis.cssClass = typeof _.cssClass !== "undefined" ? _.cssClass : xAxis.cssClass;
+      xAxis.scale = typeof _.scale !== "undefined" ? _.scale : xAxis.scale;
+      xAxis.y = typeof _.y !== "undefined" ? _.y : xAxis.y;
+      xAxis.dy = typeof _.dy !== "undefined" ? _.dy : xAxis.dy;
+      xAxis.titleAnchor = typeof _.titleAnchor !== "undefined" ? _.titleAnchor : xAxis.titleAnchor;
+      xAxis.title = typeof _.title !== "undefined" ? _.title : xAxis.title;
       return chart;
     };
 
-    chart.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
+    chart.yAxis = function (_) {
+      if (!arguments.length) { return yAxis; }
+      yAxis.cssClass = typeof _.cssClass !== "undefined" ? _.cssClass : yAxis.cssClass;
+      yAxis.scale = typeof _.scale !== "undefined" ? _.scale : yAxis.scale;
+      yAxis.y = typeof _.y !== "undefined" ? _.y : yAxis.y;
+      yAxis.dy = typeof _.dy !== "undefined" ? _.dy : yAxis.dy;
+      yAxis.titleAnchor = typeof _.titleAnchor !== "undefined" ? _.titleAnchor : yAxis.titleAnchor;
+      yAxis.title = typeof _.title !== "undefined" ? _.title : yAxis.title;
       return chart;
     };
 
-    chart.zScale = function (_) {
-      if (!arguments.length) { return zScale; }
-      zScale = _;
+    chart.zAxis = function (_) {
+      if (!arguments.length) { return zAxis; }
+      zAxis.cssClass = typeof _.cssClass !== "undefined" ? _.cssClass : zAxis.cssClass;
+      zAxis.scale = typeof _.scale !== "undefined" ? _.scale : zAxis.scale;
+      zAxis.y = typeof _.y !== "undefined" ? _.y : zAxis.y;
+      zAxis.dy = typeof _.dy !== "undefined" ? _.dy : zAxis.dy;
+      zAxis.titleAnchor = typeof _.titleAnchor !== "undefined" ? _.titleAnchor : zAxis.titleAnchor;
+      zAxis.title = typeof _.title !== "undefined" ? _.title : zAxis.title;
       return chart;
     };
 
@@ -12808,87 +14385,60 @@ define('src/modules/chart/xyzplot',['require','d3','src/modules/component/axis/a
       return chart;
     };
 
-    chart.showXAxis = function (_) {
-      if (!arguments.length) { return showXAxis; }
-      showXAxis = _;
-      return chart;
-    };
-
-    chart.showYAxis = function (_) {
-      if (!arguments.length) { return showYAxis; }
-      showYAxis = _;
-      return chart;
-    };
-
-    chart.showZAxis = function (_) {
-      if (!arguments.length) { return showZAxis; }
-      showZAxis = _;
-      return chart;
-    };
-
-    chart.xAxisTitle = function (_) {
-      if (!arguments.length) { return xAxisTitle; }
-      xAxisTitle = _;
-      return chart;
-    };
-
-    chart.yAxisTitle = function (_) {
-      if (!arguments.length) { return yAxisTitle; }
-      yAxisTitle = _;
-      return chart;
-    };
-
-    chart.zAxisTitle = function (_) {
-      if (!arguments.length) { return zAxisTitle; }
-      zAxisTitle = _;
-      return chart;
-    };
-
-    d3.rebind(chart, dispatch, "on");
     return chart;
   };
 });
-define('src/modules/element/image',['require','d3'],function (require) {
+define('src/modules/element/svg/image',['require','d3','src/modules/component/events'],function (require) {
   var d3 = require("d3");
+  var events = require("src/modules/component/events");
 
   return function image() {
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
-    var width = function () { return 10; };
-    var height = function () { return height; };
+    var values = null;
+    var width = 10;
+    var height = 10;
     var xlink = null;
     var preserveAspectRatio = null;
 
     // Options
-    var gClass = "layer";
-    var imageClass = "image";
+    var cssClass = "image";
+    var listeners = {};
 
     function element(selection) {
-      selection.each(function (data, i) {
-        var layer = d3.select(this).selectAll("layer")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .attr("class", gClass);
+      selection.each(function (data, index) {
+        var imageEvents = events().listeners(listeners);
 
-        var images = layer.selectAll("image")
-          .data(function (d) { return d; });
+        var images = d3.select(this).selectAll("images")
+          .data(values ? values : data);
 
+        // Exit
         images.exit().remove();
 
-        images
-          .enter().append("image")
-          .attr("class", imageClass);
+        // Enter
+        images.enter().append("image");
 
+        // Update
         images
+          .attr("class", cssClass)
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)
           .attr("height", height)
           .attr("xlink:href", xlink)
           .attr("preserveAspectRatio", preserveAspectRatio);
+
+        images.call(imageEvents);
       });
     }
 
+    // Public API
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
+      return element;
+    };
+    
     element.x = function (_) {
       if (!arguments.length) { return x; }
       x = _;
@@ -12925,15 +14475,15 @@ define('src/modules/element/image',['require','d3'],function (require) {
       return element;
     };
 
-    element.gClass = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
+    element.cssClass= function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
       return element;
     };
 
-    element.imageClass= function (_) {
-      if (!arguments.length) { return imageClass; }
-      imageClass = _;
+    element.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
       return element;
     };
 
@@ -12941,9 +14491,9 @@ define('src/modules/element/image',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/map/tile',['require','d3','src/modules/element/image'],function (require) {
+define('src/modules/map/tile',['require','d3','src/modules/element/svg/image'],function (require) {
   var d3 = require("d3");
-  var image = require("src/modules/element/image");
+  var image = require("src/modules/element/svg/image");
 
   return function tile() {
     var width = 960;
@@ -12991,22 +14541,10 @@ define('src/modules/map/tile',['require','d3','src/modules/element/image'],funct
             .xlink(tileLink)
             .width(1)
             .height(1)
-            .x(function (d) { console.log(d); return d[0]; })
+            .x(function (d) { return d[0]; })
             .y(function (d) { return d[1]; });
 
           g.datum(tiles).call(images);
-
-          //  g.selectAll("image")
-          //  .data(tiles, function (d) { return d; });
-          //
-          //images.exit().remove();
-          //
-          //images.enter().append("image")
-          //  .attr("xlink:href", tileLink)
-          //  .attr("width", 1)
-          //  .attr("height", 1)
-          //  .attr("x", function (d) { return d[0]; })
-          //  .attr("y", function (d) { return d[1]; });
         }
       });
     }
@@ -13050,11 +14588,88 @@ define('src/modules/map/tile',['require','d3','src/modules/element/image'],funct
     return map;
   };
 });
+define('src/modules/helpers/format_options',[],function () {
+  return function (length, type) {
+    var output = {};
+
+    switch (type) {
+      case "grid":
+        output.rows = Math.round(Math.sqrt(length));
+        output.columns = Math.ceil(Math.sqrt(length));
+        break;
+
+      case "columns":
+        output.rows = 1;
+        output.columns = length;
+        break;
+
+      default:
+        output.rows = length;
+        output.columns = 1;
+        break;
+    }
+
+    return output;
+  };
+});
+define('src/modules/layout/format',['require','d3','src/modules/helpers/format_options'],function (require) {
+  var d3 = require("d3");
+  var getFormat = require("src/modules/helpers/format_options");
+
+  return function format() {
+    var type = "rows"; // type: 'rows', 'columns', 'grid'
+    var size = [500, 500]; // [width, height]
+    var rowScale = d3.scale.linear();
+    var columnScale = d3.scale.linear();
+
+    function layout(data) {
+      var format = getFormat(data.length, type);
+      var rows = format.rows;
+      var columns = format.columns;
+      var cellWidth = size[0] / columns;
+      var cellHeight = size[1] / rows;
+      var cell = 0;
+
+      rowScale.domain([0, rows]).range([0, size[1]]);
+      columnScale.domain([0, columns]).range([0, size[0]]);
+
+      d3.range(rows).forEach(function (row) {
+        d3.range(columns).forEach(function (col) {
+          if (!data[cell]) { return; }
+
+          data[cell].dx = columnScale(col);
+          data[cell].dy = rowScale(row);
+          data[cell].height = cellHeight;
+          data[cell].width = cellWidth;
+          cell++;
+        });
+      });
+
+      return data;
+    }
+
+    // Public API
+    layout.type = function (_) {
+      if (!arguments.length) { return type; }
+      type = _;
+      return layout;
+    };
+
+    layout.size = function (_) {
+      if (!arguments.length) { return size; }
+      size = _;
+      return layout;
+    };
+
+    return layout;
+  };
+});
+
 define('src/modules/layout/grid',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function grid() {
-    var gridSize = [10, 10];
+    var gridSize = [500, 500];
     var rowScale = d3.scale.linear();
     var columnScale = d3.scale.linear();
 
@@ -13083,7 +14698,7 @@ define('src/modules/layout/grid',['require','d3'],function (require) {
       return data;
     }
 
-    layout.gridSize = function (_) {
+    layout.size = function (_) {
       if (!arguments.length) { return gridSize; }
       gridSize = _;
       return layout;
@@ -13092,114 +14707,76 @@ define('src/modules/layout/grid',['require','d3'],function (require) {
     return layout;
   };
 });
-define('src/modules/layout/split',['require','d3'],function (require) {
+define('src/modules/element/svg/ellipse',['require','d3','src/modules/component/events'],function (require) {
   var d3 = require("d3");
+  var events = require("src/modules/component/events");
 
-  return function split() {
-    var splitBy = function (d) { return d; };
-    var element = "div";
-    var elementClass = function () { return "horizontal"; };
-    var predicate = false;
-
-    function layout(selection) {
-      selection.each(function (data) {
-        var elem = d3.select(this).data([data]);
-
-        var elems = elem.selectAll("splits")
-          .data(splitBy)
-          .enter().append(element)
-          .attr("class",  elementClass);
-
-        if (predicate) {
-          elems.call(split);
-        }
-      });
-    }
-
-    layout.splitBy = function (_) {
-      if (!arguments.length) { return splitBy; }
-      splitBy = _;
-      return layout;
-    };
-
-    layout.element = function (_) {
-      if (!arguments.length) { return element; }
-      element = _;
-      return layout;
-    };
-
-    layout.elementClass = function (_) {
-      if (!arguments.length) { return elementClass; }
-      elementClass = _;
-      return layout;
-    };
-
-    layout.predicate = function (_) {
-      if (!arguments.length) { return predicate; }
-      predicate = _;
-      return layout;
-    };
-
-    return layout;
-  };
-});
-define('src/modules/element/rect',['require','d3'],function (require) {
-  var d3 = require("d3");
-
-  return function rect() {
-    var x = function (d) { return d.x; };
-    var y = function (d) { return d.y; };
-    var rx = 0;
-    var ry = 0;
-    var width = function () { return 10; };
-    var height = function () { return height; };
-    var color = d3.scale.category10();
+  return function ellipse() {
+    var cx = function (d) { return d.x; };
+    var cy = function (d) { return d.y; };
+    var rx = 20;
+    var ry = 20;
+    var color = d3.scale.category20c();
+    var values = null;
 
     // Options
-    var gClass = "layer";
-    var rectClass = "bar";
-    var fill = function (d, i) { return color(i); };
-    var stroke;
-    var strokeWidth;
+    var cssClass = "ellipses";
+    var fill = null;
+    var stroke = null;
+    var strokeWidth = 0;
+    var opacity = null;
+    var listeners = {};
 
     function element(selection) {
-      selection.each(function (data, i) {
-        var layer = d3.select(this).selectAll("layer")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .attr("class", gClass);
+      selection.each(function (data, index) {
+        var ellipseEvents = events()
+          .listeners(listeners);
 
-        var bars = layer.selectAll("rect")
-          .data(function (d) { return d; });
+        var ellipses = d3.select(this).selectAll("ellipses")
+          .data(values ? values : data);
 
-        bars.exit().remove();
+        // Exit
+        ellipses.exit().remove();
 
-        bars
-          .enter().append("rect")
-          .attr("class", rectClass)
-          .attr("fill", fill)
-          .attr("stroke", stroke)
-          .attr("strokeWidth", strokeWidth);
+        // Enter
+        ellipses.enter().append("ellipse");
 
-        bars
-          .attr("x", x)
-          .attr("y", y)
+        // Update
+        ellipses
+          .attr("class", cssClass)
+          .attr("fill", fill ? fill : colorFill)
+          .attr("stroke", stroke ? stroke : colorFill)
+          .attr("stroke-width", strokeWidth)
+          .attr("cx", cx)
+          .attr("cy", cy)
           .attr("rx", rx)
           .attr("ry", ry)
-          .attr("height", height)
-          .attr("width", width);
+          .style("opacity", opacity);
+
+        ellipses.call(ellipseEvents);
       });
     }
 
-    element.x = function (_) {
-      if (!arguments.length) { return x; }
-      x = _;
+    function colorFill(d, i) {
+      return color(i);
+    }
+
+    // Public API
+    element.data = function (_) {
+      if (!arguments.length) { return values; }
+      values = _;
       return element;
     };
 
-    element.y = function (_) {
-      if (!arguments.length) { return y; }
-      y = _;
+    element.cx = function (_) {
+      if (!arguments.length) { return cx; }
+      cx = _;
+      return element;
+    };
+
+    element.cy = function (_) {
+      if (!arguments.length) { return cy; }
+      cy = _;
       return element;
     };
 
@@ -13215,33 +14792,9 @@ define('src/modules/element/rect',['require','d3'],function (require) {
       return element;
     };
 
-    element.width = function (_) {
-      if (!arguments.length) { return width; }
-      width = _;
-      return element;
-    };
-
-    element.height = function (_) {
-      if (!arguments.length) { return height; }
-      height = _;
-      return element;
-    };
-
-    element.gClass = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
-      return element;
-    };
-
-    element.rectClass= function (_) {
-      if (!arguments.length) { return rectClass; }
-      rectClass = _;
-      return element;
-    };
-
-    element.fill = function (_) {
-      if (!arguments.length) { return fill; }
-      fill = _;
+    element.cssClass = function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
       return element;
     };
 
@@ -13251,91 +14804,15 @@ define('src/modules/element/rect',['require','d3'],function (require) {
       return element;
     };
 
-    element.stroke = function (_) {
-      if (!arguments.length) { return stroke; }
-      stroke = _;
+    element.fill = function (_) {
+      if (!arguments.length) { return fill; }
+      fill = _;
       return element;
     };
 
-    element.strokeWidth = function (_) {
-      if (!arguments.length) { return strokeWidth; }
-      strokeWidth = _;
-      return element;
-    };
-
-    return element;
-  };
-});
-
-define('src/modules/element/line',['require','d3'],function (require) {
-  var d3 = require("d3");
-
-  return function line() {
-    var x1 = null;
-    var x2 = null;
-    var y1 = null;
-    var y2 = null;
-    var gClass;
-    var lineClass;
-    var stroke;
-    var strokeWidth;
-
-    function element(selection) {
-      selection.each(function (data, i) {
-        var layer = d3.select(this).selectAll("lineG")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .attr("class", gClass);
-
-        var lines = layer.selectAll("lines")
-          .data(function (d) { return d; });
-
-        // Exit
-        lines.exit().remove();
-
-        // Enter
-        lines
-          .enter().append("line")
-          .attr("class", lineClass);
-
-        // Update
-        lines
-          .attr("x1", x1)
-          .attr("x2", x2)
-          .attr("y1", y1)
-          .attr("y2", y2)
-          .attr("stroke", stroke)
-          .attr("stroke-width", strokeWidth);
-      });
-    }
-
-    element.x1 = function (_) {
-      if (!arguments.length) { return x1; }
-      x1 = _;
-      return element;
-    };
-
-    element.x2 = function (_) {
-      if (!arguments.length) { return x2; }
-      x2 = _;
-      return element;
-    };
-
-    element.y1 = function (_) {
-      if (!arguments.length) { return y1; }
-      y1 = _;
-      return element;
-    };
-
-    element.y2 = function (_) {
-      if (!arguments.length) { return y2; }
-      y2 = _;
-      return element;
-    };
-
-    element.lineClass = function (_) {
-      if (!arguments.length) { return lineClass; }
-      lineClass = _;
+    element.opacity = function (_) {
+      if (!arguments.length) { return opacity; }
+      opacity = _;
       return element;
     };
 
@@ -13351,22 +14828,31 @@ define('src/modules/element/line',['require','d3'],function (require) {
       return element;
     };
 
+    element.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = _;
+      return element;
+    };
+
     return element;
   };
 });
-define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','src/modules/chart/boxplot','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/dendrogram','src/modules/chart/treemap','src/modules/chart/histogram','src/modules/chart/xyzplot','src/modules/map/tile','src/modules/layout/box','src/modules/layout/grid','src/modules/layout/split','src/modules/component/axis/axis','src/modules/component/chart/chart','src/modules/component/boxplot/boxplot','src/modules/element/circle','src/modules/element/rect','src/modules/element/path','src/modules/element/line','src/modules/element/clipPath','src/modules/element/image'],function (require) {
+
+define('jubilee',['require','src/modules/chart/area','src/modules/chart/bar','src/modules/chart/boxplot','src/modules/chart/dendrogram','src/modules/chart/heatmap','src/modules/chart/histogram','src/modules/chart/line','src/modules/chart/pie','src/modules/chart/scatterplot','src/modules/chart/sunburst','src/modules/chart/treemap','src/modules/chart/xyzplot','src/modules/map/tile','src/modules/layout/box','src/modules/layout/format','src/modules/layout/grid','src/modules/component/axis','src/modules/component/boxplot','src/modules/component/brush','src/modules/component/chart','src/modules/component/events','src/modules/element/svg/circle','src/modules/element/svg/clipPath','src/modules/element/svg/ellipse','src/modules/element/svg/image','src/modules/element/svg/line','src/modules/element/svg/path','src/modules/element/svg/rect','src/modules/element/canvas/rect'],function (require) {
   return {
     version: "0.1.0",
     chart: {
-      line: require("src/modules/chart/line"),
       area: require("src/modules/chart/area"),
+      bar: require("src/modules/chart/bar"),
       boxplot: require("src/modules/chart/boxplot"),
+      dendrogram: require("src/modules/chart/dendrogram"),
+      heatmap: require("src/modules/chart/heatmap"),
+      histogram: require("src/modules/chart/histogram"),
+      line: require("src/modules/chart/line"),
       pie: require("src/modules/chart/pie"),
       scatter : require("src/modules/chart/scatterplot"),
       sunburst: require("src/modules/chart/sunburst"),
-      dendrogram: require("src/modules/chart/dendrogram"),
       treemap: require("src/modules/chart/treemap"),
-      histogram: require("src/modules/chart/histogram"),
       xyzplot: require("src/modules/chart/xyzplot")
     },
     map: {
@@ -13374,21 +14860,27 @@ define('jubilee',['require','src/modules/chart/line','src/modules/chart/area','s
     },
     layout: {
       box: require("src/modules/layout/box"),
-      grid: require("src/modules/layout/grid"),
-      split: require("src/modules/layout/split")
+      format: require("src/modules/layout/format"),
+      grid: require("src/modules/layout/grid")
     },
     component: {
-      axis: require("src/modules/component/axis/axis"),
-      chart: require("src/modules/component/chart/chart"),
-      boxplot: require("src/modules/component/boxplot/boxplot")
+      axis: require("src/modules/component/axis"),
+      boxplot: require("src/modules/component/boxplot"),
+      brush: require("src/modules/component/brush"),
+      chart: require("src/modules/component/chart"),
+      events: require("src/modules/component/events")
     },
-    element: {
-      circle: require("src/modules/element/circle"),
-      rect: require("src/modules/element/rect"),
-      path: require("src/modules/element/path"),
-      line: require("src/modules/element/line"),
-      clipPath: require("src/modules/element/clipPath"),
-      image: require("src/modules/element/image")
+    svg: {
+      circle: require("src/modules/element/svg/circle"),
+      clipPath: require("src/modules/element/svg/clipPath"),
+      ellipse: require("src/modules/element/svg/ellipse"),
+      image: require("src/modules/element/svg/image"),
+      line: require("src/modules/element/svg/line"),
+      path: require("src/modules/element/svg/path"),
+      rect: require("src/modules/element/svg/rect")
+    },
+    canvas: {
+      rect: require("src/modules/element/canvas/rect")
     }
   };
 });

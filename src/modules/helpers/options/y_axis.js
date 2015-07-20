@@ -2,6 +2,7 @@ define(function () {
   return {
     show: true,
     gClass: "y axis",
+    transform: "translate(0,0)",
     tick: {
       number: 10,
       values: null,
@@ -27,6 +28,7 @@ define(function () {
       dy: ".71em",
       anchor: "middle",
       rotate: 270,
+      transform: "translate(0,0)",
       text: ""
     }
   };

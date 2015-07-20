@@ -52,9 +52,10 @@ define(function (require) {
     var axisX = deepCopy(xAxisOptions, {});
     var axisY = deepCopy(yAxisOptions, {});
     var clipPath = deepCopy(clipPathOptions, {});
-    var listeners = {};
     var stackOpts = deepCopy(stackOptions, {});
     var zeroLine = deepCopy(zeroLineOptions, {});
+
+    var listeners = {};
 
     // Area options
     var areas = {
@@ -80,8 +81,8 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data, index) {
-        width = width - margin.left - margin.right;
-        height = height - margin.top - margin.bottom;
+        var adjustedWidth = width - margin.left - margin.right;
+        var adjustedHeight = height - margin.top - margin.bottom;
 
         var stack = d3.layout.stack()
           .x(xValue)
@@ -89,7 +90,6 @@ define(function (require) {
           .offset(stackOpts.offset)
           .order(stackOpts.order)
           .out(stackOpts.out);
-
         var layers = stack(data);
 
         // Scales
@@ -97,9 +97,9 @@ define(function (require) {
         xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(layers), xValue));
 
         if (xScale.rangeBands) {
-          xScale.rangeBands([0, width], 0.1);
+          xScale.rangeBands([0, adjustedWidth], 0.1);
         } else {
-          xScale.range([0, width]);
+          xScale.range([0, adjustedWidth]);
         }
 
         yScale = yScaleOpts.scale || d3.scale.linear();
@@ -107,7 +107,7 @@ define(function (require) {
             Math.min(0, d3.min(mapDomain(layers), Y)),
             Math.max(0, d3.max(mapDomain(layers), Y))
           ])
-          .range([height, 0]);
+          .range([adjustedHeight, 0]);
 
         if (xScaleOpts.nice) { xScale.nice(); }
         if (yScaleOpts.nice) { yScale.nice(); }
@@ -116,107 +116,29 @@ define(function (require) {
         var svg = d3.select(this).selectAll("svg")
           .data([layers])
           .enter().append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom);
-
+          .attr("width", width)
+          .attr("height", height);
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
         // Brush
-        if (listeners.brush.length) {
+        if (listeners.brush && listeners.brush.length) {
           var brush = brushComponent()
-            .height(height)
+            .height(adjustedHeight)
             .xScale(xScale)
             .brushend(listeners.brush);
 
           g.call(brush);
         }
 
-        // X axis
-        if (axisX.show) {
-          var xAxis = axis()
-            .scale(xScale)
-            .gClass(axisX.gClass)
-            .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
-            .tick({
-              number: axisX.tick.number,
-              values: axisX.tick.values,
-              size: axisX.tick.size,
-              padding: axisX.tick.padding,
-              format: axisX.tick.format,
-              rotate: axisX.tick.rotate,
-              innerTickSize: axisX.tick.innerTickSize,
-              outerTickSize: axisX.tick.outerTickSize,
-              text: {
-                x: axisX.tick.text.x,
-                y: axisX.tick.text.y,
-                dx: axisX.tick.text.dx,
-                dy: axisX.tick.text.dy,
-                anchor: axisX.tick.text.anchor
-              }
-            })
-            .title({
-              titleClass: axisX.title.titleClass,
-              x: width / 2,
-              y: axisX.title.y,
-              dx: axisX.title.dx,
-              dy: axisX.title.dy,
-              anchor: axisX.title.anchor,
-              text: axisX.title.text
-            });
-
-          g.call(xAxis);
-        }
-
-        // Y axis
-        if (axisY.show) {
-          var yAxis = axis()
-            .scale(yScale)
-            .orient("left")
-            .gClass(axisY.gClass)
-            .transform(axisY.transform || "translate(-1,0)")
-            .tick({
-              number: axisY.tick.number,
-              values: axisY.tick.values,
-              size: axisY.tick.size,
-              padding: axisY.tick.padding,
-              format: axisY.tick.format,
-              rotate: axisY.tick.rotate,
-              innerTickSize: axisY.tick.innerTickSize,
-              outerTickSize: axisY.tick.outerTickSize,
-              text: {
-                x: axisY.tick.text.x,
-                y: axisY.tick.text.y,
-                dx: axisY.tick.text.dx,
-                dy: axisY.tick.text.dy,
-                anchor: axisY.tick.text.anchor
-              }
-            })
-            .title({
-              titleClass: axisY.title.titleClass,
-              x: axisY.title.x,
-              y: axisY.title.y,
-              dx: axisY.title.dx,
-              dy: axisY.title.dy,
-              transform: "translate(0," + height / 2 + ")rotate(" + axisY.title.rotate + ")",
-              anchor: axisY.title.anchor,
-              text: axisY.title.text
-            });
-
-          g.call(yAxis);
-        }
-
         // Add clippath and areas
         var X = scaleValue(xScale, xValue);
-
         var clippath = clip()
-          .width(clipPath.width || width)
-          .height(clipPath.height || height);
-
+          .width(clipPath.width || adjustedWidth)
+          .height(clipPath.height || adjustedHeight);
         var area = d3.svg.area().x(X).y0(Y0).y1(Y1)
           .interpolate(interpolate)
           .defined(defined);
-
         var areaPath = path()
           .pathGenerator(area)
           .cssClass(areas.areaClass)
@@ -237,7 +159,6 @@ define(function (require) {
           var line = d3.svg.line().x(X).y(Y1)
             .interpolate(interpolate)
             .defined(defined);
-
           var linePath = path()
             .pathGenerator(line)
             .cssClass(lines.lineClass)
@@ -261,6 +182,31 @@ define(function (require) {
             .opacity(zeroLine.opacity);
 
           g.call(zLine);
+        }
+
+        // X axis
+        if (axisX.show) {
+          var xAxis = axis()
+            .scale(xScale)
+            .gClass(axisX.gClass)
+            .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
+            .tick(axisX.tick)
+            .title(axisX.title);
+
+          g.call(xAxis);
+        }
+
+        // Y axis
+        if (axisY.show) {
+          var yAxis = axis()
+            .scale(yScale)
+            .orient("left")
+            .gClass(axisY.gClass)
+            .transform(axisY.transform || "translate(-1,0)")
+            .tick(axisY.tick)
+            .title(axisY.title);
+
+          g.call(yAxis);
         }
       });
     }

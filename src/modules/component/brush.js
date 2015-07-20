@@ -1,3 +1,6 @@
+/**
+ * Creates a brush component and binds it to an <svg></svg>.
+ */
 define(function (require) {
   var d3 = require("d3");
 
@@ -26,18 +29,18 @@ define(function (require) {
         var brush = d3.svg.brush()
           .on("brushstart", function () {
             brushStartCallback.forEach(function (listener) {
-              listener.call(this, brush, data);
+              listener.call(this, brush, data, index);
             });
           })
           .on("brush", function () {
             brushCallback.forEach(function (listener) {
-              listener.call(this, brush, data);
+              listener.call(this, brush, data, index);
             });
           })
           .on("brushend", function () {
             brushEndCallback.forEach(function (listener) {
-              listener.call(this, brush, data);
-              d3.selectAll("g.brush").call(brush.clear());
+              listener.call(this, brush, data, index);
+              d3.selectAll("g.brush").call(brush.clear()); // Clear brush
             });
           });
 

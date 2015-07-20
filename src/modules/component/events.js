@@ -1,3 +1,6 @@
+/**
+ * Adds event listeners to DOM elements
+ */
 define(function (require) {
   var d3 = require("d3");
 
@@ -8,14 +11,17 @@ define(function (require) {
       selection.each(function (data, index) {
         var element = d3.select(this);
 
-        Object.keys(listeners).forEach(function (event) {
-          if (!listeners[event] || !listeners[event].length) {
-            return element.on(event, null);
+        Object.keys(listeners).forEach(function (eventType) {
+
+          // Stop listening for event types that have an empty listeners
+          // array or are set to null
+          if (!listeners[eventType] || !listeners[eventType].length) {
+            return element.on(eventType, null);
           }
 
-          element.on(event, function (d, i) {
-            d3.event.stopPropagation();
-            listeners[event].forEach(function (listener) {
+          element.on(eventType, function (d, i) {
+            d3.event.stopPropagation(); // => event.stopPropagation()
+            listeners[eventType].forEach(function (listener) {
               listener.call(this, d3.event, d, i);
             });
           });

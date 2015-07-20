@@ -1,15 +1,37 @@
 define(function (require) {
   var d3 = require("d3");
-  var getFormat = require("src/modules/helpers/format_options");
 
   return function format() {
-    var type = "rows"; // type: 'rows', 'columns', 'grid'
+    var type = "rows"; // available types: 'rows', 'columns', 'grid'
     var size = [500, 500]; // [width, height]
     var rowScale = d3.scale.linear();
     var columnScale = d3.scale.linear();
 
+    function formatType(length, type) {
+      var output = {};
+
+      switch (type) {
+        case "grid":
+          output.rows = Math.round(Math.sqrt(length));
+          output.columns = Math.ceil(Math.sqrt(length));
+          break;
+
+        case "columns":
+          output.rows = 1;
+          output.columns = length;
+          break;
+
+        default:
+          output.rows = length;
+          output.columns = 1;
+          break;
+      }
+
+      return output;
+    }
+
     function layout(data) {
-      var format = getFormat(data.length, type);
+      var format = formatType(data.length, type);
       var rows = format.rows;
       var columns = format.columns;
       var cellWidth = size[0] / columns;

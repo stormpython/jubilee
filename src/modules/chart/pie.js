@@ -12,7 +12,6 @@ define(function (require) {
     var value = function (d) { return d.x; };
     var label = function (d) { return d.name; };
     var arc = d3.svg.arc();
-    var dispatch = d3.dispatch("hover", "mouseover", "mouseout");
 
     var pieFill = function (d, i) { return color(i); };
     var pieClass = "pie";
@@ -24,7 +23,7 @@ define(function (require) {
     var textTransform = function (d) { return "translate(" + arc.centroid(d) + ")"; };
 
     function chart (selection) {
-      selection.each(function (data, i) {
+      selection.each(function (data, index) {
         var pie = d3.layout.pie().sort(sort).value(value);
         var radius = Math.min(width, height) / 2;
 
@@ -148,7 +147,6 @@ define(function (require) {
       return chart;
     };
 
-    d3.rebind(chart, dispatch, "on");
     return chart;
   };
 });

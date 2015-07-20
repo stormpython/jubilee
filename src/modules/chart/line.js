@@ -1,28 +1,32 @@
 define(function (require) {
   var d3 = require("d3");
+
+  var addEventListener = require("src/modules/helpers/add_event_listener");
   var axis = require("src/modules/component/axis");
-  var path = require("src/modules/element/svg/path");
-  var clip = require("src/modules/element/svg/clipPath");
+  var brushComponent = require("src/modules/component/brush");
   var circle = require("src/modules/element/svg/circle");
-  var zeroAxisLine = require("src/modules/element/svg/line");
+  var clip = require("src/modules/element/svg/clipPath");
   var deepCopy = require("src/modules/helpers/deep_copy");
+  var path = require("src/modules/element/svg/path");
   var mapDomain = require("src/modules/helpers/map_domain");
+  var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var scaleValue = require("src/modules/helpers/scale_value");
-  var marginOptions = require("src/modules/helpers/options/margin");
+  var zeroAxisLine = require("src/modules/element/svg/line");
+
   var clipPathOptions = require("src/modules/helpers/options/clippath");
+  var marginOptions = require("src/modules/helpers/options/margin");
   var scaleOptions = require("src/modules/helpers/options/scale");
   var xAxisOptions = require("src/modules/helpers/options/x_axis");
   var yAxisOptions = require("src/modules/helpers/options/y_axis");
   var zeroLineOptions = require("src/modules/helpers/options/zero_line");
+
   var axisAPI = require("src/modules/helpers/api/axis");
-  var linesAPI = require("src/modules/helpers/api/lines");
   var circlesAPI = require("src/modules/helpers/api/circles");
-  var marginAPI = require("src/modules/helpers/api/margin");
   var clippathAPI = require("src/modules/helpers/api/clippath");
+  var linesAPI = require("src/modules/helpers/api/lines");
+  var marginAPI = require("src/modules/helpers/api/margin");
   var scaleAPI = require("src/modules/helpers/api/scale");
   var zeroLineAPI = require("src/modules/helpers/api/zero_line");
-  var addEventListener = require("src/modules/helpers/add_event_listener");
-  var removeEventListener = require("src/modules/helpers/remove_event_listener");
 
   return function lineChart() {
     // Chart options
@@ -33,7 +37,6 @@ define(function (require) {
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var defined = function () { return true; };
-    var dispatch = d3.dispatch("brush");
 
     // Scale options
     var xScaleOpts = deepCopy(scaleOptions, {});
@@ -46,6 +49,7 @@ define(function (require) {
     var axisY = deepCopy(yAxisOptions, {});
     var clipPath = deepCopy(clipPathOptions, {});
     var zeroLine = deepCopy(zeroLineOptions, {});
+    var listeners = {};
 
     // Line Options
     var lines = {
@@ -69,25 +73,23 @@ define(function (require) {
       strokeWidth: 3
     };
 
-    var listeners = {};
-
     function chart(selection) {
       selection.each(function (data, index) {
-        width = width - margin.left - margin.right;
-        height = height - margin.top - margin.bottom;
+        var adjustedWidth = width - margin.left - margin.right;
+        var adjustedHeight = height - margin.top - margin.bottom;
 
         xScale = xScaleOpts.scale || d3.time.scale.utc();
         xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(data), xValue));
 
         if (typeof xScale.rangeBands === "function") {
-          xScale.rangeBands([0, width, 0.1]);
+          xScale.rangeBands([0, adjustedWidth, 0.1]);
         } else {
-          xScale.range([0, width]);
+          xScale.range([0, adjustedWidth]);
         }
 
         yScale = yScaleOpts.scale || d3.scale.linear();
         yScale.domain(yScaleOpts.domain || d3.extent(mapDomain(data), yValue))
-          .range([height, 0]);
+          .range([adjustedHeight, 0]);
 
         if (xScaleOpts.nice) { xScale.nice(); }
         if (yScaleOpts.nice) { yScale.nice(); }
@@ -95,11 +97,21 @@ define(function (require) {
         var svg = d3.select(this).selectAll("svg")
           .data([data])
           .enter().append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom);
+          .attr("width", width)
+          .attr("height", height);
 
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+        // Brush
+        if (listeners.brush && listeners.brush.length) {
+          var brush = brushComponent()
+            .height(adjustedHeight)
+            .xScale(xScale)
+            .brushend(listeners.brush);
+
+          g.call(brush);
+        }
 
         var X = scaleValue(xScale, xValue);
         var Y = scaleValue(yScale, yValue);
@@ -121,32 +133,8 @@ define(function (require) {
             .scale(xScale)
             .gClass(axisX.gClass)
             .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
-            .tick({
-              number: axisX.tick.number,
-              values: axisX.tick.values,
-              size: axisX.tick.size,
-              padding: axisX.tick.padding,
-              format: axisX.tick.format,
-              rotate: axisX.tick.rotate,
-              innerTickSize: axisX.tick.innerTickSize,
-              outerTickSize: axisX.tick.outerTickSize,
-              text: {
-                x: axisX.tick.text.x,
-                y: axisX.tick.text.y,
-                dx: axisX.tick.text.dx,
-                dy: axisX.tick.text.dy,
-                anchor: axisX.tick.text.anchor
-              }
-            })
-            .title({
-              titleClass: axisX.title.titleClass,
-              x: width / 2,
-              y: axisX.title.y,
-              dx: axisX.title.dx,
-              dy: axisX.title.dy,
-              anchor: axisX.title.anchor,
-              text: axisX.title.text
-            });
+            .tick(axisX.tick)
+            .title(axisX.title);
 
           g.call(xAxis);
         }
@@ -157,31 +145,8 @@ define(function (require) {
             .orient("left")
             .gClass(axisY.gClass)
             .transform(axisY.transform || "translate(-1,0)")
-            .tick({
-              number: axisY.tick.number,
-              values: axisY.tick.values,
-              size: axisY.tick.size, padding: axisY.tick.padding, format: axisY.tick.format,
-              rotate: axisY.tick.rotate,
-              innerTickSize: axisY.tick.innerTickSize,
-              outerTickSize: axisY.tick.outerTickSize,
-              text: {
-                x: axisY.tick.text.x,
-                y: axisY.tick.text.y,
-                dx: axisY.tick.text.dx,
-                dy: axisY.tick.text.dy,
-                anchor: axisY.tick.text.anchor
-              }
-            })
-            .title({
-              titleClass: axisY.title.titleClass,
-              x: axisY.title.x,
-              y: axisY.title.y,
-              dx: axisY.title.dx,
-              dy: axisY.title.dy,
-              transform: "translate(0," + height / 2 + ")rotate(" + axisY.title.rotate + ")",
-              anchor: axisY.title.anchor,
-              text: axisY.title.text
-            });
+            .tick(axisY.tick)
+            .title(axisY.title);
 
           g.call(yAxis);
         }
@@ -206,8 +171,8 @@ define(function (require) {
 
         if (circles.show) {
           var clippath = clip()
-            .width(clipPath.width || width)
-            .height(clipPath.height || height);
+            .width(clipPath.width || adjustedWidth)
+            .height(clipPath.height || adjustedHeight);
 
           var points = circle()
             .cx(X)

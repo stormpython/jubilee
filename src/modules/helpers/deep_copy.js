@@ -1,3 +1,6 @@
+/**
+ * Returns a function that creates a deep copy of an object
+ */
 define(function () {
   return function deepCopy(parent, child) {
     child = child || {};

@@ -19,8 +19,8 @@ define(function (require) {
       tile: require("src/modules/map/tile")
     },
     layout: {
+      base: require("src/modules/layout/base"),
       box: require("src/modules/layout/box"),
-      format: require("src/modules/layout/format"),
       grid: require("src/modules/layout/grid")
     },
     component: {

@@ -3,6 +3,7 @@ define(function (require) {
     var image = require("src/modules/element/svg/image");
     var d3fixture = require("fixtures/fixture");
     var data = require("fixtures/data_generator")(10);
+    var removeChildElements = require("fixtures/remove_children");
     var element = image();
     var fixture;
 
@@ -15,7 +16,7 @@ define(function (require) {
     });
 
     afterEach(function () {
-      fixture.selectAll("*").remove();
+      removeChildElements(fixture);
       fixture = null;
     });
 
@@ -28,6 +29,7 @@ define(function (require) {
       var defaultX;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultX = function (d) { return d.x; };
         element.x(defaultX);
       });
@@ -57,6 +59,7 @@ define(function (require) {
       var defaultY;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultY = function (d) { return d.y; };
         element.y(defaultY);
       });
@@ -86,6 +89,7 @@ define(function (require) {
       var defaultWidth;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultWidth = 20;
         element.width(defaultWidth);
       });
@@ -115,6 +119,7 @@ define(function (require) {
       var defaultHeight;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultHeight = 50;
         element.height(defaultHeight);
       });
@@ -144,6 +149,7 @@ define(function (require) {
       var defaultClass;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultClass = "images";
         element.cssClass(defaultClass);
       });
@@ -173,6 +179,7 @@ define(function (require) {
       var defaultLink;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultLink = "http://www.filmoria.co.uk/wp-content/uploads/2015/03/jubilee-marvel-2.jpg";
         element.xlink(defaultLink);
       });
@@ -202,6 +209,7 @@ define(function (require) {
       var defaultRatio;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultRatio = "defer none";
         element.preserveAspectRatio(defaultRatio);
       });

@@ -1,5 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
+
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var axis = require("src/modules/component/axis");
   var brushComponent = require("src/modules/component/brush");
@@ -10,13 +11,6 @@ define(function (require) {
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var zeroAxisLine = require("src/modules/element/svg/line");
 
-  var axisAPI = require("src/modules/helpers/api/axis");
-  var clippathAPI = require("src/modules/helpers/api/clippath");
-  var clipPathOptions = require("src/modules/helpers/options/clippath");
-  var marginAPI = require("src/modules/helpers/api/margin");
-  var marginOptions = require("src/modules/helpers/options/margin");
-  var rectAPI = require("src/modules/helpers/api/rect");
-  var scaleAPI = require("src/modules/helpers/api/scale");
   var scaleOptions = require("src/modules/helpers/options/scale");
   var stackAPI = require("src/modules/helpers/api/stack");
   var stackOptions = require("src/modules/helpers/options/stack");
@@ -24,6 +18,14 @@ define(function (require) {
   var yAxisOptions = require("src/modules/helpers/options/y_axis");
   var zeroLineAPI = require("src/modules/helpers/api/zero_line");
   var zeroLineOptions = require("src/modules/helpers/options/zero_line");
+
+  var axisAPI = require("src/modules/helpers/api/axis");
+  var clippathAPI = require("src/modules/helpers/api/clippath");
+  var clipPathOptions = require("src/modules/helpers/options/clippath");
+  var marginAPI = require("src/modules/helpers/api/margin");
+  var marginOptions = require("src/modules/helpers/options/margin");
+  var rectAPI = require("src/modules/helpers/api/rect");
+  var scaleAPI = require("src/modules/helpers/api/scale");
 
   return function barChart() {
     var margin = deepCopy(marginOptions, {});
@@ -82,8 +84,8 @@ define(function (require) {
 
         if (stacked) { data = stack(data); }
 
-        width = width - margin.left - margin.right;
-        height = height - margin.top - margin.bottom;
+        var adjustedWidth = width - margin.left - margin.right;
+        var adjustedHeight = height - margin.top - margin.bottom;
 
         var newData = data.map(values);
 
@@ -91,9 +93,9 @@ define(function (require) {
         xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(newData), xValue));
 
         if (typeof xScale.rangeBands === "function") {
-          xScale.rangeBands([0, width, 0.1]);
+          xScale.rangeBands([0, adjustedWidth, 0.1]);
         } else {
-          xScale.range([0, width]);
+          xScale.range([0, adjustedWidth]);
         }
 
         yScale = yScaleOpts.scale || d3.scale.linear();
@@ -101,7 +103,7 @@ define(function (require) {
             Math.min(0, d3.min(mapDomain(newData), yStackValue)),
             Math.max(0, d3.max(mapDomain(newData), yStackValue))
           ])
-          .range([height, 0]);
+          .range([adjustedHeight, 0]);
 
         if (xScaleOpts.nice) { xScale.nice(); }
         if (yScaleOpts.nice) { yScale.nice(); }
@@ -109,8 +111,8 @@ define(function (require) {
         var svg = d3.select(this).selectAll("svg")
           .data([data])
           .enter().append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom);
+          .attr("width", width)
+          .attr("height", height);
 
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
@@ -118,7 +120,7 @@ define(function (require) {
         // Brush
         if (listeners.brush.length) {
           var brush = brushComponent()
-            .height(height)
+            .height(adjustedHeight)
             .xScale(xScale)
             .brushend(listeners.brush);
 
@@ -126,8 +128,8 @@ define(function (require) {
         }
 
         var clippath = clip()
-          .width(clipPath.width || width)
-          .height(clipPath.height || height);
+          .width(clipPath.width || adjustedWidth)
+          .height(clipPath.height || adjustedHeight);
 
         var bars = rect()
           .data(values)
@@ -175,32 +177,8 @@ define(function (require) {
             .scale(xScale)
             .gClass(axisX.gClass)
             .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
-            .tick({
-              number: axisX.tick.number,
-              values: axisX.tick.values,
-              size: axisX.tick.size,
-              padding: axisX.tick.padding,
-              format: axisX.tick.format,
-              rotate: axisX.tick.rotate,
-              innerTickSize: axisX.tick.innerTickSize,
-              outerTickSize: axisX.tick.outerTickSize,
-              text: {
-                x: axisX.tick.text.x,
-                y: axisX.tick.text.y,
-                dx: axisX.tick.text.dx,
-                dy: axisX.tick.text.dy,
-                anchor: axisX.tick.text.anchor
-              }
-            })
-            .title({
-              titleClass: axisX.title.titleClass,
-              x: width / 2,
-              y: axisX.title.y,
-              dx: axisX.title.dx,
-              dy: axisX.title.dy,
-              anchor: axisX.title.anchor,
-              text: axisX.title.text
-            });
+            .tick(axisX.tick)
+            .title(axisX.title);
 
           g.call(xAxis);
         }
@@ -211,31 +189,8 @@ define(function (require) {
             .orient("left")
             .gClass(axisY.gClass)
             .transform(axisY.transform || "translate(-1,0)")
-            .tick({
-              number: axisY.tick.number,
-              values: axisY.tick.values,
-              size: axisY.tick.size, padding: axisY.tick.padding, format: axisY.tick.format,
-              rotate: axisY.tick.rotate,
-              innerTickSize: axisY.tick.innerTickSize,
-              outerTickSize: axisY.tick.outerTickSize,
-              text: {
-                x: axisY.tick.text.x,
-                y: axisY.tick.text.y,
-                dx: axisY.tick.text.dx,
-                dy: axisY.tick.text.dy,
-                anchor: axisY.tick.text.anchor
-              }
-            })
-            .title({
-              titleClass: axisY.title.titleClass,
-              x: axisY.title.x,
-              y: axisY.title.y,
-              dx: axisY.title.dx,
-              dy: axisY.title.dy,
-              transform: "translate(0," + height / 2 + ")rotate(" + axisY.title.rotate + ")",
-              anchor: axisY.title.anchor,
-              text: axisY.title.text
-            });
+            .tick(axisY.tick)
+            .title(axisY.title);
 
           g.call(yAxis);
         }
@@ -256,9 +211,7 @@ define(function (require) {
       });
     }
 
-    function yStackValue (d, i) {
-      return d.y0 + d.y;
-    }
+    function yStackValue (d, i) { return d.y0 + d.y; }
 
     // Public API
     chart.margin = function (_) {

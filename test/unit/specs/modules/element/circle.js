@@ -3,6 +3,7 @@ define(function (require) {
     var circle = require("src/modules/element/svg/circle");
     var d3fixture = require("fixtures/fixture");
     var data = require("fixtures/data_generator")(10);
+    var removeChildElements = require("fixtures/remove_children");
     var element = circle();
     var fixture;
 
@@ -15,7 +16,7 @@ define(function (require) {
     });
 
     afterEach(function () {
-      fixture.selectAll("*").remove();
+      removeChildElements(fixture);
       fixture = null;
     });
 
@@ -28,6 +29,7 @@ define(function (require) {
       var defaultCX;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultCX = function (d) { return d.x; };
         element.cx(defaultCX);
       });
@@ -58,6 +60,7 @@ define(function (require) {
       var defaultCY;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultCY = function (d) { return d.y; };
         element.cy(defaultCY);
       });
@@ -87,6 +90,7 @@ define(function (require) {
       var defaultRadius;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultRadius = 5;
         element.radius(defaultRadius);
       });
@@ -115,6 +119,7 @@ define(function (require) {
       var defaultClass;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultClass = "circles";
         element.cssClass(defaultClass);
       });
@@ -143,6 +148,7 @@ define(function (require) {
       var defaultColor;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultColor = function () { return "#0000FF"; }; // must be a function
         element.color(defaultColor);
       });
@@ -176,6 +182,7 @@ define(function (require) {
       var defaultFill = "#0000FF";
 
       beforeEach(function () {
+        removeChildElements(fixture);
         element.fill(defaultFill);
       });
 
@@ -204,6 +211,7 @@ define(function (require) {
       var defaultStroke = "#0000FF";
 
       beforeEach(function () {
+        removeChildElements(fixture);
         element.stroke(defaultStroke);
       });
 
@@ -232,6 +240,7 @@ define(function (require) {
       var defaultStrokeWidth = 2;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         element.strokeWidth(defaultStrokeWidth);
       });
 
@@ -260,6 +269,7 @@ define(function (require) {
       var defaultOpacity = 1;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         element.opacity(defaultOpacity);
       });
 

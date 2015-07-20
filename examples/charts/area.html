@@ -19,7 +19,8 @@
 
     <div id="chart"></div>
 
-    <script data-main="../../src/require.config.js" src="../../../node_modules/requirejs/require.js"></script>
+    <script data-main="../../src/require.config.js"
+            src="../../../node_modules/requirejs/require.js"></script>
     <script>
       require(["../../src/index"], function (jubilee) {
         var data = {
@@ -39,17 +40,22 @@
               { x: 1411761570000, y: 57, label: "of"}
             ],
             [
-              { x: 1411761450000, y: -191, label: "brothers"},
-              { x: 1411761480000, y: -188, label: "brothers"},
-              { x: 1411761510000, y: -132, label: "brothers"},
-              { x: 1411761540000, y: -147, label: "brothers"},
-              { x: 1411761570000, y: -157, label: "brothers"}
+              { x: 1411761450000, y: 191, label: "brothers"},
+              { x: 1411761480000, y: 188, label: "brothers"},
+              { x: 1411761510000, y: 132, label: "brothers"},
+              { x: 1411761540000, y: 147, label: "brothers"},
+              { x: 1411761570000, y: 157, label: "brothers"}
             ]
           ]
         };
 
         var width = 700;
         var height = 400;
+        var clickFunction = function (e) { console.log(e); };
+        var brushFunction = function (brush) { console.log(brush.extent()); };
+
+        // D3 selection
+        var selection = d3.select("#chart").datum(data.series);
 
         // Example logarithmic stacked area chart configuration
         var logChart = jubilee.chart.area()
@@ -62,28 +68,23 @@
               d.y = y;
             }
           })
+          .zeroLine({ add: false })
           .xAxis({ tick: { number: 5 } })
           .yScale({ scale: d3.scale.log(), domain: [1, 323] })
           .interpolate("cardinal");
-
-        var clickFunction = function (e) { console.log(e); };
-        var brushFunction = function (brush) { console.log(brush.extent()); };
 
         // Example normal area chart configuration
         var myChart = jubilee.chart.area()
           .width(width)
           .height(height)
           .yScale({ nice: true })
-          .zeroLine({ add: true })
-          .stack({ offset: "overlap" })
+          .zeroLine({ add: false })
           .area({ opacity: 0.5 })
           .interpolate("cardinal")
           .on("click", clickFunction)
           .on("brush", brushFunction);
 
-        d3.select("#chart")
-          .datum(data.series)
-          .call(myChart);
+        selection.call(myChart);
       });
     </script>
   </body>

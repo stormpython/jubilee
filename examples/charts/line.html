@@ -19,7 +19,8 @@
 
   <div id="chart"></div>
 
-  <script data-main="../../src/require.config.js" src="../../../node_modules/requirejs/require.js"></script>
+  <script data-main="../../src/require.config.js"
+          src="../../../node_modules/requirejs/require.js"></script>
   <script>
     require(["../../src/index"], function (jubilee) {
       var data = {
@@ -63,16 +64,13 @@
         .lines({
           stroke: function (d) { return color(d[0].label); },
           interpolate: "cardinal",
-          events: {
-            click: function (e) { console.log(e); }
-          }
         })
         .circles({
           show: true,
           fill: function (d) { return color(d.label); },
-          events: {
-            dblclick: function (e) { console.log(e); }
-          }
+        })
+        .on("click", function (e) {
+          console.log(e);
         });
 
       d3.select("#chart")

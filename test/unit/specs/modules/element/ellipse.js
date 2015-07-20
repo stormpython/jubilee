@@ -3,6 +3,7 @@ define(function (require) {
     var ellipse = require("src/modules/element/svg/ellipse");
     var d3fixture = require("fixtures/fixture");
     var data = require("fixtures/data_generator")(10);
+    var removeChildElements = require("fixtures/remove_children");
     var element = ellipse();
     var fixture;
 
@@ -15,7 +16,7 @@ define(function (require) {
     });
 
     afterEach(function () {
-      fixture.selectAll("*").remove();
+      removeChildElements(fixture);
       fixture = null;
     });
 
@@ -28,6 +29,7 @@ define(function (require) {
       var defaultCX;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultCX = function (d) { return d.x; };
         element.cx(defaultCX);
       });
@@ -57,6 +59,7 @@ define(function (require) {
       var defaultCY;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultCY = function (d) { return d.y; };
         element.cy(defaultCY);
       });
@@ -86,6 +89,7 @@ define(function (require) {
       var defaultRX;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultRX = 20;
         element.rx(defaultRX);
       });
@@ -115,6 +119,7 @@ define(function (require) {
       var defaultRY;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultRY = 20;
         element.ry(defaultRY);
       });
@@ -144,6 +149,7 @@ define(function (require) {
       var defaultClass;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultClass = "ellipses";
         element.cssClass(defaultClass);
       });
@@ -173,6 +179,7 @@ define(function (require) {
       var defaultFill;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultFill = "#FF0000";
         element.fill(defaultFill);
       });
@@ -202,6 +209,7 @@ define(function (require) {
       var defaultOpacity;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultOpacity = 1;
         element.opacity(defaultOpacity);
       });
@@ -231,6 +239,7 @@ define(function (require) {
       var defaultColor;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultColor = function () { return "#FF0000"; }; // must be a function
         element.color(defaultColor);
       });
@@ -262,6 +271,7 @@ define(function (require) {
       var defaultStroke;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultStroke = "#FF0000";
         element.stroke(defaultStroke);
       });
@@ -291,6 +301,7 @@ define(function (require) {
       var defaultStrokeWidth;
 
       beforeEach(function () {
+        removeChildElements(fixture);
         defaultStrokeWidth = 2;
         element.strokeWidth(defaultStrokeWidth);
       });
