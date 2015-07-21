@@ -96,11 +96,12 @@ define(function (require) {
       tick.rotate = typeof _.rotate !== "undefined" ? _.rotate : tick.rotate;
       tick.innerTickSize = typeof _.innerTickSize !== "undefined" ? _.innerTickSize : tick.innerTickSize;
       tick.outerTickSize = typeof _.outerTickSize !== "undefined" ? _.outerTickSize : tick.outerTickSize;
-      tick.text.anchor = typeof _.text.anchor !== "undefined" ? _.text.anchor : tick.text.anchor;
-      tick.text.x = typeof _.text.x !== "undefined" ? _.text.x : tick.text.x;
-      tick.text.y = typeof _.text.y !== "undefined" ? _.text.y : tick.text.y;
-      tick.text.dx = typeof _.text.dx !== "undefined" ? _.text.dx : tick.text.dx;
-      tick.text.dy = typeof _.text.dy !== "undefined" ? _.text.dy : tick.text.dy;
+      tick.text = typeof _.text !== "undefined" ? _.text : {};
+      tick.text.anchor = _.text && typeof _.text.anchor !== "undefined" ? _.text.anchor : tick.text.anchor;
+      tick.text.x = _.text && typeof _.text.x !== "undefined" ? _.text.x : tick.text.x;
+      tick.text.y = _.text && typeof _.text.y !== "undefined" ? _.text.y : tick.text.y;
+      tick.text.dx = _.text && typeof _.text.dx !== "undefined" ? _.text.dx : tick.text.dx;
+      tick.text.dy = _.text && typeof _.text.dy !== "undefined" ? _.text.dy : tick.text.dy;
       return component;
     };
 
