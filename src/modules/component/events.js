@@ -3,6 +3,8 @@
  */
 define(function (require) {
   var d3 = require("d3");
+  var addEventListener = require("src/modules/helpers/add_event_listener");
+  var removeEventListener = require("src/modules/helpers/remove_event_listener");
 
   return function events() {
     var listeners = {};
@@ -29,10 +31,39 @@ define(function (require) {
       });
     }
 
+    function sumListeners(listeners) {
+      return Object.keys(listeners).map(function (event) {
+        return listeners[event].length;
+      }).reduce(function (a, b) {
+        return a + b;
+      }, 0);
+    }
+
     // Public API
     component.listeners = function (_) {
       if (!arguments.length) { return listeners; }
       listeners = _;
+      return component;
+    };
+
+    component.listenerCount = function (_) {
+      if (!arguments.length) { return sumListeners(listeners); }
+      if (!listeners[_]) { return 0; }
+      return listeners[_].length;
+    };
+
+    component.on = addEventListener(listeners, component);
+
+    component.off = removeEventListener(listeners, component);
+
+    component.activeEvents = function () {
+      return Object.keys(listeners).filter(function (event) {
+        return listeners[event].length;
+      });
+    };
+
+    component.removeAllListeners = function () {
+      listeners = {};
       return component;
     };
 

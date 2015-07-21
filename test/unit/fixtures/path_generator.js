@@ -10,6 +10,6 @@ define(function (require) {
     function X(d) { return d.x; }
     function Y(d) { return d.y; }
 
-    return pathTypes[type] ? pathTypes[type] : pathTypes["line"];
-  }
+    return pathTypes[type] ? pathTypes[type] : pathTypes.line;
+  };
 });
