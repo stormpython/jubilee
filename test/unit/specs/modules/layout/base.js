@@ -66,7 +66,7 @@ define(function (require) {
       });
     });
 
-    describe("grids", function () {
+    describe("grid", function () {
       var grid;
       var gridData;
 
