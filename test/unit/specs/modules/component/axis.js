@@ -17,6 +17,10 @@ define(function (require) {
       fixture = null;
     });
 
+    it("should return a function", function () {
+      chai.assert.isFunction(axis);
+    });
+
     describe("scale API", function () {
       var linearScale = d3.scale.linear();
       var ordinalScale = d3.scale.ordinal();
