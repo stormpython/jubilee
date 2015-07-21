@@ -23,6 +23,10 @@ define(function (require) {
       fixture = null;
     });
 
+    it("should return a function", function () {
+      chai.assert.isFunction(events);
+    });
+
     describe("listeners API", function () {
       it("should return the listeners object", function () {
         chai.assert.deepEqual(events.listeners(), {});
@@ -90,6 +94,10 @@ define(function (require) {
         fixture.call(events);
       });
 
+      afterEach(function () {
+        fixture.call(events.removeAllListeners());
+      });
+
       it("should add event type and listener(s)", function () {
         chai.assert.property(events.listeners(), "mouseout");
       });
@@ -106,6 +114,10 @@ define(function (require) {
         fixture.call(events);
       });
 
+      afterEach(function () {
+        fixture.call(events.removeAllListeners());
+      });
+
       it("should remove listeners", function () {
         chai.assert.notProperty(events.listeners(), "brush");
       });
@@ -120,6 +132,10 @@ define(function (require) {
       beforeEach(function () {
         events.listeners(listeners);
         fixture.call(events);
+      });
+
+      afterEach(function () {
+        fixture.call(events.removeAllListeners());
       });
 
       it("should add listeners to DOM", function () {

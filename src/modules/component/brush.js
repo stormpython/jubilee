@@ -90,6 +90,12 @@ define(function (require) {
       return component;
     };
 
+    component.cssClass = function (_) {
+      if (!arguments.length) { return cssClass; }
+      cssClass = _;
+      return component;
+    };
+
     component.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale = _;
@@ -117,21 +123,21 @@ define(function (require) {
     component.brushstart = function (_) {
       if (!arguments.length) { return brushStartCallback; }
       if (typeof _ === "function") { brushStartCallback.push(_); }
-      brushStartCallback = _;
+      else { brushStartCallback = _; }
       return component;
     };
 
     component.brush = function (_) {
       if (!arguments.length) { return brushCallback; }
       if (typeof _ === "function") { brushCallback.push(_); }
-      brushCallback = _;
+      else { brushCallback = _; }
       return component;
     };
 
     component.brushend = function (_) {
       if (!arguments.length) { return brushEndCallback; }
       if (typeof _ === "function") { brushEndCallback.push(_); }
-      brushEndCallback = _;
+      else { brushEndCallback = _; }
       return component;
     };
 
