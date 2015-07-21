@@ -20,8 +20,8 @@ define(function (require) {
       var height = size[1] / Math.ceil(Math.sqrt(data.length));
 
       gridData.forEach(function (chart) {
-        chai.assert.equal(chart.x % width, 0);
-        chai.assert.equal(chart.y % height, 0);
+        chai.assert.equal(chart.dx % width, 0);
+        chai.assert.equal(chart.dy % height, 0);
         chai.assert.equal(chart.width, width);
         chai.assert.equal(chart.height, height);
       });

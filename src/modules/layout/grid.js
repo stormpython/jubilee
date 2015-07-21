@@ -20,8 +20,8 @@ define(function (require) {
         d3.range(columns).forEach(function (col) {
           if (!data[cell]) { return; }
 
-          data[cell].x = columnScale(col);
-          data[cell].y = rowScale(row);
+          data[cell].dx = columnScale(col);
+          data[cell].dy = rowScale(row);
           data[cell].height = gridCellHeight;
           data[cell].width = gridCellWidth;
           cell++;
