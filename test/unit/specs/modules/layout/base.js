@@ -1,17 +1,7 @@
 define(function (require) {
   describe("Layout: base tests", function() {
     var base = require("src/modules/layout/base");
-    var data = [
-      {
-        values: [1, 2, 3, 4, 5]
-      },
-      {
-        values: [6, 7, 8, 9, 10]
-      },
-      {
-        values: [11, 12, 13, 14, 15]
-      }
-    ];
+    var data = [{}, {}, {}];
     var size = [300, 300];
 
     describe("rows", function () {
@@ -84,7 +74,6 @@ define(function (require) {
         var height = size[1] / Math.ceil(Math.sqrt(data.length));
 
         gridData.forEach(function (chart) {
-          console.log(chart.dx, chart.dy);
           chai.assert.equal(chart.dx % width, 0);
           chai.assert.equal(chart.dy % height, 0);
           chai.assert.equal(chart.width, width);
