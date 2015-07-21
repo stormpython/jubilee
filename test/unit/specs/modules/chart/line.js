@@ -1,5 +1,5 @@
 define(function (require) {
-  describe("Line Chart Tests", function () {
+  describe("Chart: Line Tests", function () {
     var lineChart = require("src/modules/chart/line");
     var d3fixture = require("fixtures/fixture");
 

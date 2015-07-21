@@ -1,5 +1,5 @@
 define(function (require) {
-  describe("Ellipse SVG Tests", function () {
+  describe("Element: Ellipse SVG Tests", function () {
     var ellipse = require("src/modules/element/svg/ellipse");
     var d3fixture = require("fixtures/fixture");
     var data = require("fixtures/data_generator")(10);
