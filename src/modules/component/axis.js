@@ -96,7 +96,7 @@ define(function (require) {
       tick.rotate = typeof _.rotate !== "undefined" ? _.rotate : tick.rotate;
       tick.innerTickSize = typeof _.innerTickSize !== "undefined" ? _.innerTickSize : tick.innerTickSize;
       tick.outerTickSize = typeof _.outerTickSize !== "undefined" ? _.outerTickSize : tick.outerTickSize;
-      tick.text = typeof _.text !== "undefined" ? _.text : {};
+      tick.text = typeof _.text !== "undefined" ? _.text : tick.text || {};
       tick.text.anchor = _.text && typeof _.text.anchor !== "undefined" ? _.text.anchor : tick.text.anchor;
       tick.text.x = _.text && typeof _.text.x !== "undefined" ? _.text.x : tick.text.x;
       tick.text.y = _.text && typeof _.text.y !== "undefined" ? _.text.y : tick.text.y;
