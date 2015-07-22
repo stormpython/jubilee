@@ -2,7 +2,7 @@ define(function (require) {
   describe("Component: Events tests", function () {
     var eventsFunction = require("src/modules/component/events");
     var d3fixture = require("fixtures/fixture");
-    var removeChildElements = require("fixtures/remove_children");
+    var remove = require("fixtures/remove");
     var totalListenerCount;
     var listeners;
     var fixture;
@@ -20,8 +20,7 @@ define(function (require) {
     });
 
     afterEach(function () {
-      removeChildElements(fixture);
-      fixture = null;
+      remove(fixture);
     });
 
     it("should return a function", function () {

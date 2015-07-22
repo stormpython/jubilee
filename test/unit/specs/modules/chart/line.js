@@ -2,7 +2,7 @@ define(function (require) {
   describe("Chart: Line Tests", function () {
     var lineChart = require("src/modules/chart/line");
     var d3fixture = require("fixtures/fixture");
-    var removeChildElements = require("fixtures/remove_children");
+    var remove = require("fixtures/remove");
     var myChart = lineChart();
     var fixture;
 
@@ -11,8 +11,7 @@ define(function (require) {
     });
 
     afterEach(function () {
-      removeChildElements(fixture);
-      fixture = null;
+      remove(fixture);
     });
 
     it("should be a function", function () {

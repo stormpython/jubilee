@@ -3,7 +3,7 @@ define(function (require) {
     var d3 = require("d3");
     var axisFunction = require("src/modules/component/axis");
     var d3fixture = require("fixtures/fixture");
-    var removeChildElements = require("fixtures/remove_children");
+    var remove = require("fixtures/remove");
     var fixture;
     var axis;
 
@@ -13,8 +13,7 @@ define(function (require) {
     });
 
     afterEach(function () {
-      removeChildElements(fixture);
-      fixture = null;
+      remove(fixture);
     });
 
     it("should return a function", function () {

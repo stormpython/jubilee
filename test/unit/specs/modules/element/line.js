@@ -3,7 +3,8 @@ define(function (require) {
     var line = require("src/modules/element/svg/line");
     var d3fixture = require("fixtures/fixture");
     var data = require("fixtures/data_generator")(10);
-    var removeChildElements = require("fixtures/remove_children");
+    var remove = require("fixtures/remove");
+    var removeChildren = require("fixtures/remove_children");
     var element = line();
     var fixture;
 
@@ -16,8 +17,7 @@ define(function (require) {
     });
 
     afterEach(function () {
-      removeChildElements(fixture);
-      fixture = null;
+      remove(fixture);
     });
 
     it("should return a function", function () {
@@ -29,7 +29,7 @@ define(function (require) {
       var defaultX1;
 
       beforeEach(function () {
-        removeChildElements(fixture);
+        removeChildren(fixture);
         defaultX1 = function (d) { return d.x; };
         element.x1(defaultX1);
       });
@@ -59,7 +59,7 @@ define(function (require) {
       var defaultX2;
 
       beforeEach(function () {
-        removeChildElements(fixture);
+        removeChildren(fixture);
         defaultX2 = function (d) { return d.x; };
         element.x2(defaultX2);
       });
@@ -89,7 +89,7 @@ define(function (require) {
       var defaultY1;
 
       beforeEach(function () {
-        removeChildElements(fixture);
+        removeChildren(fixture);
         defaultY1 = function (d) { return d.y; };
         element.y1(defaultY1);
       });
@@ -119,7 +119,7 @@ define(function (require) {
       var defaultY2;
 
       beforeEach(function () {
-        removeChildElements(fixture);
+        removeChildren(fixture);
         defaultY2 = function (d) { return d.y; };
         element.y2(defaultY2);
       });
@@ -149,7 +149,7 @@ define(function (require) {
       var defaultClass;
 
       beforeEach(function () {
-        removeChildElements(fixture);
+        removeChildren(fixture);
         defaultClass = "lines";
         element.cssClass(defaultClass);
       });
@@ -179,7 +179,7 @@ define(function (require) {
       var defaultOpacity;
 
       beforeEach(function () {
-        removeChildElements(fixture);
+        removeChildren(fixture);
         defaultOpacity = 1;
         element.opacity(defaultOpacity);
       });
@@ -209,7 +209,7 @@ define(function (require) {
       var defaultColor;
 
       beforeEach(function () {
-        removeChildElements(fixture);
+        removeChildren(fixture);
         defaultColor = function () { return "#FF0000"; }; // must be a function
         element.color(defaultColor);
       });
@@ -240,7 +240,7 @@ define(function (require) {
       var defaultStroke;
 
       beforeEach(function () {
-        removeChildElements(fixture);
+        removeChildren(fixture);
         defaultStroke = "#FF0000";
         element.stroke(defaultStroke);
       });
@@ -270,7 +270,7 @@ define(function (require) {
       var defaultStrokeWidth;
 
       beforeEach(function () {
-        removeChildElements(fixture);
+        removeChildren(fixture);
         defaultStrokeWidth = 2;
         element.strokeWidth(defaultStrokeWidth);
       });
