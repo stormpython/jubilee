@@ -2,8 +2,7 @@ define(function (require) {
   describe("Chart: Line Tests", function () {
     var lineChart = require("src/modules/chart/line");
     var d3fixture = require("fixtures/fixture");
-
-    var isFunction = (typeof lineChart === "function");
+    var removeChildElements = require("fixtures/remove_children");
     var myChart = lineChart();
     var fixture;
 
@@ -12,11 +11,12 @@ define(function (require) {
     });
 
     afterEach(function () {
-      fixture.remove();
+      removeChildElements(fixture);
+      fixture = null;
     });
 
     it("should be a function", function () {
-      chai.assert.equal(isFunction, true);
+      chai.assert.isFunction(myChart);
     });
 
     describe("width API", function () {

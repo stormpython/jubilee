@@ -4,8 +4,10 @@
  * to an event object, e.g. { "click": [ listener1, listener2], "brush": [ listener1 ], ... }.
  */
 define(function () {
-  return function (listeners, chart) {
+  return function (chart) {
     return function (eventType, listener) {
+      var listeners = chart.listeners();
+
       if (arguments.length === 1 && listeners[eventType]) {
         return listeners[eventType];
       }

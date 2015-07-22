@@ -10,7 +10,6 @@ define(function (require) {
 
     beforeEach(function () {
       element = path().pathGenerator(pathGenerator);
-
       fixture = d3fixture;
 
       fixture
@@ -30,7 +29,7 @@ define(function (require) {
 
     describe("pathGenerator API", function () {
       var defaultGenerator;
-      var newGenerator;
+      var areaGenerator;
 
       beforeEach(function () {
         removeChildElements(fixture);
@@ -44,8 +43,8 @@ define(function (require) {
       });
 
       it("should set the property", function () {
-        element.pathGenerator(newGenerator);
-        chai.assert.equal(element.pathGenerator(), newGenerator);
+        element.pathGenerator(areaGenerator);
+        chai.assert.equal(element.pathGenerator(), areaGenerator);
       });
 
       it("should set the proper value of the DOM attribute", function () {

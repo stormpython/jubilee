@@ -5,8 +5,10 @@
  * Ability to remove one event listener at a time or all listeners for an event type.
  */
 define(function () {
-  return function (listeners, chart) {
+  return function (chart) {
     return function (eventType, listener) {
+      var listeners = chart.listeners();
+
       if (arguments.length === 1 && listeners[eventType]) {
         listeners[eventType] = null;
       }

@@ -2,6 +2,7 @@ define(function (require) {
   describe("Element: ClipPath SVG Tests", function () {
     var clipPath = require("src/modules/element/svg/clipPath");
     var d3fixture = require("fixtures/fixture");
+    var removeChildElements = require("fixtures/remove_children");
     var element = clipPath();
     var fixture;
 
@@ -14,7 +15,7 @@ define(function (require) {
     });
 
     afterEach(function () {
-      fixture.selectAll("*").remove();
+      removeChildElements(fixture);
       fixture = null;
     });
 

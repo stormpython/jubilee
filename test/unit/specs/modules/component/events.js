@@ -2,6 +2,7 @@ define(function (require) {
   describe("Component: Events tests", function () {
     var eventsFunction = require("src/modules/component/events");
     var d3fixture = require("fixtures/fixture");
+    var removeChildElements = require("fixtures/remove_children");
     var totalListenerCount;
     var listeners;
     var fixture;
@@ -19,7 +20,7 @@ define(function (require) {
     });
 
     afterEach(function () {
-      fixture.call(events.removeAllListeners());
+      removeChildElements(fixture);
       fixture = null;
     });
 
@@ -28,6 +29,10 @@ define(function (require) {
     });
 
     describe("listeners API", function () {
+      afterEach(function () {
+        events.listeners({});
+      });
+
       it("should return the listeners object", function () {
         chai.assert.deepEqual(events.listeners(), {});
       });
@@ -43,6 +48,10 @@ define(function (require) {
         events.listeners(listeners);
       });
 
+      afterEach(function () {
+        events.listeners({});
+      });
+
       it("should remove all listeners", function () {
         events.removeAllListeners();
         chai.assert.deepEqual(events.listeners(), {});
@@ -52,6 +61,10 @@ define(function (require) {
     describe("listenerCount API", function () {
       beforeEach(function () {
         events.listeners(listeners);
+      });
+
+      afterEach(function () {
+        events.listeners({});
       });
 
       it("should return a count of listeners", function () {
@@ -79,6 +92,10 @@ define(function (require) {
         events.listeners(listeners);
       });
 
+      afterEach(function () {
+        events.listeners({});
+      });
+
       it("should return only events with listeners", function () {
         var activeEventArray = ["click", "mouseover"];
         var activeEvents = events.activeEvents();
@@ -95,7 +112,7 @@ define(function (require) {
       });
 
       afterEach(function () {
-        fixture.call(events.removeAllListeners());
+        fixture.call(events.off("mouseout"));
       });
 
       it("should add event type and listener(s)", function () {
@@ -110,16 +127,20 @@ define(function (require) {
 
     describe("off API", function () {
       beforeEach(function () {
-        events.off("brush");
+        events.listeners(listeners);
         fixture.call(events);
+
+        fixture.call(events.off("brush")); // Remove brush
       });
 
       afterEach(function () {
-        fixture.call(events.removeAllListeners());
+        Object.keys(listeners).forEach(function (event) {
+          fixture.call(events.off(event));
+        });
       });
 
       it("should remove listeners", function () {
-        chai.assert.notProperty(events.listeners(), "brush");
+        chai.assert.equal(events.listenerCount("brush"), 0);
       });
 
       it("should remove listeners from DOM", function () {
@@ -135,7 +156,9 @@ define(function (require) {
       });
 
       afterEach(function () {
-        fixture.call(events.removeAllListeners());
+        Object.keys(listeners).forEach(function (event) {
+          fixture.call(events.off(event));
+        });
       });
 
       it("should add listeners to DOM", function () {
@@ -146,10 +169,12 @@ define(function (require) {
       });
 
       it("should remove listeners from DOM", function () {
+        var element;
+
         listeners.brush = [];
         listeners.click = null;
         fixture.call(events.listeners(listeners));
-        var element = fixture.node();
+        element = fixture.node();
 
         chai.assert.notProperty(element, "__onbrush");
         chai.assert.notProperty(element, "__onclick");
