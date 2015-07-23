@@ -34,6 +34,7 @@ define(function (require) {
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();
+    var accessor = function (d) { return d; };
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var defined = function () { return true; };
@@ -75,6 +76,8 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data, index) {
+        data = accessor.call(this, data, index);
+
         var adjustedWidth = width - margin.left - margin.right;
         var adjustedHeight = height - margin.top - margin.bottom;
 
@@ -223,6 +226,12 @@ define(function (require) {
       return chart;
     };
 
+    chart.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
+      return chart;
+    };
+
     chart.x = function (_) {
       if (!arguments.length) { return xValue; }
       xValue = _;
@@ -295,9 +304,9 @@ define(function (require) {
       return chart;
     };
 
-    chart.on = addEventListener(listeners, chart);
+    chart.on = addEventListener(chart);
 
-    chart.off = removeEventListener(listeners, chart);
+    chart.off = removeEventListener(chart);
 
     return chart;
   };

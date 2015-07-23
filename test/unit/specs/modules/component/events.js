@@ -42,21 +42,6 @@ define(function (require) {
       });
     });
 
-    describe("removeAllListeners API", function () {
-      beforeEach(function () {
-        events.listeners(listeners);
-      });
-
-      afterEach(function () {
-        events.listeners({});
-      });
-
-      it("should remove all listeners", function () {
-        events.removeAllListeners();
-        chai.assert.deepEqual(events.listeners(), {});
-      });
-    });
-
     describe("listenerCount API", function () {
       beforeEach(function () {
         events.listeners(listeners);

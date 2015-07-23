@@ -32,6 +32,7 @@ define(function (require) {
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();
+    var accessor = function (d) { return d; };
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var values = function (d) { return d; };
@@ -77,6 +78,8 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data, index) {
+        data = accessor.call(this, data, index);
+
         var stack = d3.layout.stack().x(xValue).y(yValue).values(values)
           .offset(stackOpts.offset)
           .order(stackOpts.order)
@@ -211,7 +214,7 @@ define(function (require) {
       });
     }
 
-    function yStackValue (d, i) { return d.y0 + d.y; }
+    function yStackValue (d) { return d.y0 + d.y; }
 
     // Public API
     chart.margin = function (_) {
@@ -235,6 +238,12 @@ define(function (require) {
     chart.color = function (_) {
       if (!arguments.length) { return color; }
       color = _;
+      return chart;
+    };
+
+    chart.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
       return chart;
     };
 
@@ -316,9 +325,9 @@ define(function (require) {
       return chart;
     };
 
-    chart.on = addEventListener(listeners, chart);
+    chart.on = addEventListener(chart);
 
-    chart.off = removeEventListener(listeners, chart);
+    chart.off = removeEventListener(chart);
 
     return chart;
   };

@@ -12,9 +12,6 @@ define(function (require) {
     function component(selection) {
       selection.each(function (data, index) {
         var element = d3.select(this);
-        var isAllNull = Object.keys(listeners).every(function (eventType) {
-          return eventType === null;
-        });
 
         Object.keys(listeners).forEach(function (eventType) {
 
@@ -31,9 +28,6 @@ define(function (require) {
             });
           });
         });
-
-        // Reset listeners object if all values are null
-        if (isAllNull) { listeners = {}; }
       });
     }
 
@@ -66,14 +60,6 @@ define(function (require) {
       return Object.keys(listeners).filter(function (event) {
         return listeners[event].length;
       });
-    };
-
-    component.removeAllListeners = function () {
-      listeners = {};
-      //Object.keys(listeners).forEach(function (eventType) {
-      //  listeners[eventType] = null;
-      //});
-      return component;
     };
 
     return component;
