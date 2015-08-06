@@ -11,14 +11,28 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
-        var clipPath = d3.select(this)
-          .append("clipPath");
+        var clipPath = d3.select(this).selectAll("clipPath")
+          .data([data]);
+
+        // Exit
+        clipPath.exit().remove();
+
+        // Enter
+        clipPath.enter().append("clipPath");
 
         // Update
         clipPath
           .attr("id", id)
-          .attr("transform", transform)
-          .append("rect")
+          .attr("transform", transform);
+
+        var rect = clipPath.selectAll("rect")
+          .data(function (d) { return d; });
+
+        rect.exit().remove();
+
+        rect.enter().append("rect");
+
+        rect
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)
