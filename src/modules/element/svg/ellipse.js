@@ -23,7 +23,7 @@ define(function (require) {
         var ellipseEvents = events()
           .listeners(listeners);
 
-        var ellipses = d3.select(this).selectAll("ellipses")
+        var ellipses = d3.select(this).selectAll("ellipse")
           .data(values ? values : data);
 
         // Exit

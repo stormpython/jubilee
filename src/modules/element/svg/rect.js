@@ -24,7 +24,7 @@ define(function (require) {
       selection.each(function (data, index) {
         var rectEvents = events().listeners(listeners);
 
-        var bars = d3.select(this).selectAll("rects")
+        var bars = d3.select(this).selectAll("rect")
           .data(values ? values : data);
 
         bars.exit().remove();

@@ -20,7 +20,7 @@ define(function (require) {
       selection.each(function (data, index) {
         var lineEvents = events().listeners(listeners);
 
-        var lines = d3.select(this).selectAll("lines")
+        var lines = d3.select(this).selectAll("line")
           .data(values ? values : data);
 
         // Exit

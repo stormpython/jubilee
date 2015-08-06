@@ -22,7 +22,7 @@ define(function (require) {
         var circleEvents = events()
           .listeners(listeners);
 
-        var circles = d3.select(this).selectAll("circles")
+        var circles = d3.select(this).selectAll("circle")
           .data(values ? values : data);
 
         // Exit

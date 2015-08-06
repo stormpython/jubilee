@@ -19,7 +19,7 @@ define(function (require) {
       selection.each(function (data, index) {
         var imageEvents = events().listeners(listeners);
 
-        var images = d3.select(this).selectAll("images")
+        var images = d3.select(this).selectAll("image")
           .data(values ? values : data);
 
         // Exit
