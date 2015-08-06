@@ -17,7 +17,8 @@
       }
     </style>
     <div id="bar"></div>
-    <script data-main="../../src/require.config.js" src="../../../node_modules/requirejs/require.js"></script>
+    <script data-main="../../src/require.config.js"
+            src="../../../node_modules/requirejs/require.js"></script>
     <script>
       require(["../../src/index"], function (jubilee) {
         var data = {
@@ -54,13 +55,14 @@
 
         var color = d3.scale.category10(["a", "b", "c", "d", "e"]);
         var bar = jubilee.chart.bar()
+          .accessor(function (d) { return d.series; })
+          .values(function (d) { return d.values; })
           .width(760)
           .height(500)
           .color(color)
           .zeroLine({ add: false })
           .xScale({ nice: true })
           .yScale({ nice: true })
-          .values(function (d) { return d.values; })
           .rects({
             fill: function (d) { return d.label; },
             y: function (d, i, j, scale) {
@@ -81,7 +83,7 @@
           .on("brush", function (brush) { console.log(brush.extent()); });
 
         d3.select("#bar")
-          .datum(data.series)
+          .datum(data)
           .call(bar);
       });
     </script>
