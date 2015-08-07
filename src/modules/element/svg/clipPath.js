@@ -26,7 +26,7 @@ define(function (require) {
           .attr("transform", transform);
 
         var rect = clipPath.selectAll("rect")
-          .data(function (d) { return d; });
+          .data([{}]);
 
         rect.exit().remove();
 
