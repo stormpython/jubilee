@@ -73,22 +73,8 @@
           console.log(e);
         });
 
-      var selection = d3.select("#chart").datum(data.series);
-      selection.call(myChart);
-
-      var newData = {
-        series: [
-          [
-            { x: 1411761450000, y: 41, label: "band"},
-            { x: 1411761480000, y: 18, label: "band"},
-            { x: 1411761510000, y: 20, label: "band"},
-            { x: 1411761540000, y: 17, label: "band"},
-            { x: 1411761570000, y: 17, label: "band"}
-          ]
-        ]
-      };
-
-      selection.datum(newData.series);
+      var selection = d3.select("#chart");
+      selection.datum(data.series).call(myChart);
   });
   </script>
 </body>
