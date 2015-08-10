@@ -10323,14 +10323,28 @@ define('src/modules/element/svg/clipPath',['require','d3'],function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
-        var clipPath = d3.select(this)
-          .append("clipPath");
+        var clipPath = d3.select(this).selectAll("clipPath")
+          .data([data]);
+
+        // Exit
+        clipPath.exit().remove();
+
+        // Enter
+        clipPath.enter().append("clipPath");
 
         // Update
         clipPath
           .attr("id", id)
-          .attr("transform", transform)
-          .append("rect")
+          .attr("transform", transform);
+
+        var rect = clipPath.selectAll("rect")
+          .data([{}]);
+
+        rect.exit().remove();
+
+        rect.enter().append("rect");
+
+        rect
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)
@@ -10536,7 +10550,7 @@ define('src/modules/element/svg/path',['require','d3','src/modules/component/eve
       selection.each(function (data, index) {
         var pathEvents = events().listeners(listeners);
 
-        var path = d3.select(this).selectAll("paths")
+        var path = d3.select(this).selectAll("path")
           .data(values ? values.map(accessor) : accessor);
 
         path.exit().remove();
@@ -10659,7 +10673,7 @@ define('src/modules/element/svg/line',['require','d3','src/modules/component/eve
       selection.each(function (data, index) {
         var lineEvents = events().listeners(listeners);
 
-        var lines = d3.select(this).selectAll("lines")
+        var lines = d3.select(this).selectAll("line")
           .data(values ? values : data);
 
         // Exit
@@ -10867,9 +10881,9 @@ define('src/modules/helpers/options/zero_line',[],function () {
   };
 });
 define('src/modules/helpers/api/axis',[],function () {
-  var axis = {};
-
   return function (_, options) {
+    var axis = {};
+
     axis.show = typeof _.show !== "undefined" ? _.show : options.show;
     axis.gClass = typeof _.gClass !== "undefined" ? _.gClass : options.gClass;
     axis.transform = typeof _.transform !== "undefined" ? _.transform : options.transform;
@@ -11374,7 +11388,7 @@ define('src/modules/element/svg/rect',['require','d3','src/modules/component/eve
       selection.each(function (data, index) {
         var rectEvents = events().listeners(listeners);
 
-        var bars = d3.select(this).selectAll("rects")
+        var bars = d3.select(this).selectAll("rect")
           .data(values ? values : data);
 
         bars.exit().remove();
@@ -13201,7 +13215,7 @@ define('src/modules/element/svg/circle',['require','d3','src/modules/component/e
         var circleEvents = events()
           .listeners(listeners);
 
-        var circles = d3.select(this).selectAll("circles")
+        var circles = d3.select(this).selectAll("circle")
           .data(values ? values : data);
 
         // Exit
@@ -14385,7 +14399,7 @@ define('src/modules/element/svg/image',['require','d3','src/modules/component/ev
       selection.each(function (data, index) {
         var imageEvents = events().listeners(listeners);
 
-        var images = d3.select(this).selectAll("images")
+        var images = d3.select(this).selectAll("image")
           .data(values ? values : data);
 
         // Exit
@@ -14706,7 +14720,7 @@ define('src/modules/element/svg/ellipse',['require','d3','src/modules/component/
         var ellipseEvents = events()
           .listeners(listeners);
 
-        var ellipses = d3.select(this).selectAll("ellipses")
+        var ellipses = d3.select(this).selectAll("ellipse")
           .data(values ? values : data);
 
         // Exit
