@@ -70,8 +70,8 @@ define(function (require) {
       },
       rx: 0,
       ry: 0,
-      fill: function (d, i) { return color(i); },
-      stroke: function (d, i) { return color(i); },
+      fill: function (d, i) { return i; },
+      stroke: function (d, i) { return i; },
       strokeWidth: 0,
       opacity: 1
     };
