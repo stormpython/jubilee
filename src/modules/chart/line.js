@@ -39,6 +39,7 @@ define(function (require) {
     var yValue = function (d) { return d.y; };
     var defined = function () { return true; };
     var interpolate = "linear";
+    var tension = 0.7;
 
     // Scale options
     var xScaleOpts = deepCopy(scaleOptions, {});
@@ -59,8 +60,7 @@ define(function (require) {
       lineClass: "line",
       stroke: function (d, i, j) { return i; },
       strokeWidth: 3,
-      opacity: 1,
-      tension:  0.7
+      opacity: 1
     };
 
     // Circle Options
@@ -120,13 +120,14 @@ define(function (require) {
         var Y = scaleValue(yScale, yValue);
         var line = d3.svg.line().x(X).y(Y)
           .interpolate(interpolate)
-          .tension(lines.tension)
+          .tension(tension)
           .defined(defined);
 
         var linePath = path()
           .pathGenerator(line)
           .cssClass(lines.lineClass)
           .stroke(function (d, i, j) {
+            debugger;
             return color(lines.stroke.call(null, d, i, j));
           })
           .strokeWidth(lines.strokeWidth)
@@ -257,6 +258,12 @@ define(function (require) {
     chart.interpolate = function (_) {
       if (!arguments.length) { return interpolate; }
       interpolate = _;
+      return chart;
+    };
+
+    chart.tension = function (_) {
+      if (!arguments.length) { return tension; }
+      tension = _;
       return chart;
     };
 

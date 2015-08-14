@@ -11595,8 +11595,8 @@ define('src/modules/chart/bar',['require','d3','src/modules/helpers/add_event_li
       },
       rx: 0,
       ry: 0,
-      fill: function (d, i) { return color(i); },
-      stroke: function (d, i) { return color(i); },
+      fill: function (d, i) { return i; },
+      stroke: function (d, i) { return i; },
       strokeWidth: 0,
       opacity: 1
     };
@@ -13369,6 +13369,7 @@ define('src/modules/chart/line',['require','d3','src/modules/helpers/add_event_l
     var yValue = function (d) { return d.y; };
     var defined = function () { return true; };
     var interpolate = "linear";
+    var tension = 0.7;
 
     // Scale options
     var xScaleOpts = deepCopy(scaleOptions, {});
@@ -13387,18 +13388,17 @@ define('src/modules/chart/line',['require','d3','src/modules/helpers/add_event_l
     var lines = {
       groupClass: "paths",
       lineClass: "line",
-      stroke: function (d, i) { return color(i); },
+      stroke: function (d, i, j) { return i; },
       strokeWidth: 3,
-      opacity: 1,
-      tension:  0.7
+      opacity: 1
     };
 
     // Circle Options
     var circles = {
-      show: true,
+      show: false,
       groupClass: "circle layer",
       circleClass: "circle",
-      fill: function (d, i, j) { return color(j); },
+      fill: function (d, i, j) { return j; },
       stroke: null,
       radius: 5,
       strokeWidth: 3
@@ -13450,13 +13450,16 @@ define('src/modules/chart/line',['require','d3','src/modules/helpers/add_event_l
         var Y = scaleValue(yScale, yValue);
         var line = d3.svg.line().x(X).y(Y)
           .interpolate(interpolate)
-          .tension(lines.tension)
+          .tension(tension)
           .defined(defined);
 
         var linePath = path()
           .pathGenerator(line)
           .cssClass(lines.lineClass)
-          .stroke(lines.stroke)
+          .stroke(function (d, i, j) {
+            debugger;
+            return color(lines.stroke.call(null, d, i, j));
+          })
           .strokeWidth(lines.strokeWidth)
           .opacity(lines.opacity)
           .listeners(listeners);
@@ -13513,7 +13516,9 @@ define('src/modules/chart/line',['require','d3','src/modules/helpers/add_event_l
             .color(color)
             .radius(circles.radius)
             .cssClass(circles.circleClass)
-            .fill(circles.fill)
+            .fill(function (d, i, j) {
+              return circles.fill.call(null, d, i, j);
+            })
             .stroke(circles.stroke ? circles.stroke : circles.fill)
             .strokeWidth(circles.strokeWidth)
             .listeners(listeners);
@@ -13583,6 +13588,12 @@ define('src/modules/chart/line',['require','d3','src/modules/helpers/add_event_l
     chart.interpolate = function (_) {
       if (!arguments.length) { return interpolate; }
       interpolate = _;
+      return chart;
+    };
+
+    chart.tension = function (_) {
+      if (!arguments.length) { return tension; }
+      tension = _;
       return chart;
     };
 
