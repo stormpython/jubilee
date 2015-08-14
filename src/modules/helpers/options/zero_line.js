@@ -1,6 +1,6 @@
 define(function () {
   return {
-    add: true,
+    add: false,
     lineClass: "zero-line",
     stroke: "black",
     strokeWidth: 1,

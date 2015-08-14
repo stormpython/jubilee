@@ -10673,7 +10673,7 @@ define('src/modules/element/svg/line',['require','d3','src/modules/component/eve
       selection.each(function (data, index) {
         var lineEvents = events().listeners(listeners);
 
-        var lines = d3.select(this).selectAll("line")
+        var lines = d3.select(this).selectAll("lines")
           .data(values ? values : data);
 
         // Exit
@@ -10873,7 +10873,7 @@ define('src/modules/helpers/options/y_axis',[],function () {
 });
 define('src/modules/helpers/options/zero_line',[],function () {
   return {
-    add: true,
+    add: false,
     lineClass: "zero-line",
     stroke: "black",
     strokeWidth: 1,
