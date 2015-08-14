@@ -11590,8 +11590,8 @@ define('src/modules/chart/bar',['require','d3','src/modules/helpers/add_event_li
       width: function (d, i, j, scale, data) {
         return scale.range()[1] / data.length;
       },
-      height: function (d, i, j, scale) {
-        return scale.range()[0] - scale(yValue.call(null, d, i));
+      height: function (d, i, j, scale, data, accessor) {
+        return scale.range()[0] - scale(accessor.call(null, d, i));
       },
       rx: 0,
       ry: 0,
@@ -11679,13 +11679,13 @@ define('src/modules/chart/bar',['require','d3','src/modules/helpers/add_event_li
             return rects.x.call(null, d, i, j, xScale, xValue);
           })
           .width(function (d, i, j) {
-            return rects.width.call(null, d, i, j, xScale, data);
+            return rects.width.call(null, d, i, j, xScale, data, xValue);
           })
           .y(function (d, i, j) {
             return rects.y.call(null, d, i, j, yScale, yValue);
           })
           .height(function (d, i, j) {
-            return rects.height.call(null, d, i, j, yScale, data);
+            return rects.height.call(null, d, i, j, yScale, data, yValue);
           })
           .listeners(listeners);
 
