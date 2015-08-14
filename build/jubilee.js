@@ -13457,7 +13457,6 @@ define('src/modules/chart/line',['require','d3','src/modules/helpers/add_event_l
           .pathGenerator(line)
           .cssClass(lines.lineClass)
           .stroke(function (d, i, j) {
-            debugger;
             return color(lines.stroke.call(null, d, i, j));
           })
           .strokeWidth(lines.strokeWidth)
