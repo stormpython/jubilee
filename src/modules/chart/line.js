@@ -38,6 +38,7 @@ define(function (require) {
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var defined = function () { return true; };
+    var interpolate = "linear";
 
     // Scale options
     var xScaleOpts = deepCopy(scaleOptions, {});
@@ -59,7 +60,6 @@ define(function (require) {
       stroke: function (d, i) { return color(i); },
       strokeWidth: 3,
       opacity: 1,
-      interpolate: "linear",
       tension:  0.7
     };
 
@@ -119,7 +119,7 @@ define(function (require) {
         var X = scaleValue(xScale, xValue);
         var Y = scaleValue(yScale, yValue);
         var line = d3.svg.line().x(X).y(Y)
-          .interpolate(lines.interpolate)
+          .interpolate(interpolate)
           .tension(lines.tension)
           .defined(defined);
 
@@ -247,6 +247,12 @@ define(function (require) {
     chart.defined = function (_) {
       if (!arguments.length) { return defined; }
       defined = _;
+      return chart;
+    };
+
+    chart.interpolate = function (_) {
+      if (!arguments.length) { return interpolate; }
+      interpolate = _;
       return chart;
     };
 
