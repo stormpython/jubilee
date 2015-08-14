@@ -56,11 +56,11 @@ define(function (require) {
     var rects = {
       groupClass: "rects",
       cssClass: "bars",
-      x: function (d, i, j, scale) {
-        return scale(xValue.call(null, d, i));
+      x: function (d, i, j, scale, accessor) {
+        return scale(accessor.call(null, d, i));
       },
-      y: function (d, i, j, scale) {
-        return scale(yValue.call(null, d, i));
+      y: function (d, i, j, scale, accessor) {
+        return scale(accessor.call(null, d, i));
       },
       width: function (d, i, j, scale, data) {
         return scale.range()[1] / data.length;
@@ -151,13 +151,13 @@ define(function (require) {
           .rx(rects.rx)
           .ry(rects.ry)
           .x(function (d, i, j) {
-            return rects.x.call(null, d, i, j, xScale, data);
+            return rects.x.call(null, d, i, j, xScale, xValue);
           })
           .width(function (d, i, j) {
             return rects.width.call(null, d, i, j, xScale, data);
           })
           .y(function (d, i, j) {
-            return rects.y.call(null, d, i, j, yScale, data);
+            return rects.y.call(null, d, i, j, yScale, yValue);
           })
           .height(function (d, i, j) {
             return rects.height.call(null, d, i, j, yScale, data);
