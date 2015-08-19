@@ -1,27 +1,24 @@
 define(function (require) {
   var d3 = require("d3");
-  var events = require("src/modules/component/events");
 
   return function line() {
-    var x1 = null;
-    var x2 = null;
-    var y1 = null;
-    var y2 = null;
-    var color = d3.scale.category10();
-    var values = null;
+    var accessor = function (d) { return d; };
+    var x1 = 0;
+    var x2 = 0;
+    var y1 = 0;
+    var y2 = 0;
 
     var cssClass = "line";
-    var stroke = null;
+    var stroke = colorFill;
     var strokeWidth = 2;
-    var opacity = null;
-    var listeners = {};
+    var opacity = 1;
 
     function element(selection) {
       selection.each(function (data, index) {
-        var lineEvents = events().listeners(listeners);
+        data = accessor.call(this, data, index);
 
         var lines = d3.select(this).selectAll("lines")
-          .data(values ? values : data);
+          .data(data);
 
         // Exit
         lines.exit().remove();
@@ -36,22 +33,20 @@ define(function (require) {
           .attr("x2", x2)
           .attr("y1", y1)
           .attr("y2", y2)
-          .attr("stroke", stroke ? stroke : colorFill)
+          .attr("stroke", stroke)
           .attr("stroke-width", strokeWidth)
           .style("opacity", opacity);
-
-        lines.call(lineEvents);
       });
     }
 
     function colorFill(d, i) {
-      return color(i);
+      return d3.scale.category10()(i);
     }
 
     // Public API
-    element.data = function (_) {
-      if (!arguments.length) { return values; }
-      values = _;
+    element.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
       return element;
     };
     
@@ -79,13 +74,7 @@ define(function (require) {
       return element;
     };
 
-    element.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
-      return element;
-    };
-
-    element.cssClass = function (_) {
+    element.class = function (_) {
       if (!arguments.length) { return cssClass; }
       cssClass = _;
       return element;
@@ -106,12 +95,6 @@ define(function (require) {
     element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return element;
-    };
-
-    element.listeners = function (_) {
-      if (!arguments.length) { return listeners; }
-      listeners = _;
       return element;
     };
 
