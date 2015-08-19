@@ -92,7 +92,7 @@ define(function (require) {
 
     element.stroke = function (_) {
       if (!arguments.length) { return stroke; }
-      stroke = _;
+      stroke = d3.functor(_);
       return element;
     };
 

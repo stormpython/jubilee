@@ -76,6 +76,7 @@ define(function (require) {
 
     function chart(selection) {
       selection.each(function (data, index) {
+        // Allows chart to accept an array or object
         data = accessor.call(this, data, index);
 
         var adjustedWidth = width - margin.left - margin.right;
