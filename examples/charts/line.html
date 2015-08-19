@@ -68,9 +68,10 @@
         .circles({
           show: true,
           fill: function (d) { return color(d.label); },
+          opacity: 0
         })
-        .on("click", function (e) {
-          console.log(e);
+        .on("mouseover", function (e, d, i) {
+          console.log(e, d, i);
         });
 
       var selection = d3.select("#chart");

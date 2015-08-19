@@ -51,7 +51,7 @@
 
         var width = 700;
         var height = 400;
-        var clickFunction = function (e) { console.log(e); };
+        var clickFunction = function (e, d, i) { console.log(e, d, i); };
         var brushFunction = function (brush) { console.log(brush.extent()); };
 
         // D3 selection

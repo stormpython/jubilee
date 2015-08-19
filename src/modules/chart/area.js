@@ -1,5 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
+  var events = require("src/modules/component/events");
 
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var axis = require("src/modules/component/axis");
@@ -93,6 +94,7 @@ define(function (require) {
           .offset(stackOpts.offset)
           .order(stackOpts.order)
           .out(stackOpts.out);
+
         var layers = stack(data);
 
         // Scales
@@ -115,12 +117,16 @@ define(function (require) {
         if (xScaleOpts.nice) { xScale.nice(); }
         if (yScaleOpts.nice) { yScale.nice(); }
 
+        var svgEvents = events().listeners(listeners).accessor(xValue);
+
         // Canvas
         var svg = d3.select(this).selectAll("svg")
           .data([layers])
           .enter().append("svg")
           .attr("width", width)
-          .attr("height", height);
+          .attr("height", height)
+          .call(svgEvents);
+
         var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
@@ -136,20 +142,22 @@ define(function (require) {
 
         // Add clippath and areas
         var X = scaleValue(xScale, xValue);
+
         var clippath = clip()
           .width(clipPath.width || adjustedWidth)
           .height(clipPath.height || adjustedHeight);
+
         var area = d3.svg.area().x(X).y0(Y0).y1(Y1)
           .interpolate(interpolate)
           .defined(defined);
+
         var areaPath = path()
           .pathGenerator(area)
-          .cssClass(areas.areaClass)
+          .class(areas.areaClass)
           .stroke(areas.stroke)
           .strokeWidth(areas.strokeWidth)
           .fill(areas.fill)
-          .opacity(areas.opacity)
-          .listeners(listeners);
+          .opacity(areas.opacity);
 
         g.call(clippath)
           .append("g")
@@ -162,9 +170,10 @@ define(function (require) {
           var line = d3.svg.line().x(X).y(Y1)
             .interpolate(interpolate)
             .defined(defined);
+
           var linePath = path()
             .pathGenerator(line)
-            .cssClass(lines.lineClass)
+            .class(lines.lineClass)
             .stroke(lines.stroke)
             .strokeWidth(lines.strokeWidth)
             .opacity(lines.opacity);
@@ -175,7 +184,7 @@ define(function (require) {
         // Zero-line
         if (zeroLine.add) {
           var zLine = zeroAxisLine()
-            .cssClass(zeroLine.lineClass)
+            .class(zeroLine.lineClass)
             .x1(function () { return xScale.range()[0]; })
             .x2(function () { return xScale.range()[1]; })
             .y1(function () { return yScale(0); })
@@ -191,7 +200,7 @@ define(function (require) {
         if (axisX.show) {
           var xAxis = axis()
             .scale(xScale)
-            .gClass(axisX.gClass)
+            .class(axisX.gClass)
             .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
             .tick(axisX.tick)
             .title(axisX.title);
@@ -204,7 +213,7 @@ define(function (require) {
           var yAxis = axis()
             .scale(yScale)
             .orient("left")
-            .gClass(axisY.gClass)
+            .class(axisY.gClass)
             .transform(axisY.transform || "translate(-1,0)")
             .tick(axisY.tick)
             .title(axisY.title);
