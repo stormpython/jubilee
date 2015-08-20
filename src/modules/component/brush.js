@@ -44,14 +44,12 @@ define(function (require) {
             });
           });
 
-        var svg = d3.select(this);
-
         if (xScale) { brush.x(xScale); }
         if (yScale) { brush.y(yScale); }
         if (extent) { brush.extent(extent); }
         if (clamp) { brush.clamp(clamp); }
 
-        var brushG = svg.append("g")
+        var brushG = d3.select(this).append("g")
           .attr("class", cssClass)
           .attr("opacity", opacity)
           .call(brush)
@@ -90,7 +88,7 @@ define(function (require) {
       return component;
     };
 
-    component.cssClass = function (_) {
+    component.class = function (_) {
       if (!arguments.length) { return cssClass; }
       cssClass = _;
       return component;
