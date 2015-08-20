@@ -1,30 +1,26 @@
 define(function (require) {
   var d3 = require("d3");
-  var events = require("src/modules/component/events");
 
   return function ellipse() {
+    var accessor = function (d) { return d; };
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
     var rx = 20;
     var ry = 20;
-    var color = d3.scale.category20c();
-    var values = null;
 
     // Options
     var cssClass = "ellipses";
-    var fill = null;
-    var stroke = null;
+    var fill = colorFill;
+    var stroke = colorFill;
     var strokeWidth = 0;
     var opacity = null;
-    var listeners = {};
 
     function element(selection) {
       selection.each(function (data, index) {
-        var ellipseEvents = events()
-          .listeners(listeners);
+        data = accessor.call(this, data, index);
 
         var ellipses = d3.select(this).selectAll("ellipse")
-          .data(values ? values : data);
+          .data(data);
 
         // Exit
         ellipses.exit().remove();
@@ -35,27 +31,25 @@ define(function (require) {
         // Update
         ellipses
           .attr("class", cssClass)
-          .attr("fill", fill ? fill : colorFill)
-          .attr("stroke", stroke ? stroke : colorFill)
+          .attr("fill", fill)
+          .attr("stroke", stroke)
           .attr("stroke-width", strokeWidth)
           .attr("cx", cx)
           .attr("cy", cy)
           .attr("rx", rx)
           .attr("ry", ry)
           .style("opacity", opacity);
-
-        ellipses.call(ellipseEvents);
       });
     }
 
     function colorFill(d, i) {
-      return color(i);
+      return d3.scale.category10()(i);
     }
 
     // Public API
-    element.data = function (_) {
-      if (!arguments.length) { return values; }
-      values = _;
+    element.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
       return element;
     };
 
@@ -83,15 +77,9 @@ define(function (require) {
       return element;
     };
 
-    element.cssClass = function (_) {
+    element.class = function (_) {
       if (!arguments.length) { return cssClass; }
       cssClass = _;
-      return element;
-    };
-
-    element.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
       return element;
     };
 
@@ -116,12 +104,6 @@ define(function (require) {
     element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return element;
-    };
-
-    element.listeners = function (_) {
-      if (!arguments.length) { return listeners; }
-      listeners = _;
       return element;
     };
 

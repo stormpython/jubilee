@@ -7,6 +7,7 @@ define(function () {
     circles.fill = typeof _.fill !== "undefined" ? _.fill : circles.fill;
     circles.stroke = typeof _.stroke !== "undefined" ? _.stroke : circles.stroke;
     circles.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : circles.strokeWidth;
+    circles.opacity = typeof _.opacity !== "undefined" ? _.opacity : circles.opacity;
 
     return circles;
   };

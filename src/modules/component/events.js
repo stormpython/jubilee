@@ -3,63 +3,52 @@
  */
 define(function (require) {
   var d3 = require("d3");
-  var addEventListener = require("src/modules/helpers/add_event_listener");
-  var removeEventListener = require("src/modules/helpers/remove_event_listener");
 
   return function events() {
+    var accessor = function (d) { return d.x; };
     var listeners = {};
 
     function component(selection) {
       selection.each(function (data, index) {
         var element = d3.select(this);
+        var bisect = d3.bisector(accessor).left;
 
-        Object.keys(listeners).forEach(function (eventType) {
+        d3.entries(listeners).forEach(function (e, i) {
 
           // Stop listening for event types that have an empty listeners
           // array or are set to null
-          if (!listeners[eventType] || !listeners[eventType].length) {
-            return element.on(eventType, null);
+          if (!e.value || !e.value.length) {
+            return element.on(e.key, null);
           }
 
-          element.on(eventType, function (d, i) {
+          element.on(e.key, function (d, i) {
             d3.event.stopPropagation(); // => event.stopPropagation()
-            listeners[eventType].forEach(function (listener) {
-              listener.call(this, d3.event, d, i);
+
+            e.value.forEach(function (listener) {
+              // References the data point to calculate the correct index value
+              var target = d3.select(d3.event.target);
+              var parentDatum = d3.select(target.node().parentNode).datum();
+              var datum = target.datum();
+              var index = bisect(parentDatum, accessor.call(null, datum));
+
+              listener.call(this, d3.event, datum, index);
             });
           });
         });
       });
     }
 
-    function sumListeners(listeners) {
-      return Object.keys(listeners).map(function (event) {
-        return listeners[event].length;
-      }).reduce(function (a, b) {
-        return a + b;
-      }, 0);
-    }
-
     // Public API
+    component.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
+      return component;
+    };
+
     component.listeners = function (_) {
       if (!arguments.length) { return listeners; }
       listeners = _;
       return component;
-    };
-
-    component.listenerCount = function (_) {
-      if (!arguments.length) { return sumListeners(listeners); }
-      if (!listeners[_]) { return 0; }
-      return listeners[_].length;
-    };
-
-    component.on = addEventListener(component);
-
-    component.off = removeEventListener(component);
-
-    component.activeEvents = function () {
-      return Object.keys(listeners).filter(function (event) {
-        return listeners[event].length;
-      });
     };
 
     return component;

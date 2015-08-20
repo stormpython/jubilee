@@ -1,5 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
+  var events = require("src/modules/component/events");
 
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var axis = require("src/modules/component/axis");
@@ -71,7 +72,8 @@ define(function (require) {
       fill: function (d, i, j) { return j; },
       stroke: null,
       radius: 5,
-      strokeWidth: 3
+      strokeWidth: 3,
+      opacity: 1
     };
 
     function chart(selection) {
@@ -98,6 +100,8 @@ define(function (require) {
         if (xScaleOpts.nice) { xScale.nice(); }
         if (yScaleOpts.nice) { yScale.nice(); }
 
+        var svgEvents = events().listeners(listeners).accessor(xValue);
+
         var svg = d3.select(this).selectAll("svg")
           .data([data])
           .enter().append("svg")
@@ -105,7 +109,8 @@ define(function (require) {
           .attr("height", height);
 
         var g = svg.append("g")
-          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")")
+          .call(svgEvents);
 
         // Brush
         if (listeners.brush && listeners.brush.length) {
@@ -126,18 +131,17 @@ define(function (require) {
 
         var linePath = path()
           .pathGenerator(line)
-          .cssClass(lines.lineClass)
+          .class(lines.lineClass)
           .stroke(function (d, i, j) {
             return color(lines.stroke.call(null, d, i, j));
           })
           .strokeWidth(lines.strokeWidth)
-          .opacity(lines.opacity)
-          .listeners(listeners);
+          .opacity(lines.opacity);
 
         if (axisX.show) {
           var xAxis = axis()
             .scale(xScale)
-            .gClass(axisX.gClass)
+            .class(axisX.gClass)
             .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
             .tick(axisX.tick)
             .title(axisX.title);
@@ -149,7 +153,7 @@ define(function (require) {
           var yAxis = axis()
             .scale(yScale)
             .orient("left")
-            .gClass(axisY.gClass)
+            .class(axisY.gClass)
             .transform(axisY.transform || "translate(-1,0)")
             .tick(axisY.tick)
             .title(axisY.title);
@@ -163,7 +167,7 @@ define(function (require) {
 
         if (zeroLine.add) {
           var zLine = zeroAxisLine()
-            .cssClass(zeroLine.lineClass)
+            .class(zeroLine.lineClass)
             .x1(function () { return xScale.range()[0]; })
             .x2(function () { return xScale.range()[1]; })
             .y1(function () { return yScale(0); })
@@ -183,15 +187,14 @@ define(function (require) {
           var points = circle()
             .cx(X)
             .cy(Y)
-            .color(color)
             .radius(circles.radius)
-            .cssClass(circles.circleClass)
+            .class(circles.circleClass)
             .fill(function (d, i, j) {
               return circles.fill.call(null, d, i, j);
             })
             .stroke(circles.stroke ? circles.stroke : circles.fill)
             .strokeWidth(circles.strokeWidth)
-            .listeners(listeners);
+            .opacity(circles.opacity);
 
           g.call(clippath)
             .append("g")

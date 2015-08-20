@@ -105,7 +105,7 @@ define(function (require) {
       return component;
     };
 
-    component.gClass = function (_) {
+    component.class = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
       return component;

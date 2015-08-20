@@ -1,11 +1,10 @@
 define(function (require) {
   var d3 = require("d3");
-  var events = require("src/modules/component/events");
 
   return function image() {
+    var accessor = function (d) { return d; };
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
-    var values = null;
     var width = 10;
     var height = 10;
     var xlink = null;
@@ -13,14 +12,13 @@ define(function (require) {
 
     // Options
     var cssClass = "image";
-    var listeners = {};
 
     function element(selection) {
       selection.each(function (data, index) {
-        var imageEvents = events().listeners(listeners);
+        data = accessor.call(this, data, index);
 
         var images = d3.select(this).selectAll("image")
-          .data(values ? values : data);
+          .data(data);
 
         // Exit
         images.exit().remove();
@@ -37,15 +35,13 @@ define(function (require) {
           .attr("height", height)
           .attr("xlink:href", xlink)
           .attr("preserveAspectRatio", preserveAspectRatio);
-
-        images.call(imageEvents);
       });
     }
 
     // Public API
-    element.data = function (_) {
-      if (!arguments.length) { return values; }
-      values = _;
+    element.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
       return element;
     };
     
@@ -85,15 +81,9 @@ define(function (require) {
       return element;
     };
 
-    element.cssClass= function (_) {
+    element.class = function (_) {
       if (!arguments.length) { return cssClass; }
       cssClass = _;
-      return element;
-    };
-
-    element.listeners = function (_) {
-      if (!arguments.length) { return listeners; }
-      listeners = _;
       return element;
     };
 

@@ -1,31 +1,28 @@
 define(function (require) {
   var d3 = require("d3");
-  var events = require("src/modules/component/events");
 
   return function rect() {
+    var accessor = function (d) { return d; };
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var rx = 0;
     var ry = 0;
     var width = null;
     var height = null;
-    var values = null;
 
     // Options
-    var color = d3.scale.category10();
     var cssClass = "bar";
-    var fill = null;
-    var stroke = null;
+    var fill = colorFill;
+    var stroke = colorFill;
     var strokeWidth = 0;
-    var opacity = null;
-    var listeners = {};
+    var opacity = 1;
 
     function element(selection) {
       selection.each(function (data, index) {
-        var rectEvents = events().listeners(listeners);
+        data = accessor.call(this, data, index);
 
         var bars = d3.select(this).selectAll("rect")
-          .data(values ? values : data);
+          .data(data);
 
         bars.exit().remove();
 
@@ -33,8 +30,8 @@ define(function (require) {
 
         bars
           .attr("class", cssClass)
-          .attr("fill", fill ? fill : colorFill)
-          .attr("stroke", stroke ? stroke : colorFill)
+          .attr("fill", fill)
+          .attr("stroke", stroke)
           .attr("stroke-width", strokeWidth)
           .attr("x", x)
           .attr("y", y)
@@ -43,19 +40,17 @@ define(function (require) {
           .attr("width", width)
           .attr("height", height)
           .style("opacity", opacity);
-
-        bars.call(rectEvents);
       });
     }
 
     function colorFill(d, i) {
-      return color(i);
+      return d3.scale.category10()(i);
     }
 
     // Public API
-    element.data = function (_) {
-      if (!arguments.length) { return values; }
-      values = _;
+    element.accessor = function (_) {
+      if (!arguments.length) { return accessor; }
+      accessor = _;
       return element;
     };
 
@@ -95,7 +90,7 @@ define(function (require) {
       return element;
     };
 
-    element.cssClass= function (_) {
+    element.class= function (_) {
       if (!arguments.length) { return cssClass; }
       cssClass = _;
       return element;
@@ -113,12 +108,6 @@ define(function (require) {
       return element;
     };
 
-    element.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
-      return element;
-    };
-
     element.stroke = function (_) {
       if (!arguments.length) { return stroke; }
       stroke = _;
@@ -128,12 +117,6 @@ define(function (require) {
     element.strokeWidth = function (_) {
       if (!arguments.length) { return strokeWidth; }
       strokeWidth = _;
-      return element;
-    };
-
-    element.listeners = function (_) {
-      if (!arguments.length) { return listeners; }
-      listeners = _;
       return element;
     };
 
