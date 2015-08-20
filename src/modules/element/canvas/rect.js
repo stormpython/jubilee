@@ -89,7 +89,7 @@ define(function (require) {
     }
 
     // Public API
-    element.cssClass = function (_) {
+    element.class = function (_) {
       if (!arguments.length) { return cssClass; }
       cssClass = _;
       return element;
