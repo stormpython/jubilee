@@ -26,7 +26,7 @@ define(function (require) {
     var gClass = "axis";
 
     var title = {
-      titleClass: "axis title",
+      class: "axis title",
       x: 6,
       y: 6,
       dx: "",
@@ -63,7 +63,7 @@ define(function (require) {
           .style("text-anchor", tick.text.anchor);
 
         g.append("text")
-          .attr("class", title.titleClass)
+          .attr("class", title.class)
           .attr("x", title.x)
           .attr("y", title.y)
           .attr("dx", title.dx)
@@ -119,7 +119,7 @@ define(function (require) {
 
     component.title = function (_) {
       if (!arguments.length) { return title; }
-      title.titleClass = typeof _.titleClass !== "undefined" ? _.titleClass : title.titleClass;
+      title.class = typeof _.class !== "undefined" ? _.class : title.class;
       title.x = typeof _.x !== "undefined" ? _.x : title.x;
       title.y = typeof _.y !== "undefined" ? _.y : title.y;
       title.dx = typeof _.dx !== "undefined" ? _.dx : title.dx;
