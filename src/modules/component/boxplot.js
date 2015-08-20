@@ -10,7 +10,7 @@ define(function (require) {
       width: 20,
       height: null,
       y: null,
-      boxClass: "range",
+      class: "range",
       fill: "white",
       stroke: "black",
       strokeWidth: "2px"
@@ -22,7 +22,7 @@ define(function (require) {
       x2: 0,
       y1: null,
       y2: null,
-      rangeClass: "range",
+      class: "range",
       stroke: "black",
       strokeWidth: "4px"
     };
@@ -31,7 +31,7 @@ define(function (require) {
     var max = {
       y1: null,
       y2: null,
-      maxClass: "max",
+      class: "max",
       stroke: "black",
       strokeWidth: "4px"
     };
@@ -40,7 +40,7 @@ define(function (require) {
     var min = {
       y1: null,
       y2: null,
-      minClass: "min",
+      class: "min",
       stroke: "black",
       strokeWidth: "4px"
     };
@@ -49,7 +49,7 @@ define(function (require) {
     var median = {
       y1: 0,
       y2: 0,
-      medianClass: "median",
+      class: "median",
       stroke: "darkgrey",
       strokeWidth: "4px"
     };
@@ -74,7 +74,7 @@ define(function (require) {
             var g = d3.select(this);
 
             g.append("line")
-              .attr("class", range.rangeClass)
+              .attr("class", range.class)
               .attr("x1", range.x1)
               .attr("x2", range.x2)
               .attr("y1", range.y1)
@@ -83,7 +83,7 @@ define(function (require) {
               .style("stroke-boxWidth", range.strokeWidth);
 
             g.append("line")
-              .attr("class", max.maxClass)
+              .attr("class", max.class)
               .attr("x1", maxX1)
               .attr("x2", maxX2)
               .attr("y1", max.y1)
@@ -92,7 +92,7 @@ define(function (require) {
               .style("stroke-boxWidth", max.strokeWidth);
 
             g.append("line")
-              .attr("class", min.minClass)
+              .attr("class", min.class)
               .attr("x1", minX1)
               .attr("x2", minX2)
               .attr("y1", min.y1)
@@ -101,7 +101,7 @@ define(function (require) {
               .style("stroke-boxWidth", min.strokeWidth);
 
             g.append("rect")
-              .attr("class", box.boxClass)
+              .attr("class", box.class)
               .attr("x", boxX)
               .attr("y", box.y)
               .attr("width", box.width)
@@ -111,7 +111,7 @@ define(function (require) {
               .style("stroke-boxWidth", box.strokeWidth);
 
             g.append("line")
-              .attr("class", median.medianClass)
+              .attr("class", median.class)
               .attr("x1", medianX1)
               .attr("x2", medianX2)
               .attr("y1", median.y1)
@@ -139,7 +139,7 @@ define(function (require) {
       box.width = typeof _.width !== "undefined" ? _.width : box.width;
       box.height = typeof _.height !== "undefined" ? _.height : box.height;
       box.y = typeof _.y !== "undefined" ? _.y : box.y;
-      box.boxClass = typeof _.boxClass !== "undefined" ? _.boxClass : box.boxClass;
+      box.class = typeof _.class !== "undefined" ? _.class : box.class;
       box.fill = typeof _.fill !== "undefined" ? _.fill : box.fill;
       box.stroke = typeof _.stroke !== "undefined" ? _.stroke : box.stroke;
       box.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : box.strokeWidth;
@@ -152,7 +152,7 @@ define(function (require) {
       range.x2 = typeof _.x2!== "undefined" ? _.x2 : range.x2;
       range.y1 = typeof _.y1 !== "undefined" ? _.y1 : range.y1;
       range.y2 = typeof _.y2 !== "undefined" ? _.y2 : range.y2;
-      range.rangeClass = typeof _.rangeClass !== "undefined" ? _.rangeClass : range.rangeClass;
+      range.class = typeof _.class !== "undefined" ? _.class : range.class;
       range.stroke = typeof _.stroke !== "undefined" ? _.stroke : range.stroke;
       range.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : range.strokeWidth;
       return component;
@@ -162,7 +162,7 @@ define(function (require) {
       if (!arguments.length) { return max; }
       max.y1 = typeof _.y1 !== "undefined" ? _.y1 : max.y1;
       max.y2 = typeof _.y2 !== "undefined" ? _.y2 : max.y2;
-      max.maxClass = typeof _.maxClass !== "undefined" ? _.maxClass : max.maxClass;
+      max.class = typeof _.class !== "undefined" ? _.class : max.class;
       max.stroke = typeof _.stroke !== "undefined" ? _.stroke : max.stroke;
       max.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : max.strokeWidth;
       return component;
@@ -172,7 +172,7 @@ define(function (require) {
       if (!arguments.length) { return min; }
       min.y1 = typeof _.y1 !== "undefined" ? _.y1 : min.y1;
       min.y2 = typeof _.y2 !== "undefined" ? _.y2 : min.y2;
-      min.minClass = typeof _.minClass !== "undefined" ? _.minClass : min.minClass;
+      min.class = typeof _.class !== "undefined" ? _.class : min.class;
       min.stroke = typeof _.stroke !== "undefined" ? _.stroke : min.stroke;
       min.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : min.strokeWidth;
       return component;
@@ -182,7 +182,7 @@ define(function (require) {
       if (!arguments.length) { return median; }
       median.y1 = typeof _.y1 !== "undefined" ? _.y1 : median.y1;
       median.y2 = typeof _.y2 !== "undefined" ? _.y2 : median.y2;
-      median.medianClass = typeof _.medianClass !== "undefined" ? _.medianClass : median.medianClass;
+      median.class = typeof _.class !== "undefined" ? _.class : median.class;
       median.stroke = typeof _.stroke !== "undefined" ? _.stroke : median.stroke;
       median.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : median.strokeWidth;
       return component;
