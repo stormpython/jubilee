@@ -71,7 +71,24 @@
           opacity: 0
         })
         .on("mouseover", function (e, d, i) {
-          console.log(e, d, i);
+          var val = d3.select(e.target).style("opacity");
+          var pdata = d3.select(e.target.farthestViewportElement).datum();
+          var rdata = d3.merge(pdata).filter(function (a, i) {
+            return a.x === d.x;
+          });
+
+          if (!+val) {
+            d3.selectAll("circle").filter(function (a) {
+              return a.x === d.x;
+            }).style("opacity", 1);
+          }
+          if (d3.select(e.target).attr("class") === "circle") {
+            console.log(rdata);
+            console.log(e, d, i);
+          }
+        })
+        .on("mouseout", function (e, d, i) {
+          d3.selectAll("circle").style("opacity", 0);
         });
 
       var selection = d3.select("#chart");

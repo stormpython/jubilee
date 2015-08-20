@@ -23,11 +23,12 @@ define(function (require) {
 
           element.on(e.key, function (d, i) {
             d3.event.stopPropagation(); // => event.stopPropagation()
+
             e.value.forEach(function (listener) {
+              // References the data point to calculate the correct index value
               var target = d3.select(d3.event.target);
-              var parent = d3.select(target.node().parentNode);
+              var parentDatum = d3.select(target.node().parentNode).datum();
               var datum = target.datum();
-              var parentDatum = parent.datum();
               var index = bisect(parentDatum, accessor.call(null, datum));
 
               listener.call(this, d3.event, datum, index);
