@@ -6,11 +6,9 @@ define(function (require) {
     var options = {};
 
     function component() {
-      var args = arguments;
-
       d3.entries(options).forEach(function (d) {
         if (typeof func[d.key] === "function") {
-          func[d.key](d3.functor(d.value).apply(null, args));
+          func[d.key](d.value);
         }
       });
 

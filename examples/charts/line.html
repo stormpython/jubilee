@@ -70,10 +70,26 @@
           fill: function (d) { return color(d.label); },
           opacity: 0
         })
+        .on("mousemove", function (e, d, i) {
+          var parent = d3.select(e.currentTarget);
+
+          var x = d3.mouse(e.currentTarget)[0];
+          parent.append("line")
+            .attr("class", "mousemove-line")
+            .attr("x1", x)
+            .attr("x2", x)
+            .attr("y1", 500)
+            .attr("y2", 0)
+            .attr("stroke", "black");
+
+          parent.select("line").remove();
+        })
         .on("mouseover", function (e, d, i) {
+          d3.event.stopPropagation();
           var val = d3.select(e.target).style("opacity");
-          var pdata = d3.select(e.target.farthestViewportElement).datum();
-          var rdata = d3.merge(pdata).filter(function (a, i) {
+          var parent = d3.select(e.currentTarget);
+          var pData = parent.datum();
+          var rData = d3.merge(pData).filter(function (a, i) {
             return a.x === d.x;
           });
 
@@ -83,12 +99,13 @@
             }).style("opacity", 1);
           }
           if (d3.select(e.target).attr("class") === "circle") {
-            console.log(rdata);
+            console.log(rData);
             console.log(e, d, i);
           }
         })
         .on("mouseout", function (e, d, i) {
           d3.selectAll("circle").style("opacity", 0);
+          d3.select(".mouseover-line").remove();
         });
 
       var selection = d3.select("#chart");
