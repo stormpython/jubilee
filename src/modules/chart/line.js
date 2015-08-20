@@ -9,7 +9,6 @@ define(function (require) {
   var clip = require("src/modules/element/svg/clipPath");
   var deepCopy = require("src/modules/helpers/deep_copy");
   var path = require("src/modules/element/svg/path");
-  var mapDomain = require("src/modules/helpers/map_domain");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var scaleValue = require("src/modules/helpers/scale_value");
   var zeroAxisLine = require("src/modules/element/svg/line");
@@ -85,7 +84,7 @@ define(function (require) {
         var adjustedHeight = height - margin.top - margin.bottom;
 
         xScale = xScaleOpts.scale || d3.time.scale.utc();
-        xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(data), xValue));
+        xScale.domain(xScaleOpts.domain || d3.extent(d3.merge(data), xValue));
 
         if (typeof xScale.rangeBands === "function") {
           xScale.rangeBands([0, adjustedWidth, 0.1]);
@@ -94,7 +93,7 @@ define(function (require) {
         }
 
         yScale = yScaleOpts.scale || d3.scale.linear();
-        yScale.domain(yScaleOpts.domain || d3.extent(mapDomain(data), yValue))
+        yScale.domain(yScaleOpts.domain || d3.extent(d3.merge(data), yValue))
           .range([adjustedHeight, 0]);
 
         if (xScaleOpts.nice) { xScale.nice(); }

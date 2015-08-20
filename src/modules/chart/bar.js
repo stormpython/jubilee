@@ -6,7 +6,6 @@ define(function (require) {
   var brushComponent = require("src/modules/component/brush");
   var clip = require("src/modules/element/svg/clipPath");
   var deepCopy = require("src/modules/helpers/deep_copy");
-  var mapDomain = require("src/modules/helpers/map_domain");
   var rect = require("src/modules/element/svg/rect");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var zeroAxisLine = require("src/modules/element/svg/line");
@@ -95,7 +94,7 @@ define(function (require) {
         var scaleData = data.map(values);
 
         xScale = xScaleOpts.scale || d3.time.scale.utc();
-        xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(scaleData), xValue));
+        xScale.domain(xScaleOpts.domain || d3.extent(d3.merge(scaleData), xValue));
 
         if (typeof xScale.rangeBands === "function") {
           xScale.rangeBands([0, adjustedWidth, 0.1]);
@@ -105,8 +104,8 @@ define(function (require) {
 
         yScale = yScaleOpts.scale || d3.scale.linear();
         yScale.domain(yScaleOpts.domain || [
-            Math.min(0, d3.min(mapDomain(scaleData), yStackValue)),
-            Math.max(0, d3.max(mapDomain(scaleData), yStackValue))
+            Math.min(0, d3.min(d3.merge(scaleData), yStackValue)),
+            Math.max(0, d3.max(d3.merge(scaleData), yStackValue))
           ])
           .range([adjustedHeight, 0]);
 

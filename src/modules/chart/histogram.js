@@ -51,8 +51,8 @@ define(function (require) {
           });
         });
 
-        xScale.domain(xDomain.call(mapDomain(layers)));
-        yScale.domain(yDomain.call(mapDomain(layers)));
+        xScale.domain(xDomain.call(d3.merge(layers)));
+        yScale.domain(yDomain.call(d3.merge(layers)));
 
         svg = d3.select(this).append("svg")
           .data([layers])
@@ -136,12 +136,6 @@ define(function (require) {
 
     function Y(d) {
       return yScale(d.y0 + d.y);
-    }
-
-    function mapDomain(data) {
-      return data.reduce(function (a, b) {
-        return a.concat(b);
-      });
     }
 
     function getYStackExtent(data, extent) {

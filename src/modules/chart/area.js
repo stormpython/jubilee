@@ -7,7 +7,6 @@ define(function (require) {
   var brushComponent = require("src/modules/component/brush");
   var clip = require("src/modules/element/svg/clipPath");
   var deepCopy = require("src/modules/helpers/deep_copy");
-  var mapDomain = require("src/modules/helpers/map_domain");
   var path = require("src/modules/element/svg/path");
   var scaleValue = require("src/modules/helpers/scale_value");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
@@ -99,7 +98,7 @@ define(function (require) {
 
         // Scales
         xScale = xScaleOpts.scale || d3.time.scale.utc();
-        xScale.domain(xScaleOpts.domain || d3.extent(mapDomain(layers), xValue));
+        xScale.domain(xScaleOpts.domain || d3.extent(d3.merge(layers), xValue));
 
         if (xScale.rangeBands) {
           xScale.rangeBands([0, adjustedWidth], 0.1);
@@ -109,8 +108,8 @@ define(function (require) {
 
         yScale = yScaleOpts.scale || d3.scale.linear();
         yScale.domain(yScaleOpts.domain || [
-            Math.min(0, d3.min(mapDomain(layers), Y)),
-            Math.max(0, d3.max(mapDomain(layers), Y))
+            Math.min(0, d3.min(d3.merge(layers), Y)),
+            Math.max(0, d3.max(d3.merge(layers), Y))
           ])
           .range([adjustedHeight, 0]);
 

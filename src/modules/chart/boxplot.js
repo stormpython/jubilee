@@ -59,8 +59,8 @@ define(function (require) {
 
         yScale = yScale ? yScale : d3.scale.linear()
           .domain([
-            Math.min(0, d3.min(mapDomain(data))),
-            Math.max(0, d3.max(mapDomain(data)))
+            Math.min(0, d3.min(d3.merge(data))),
+            Math.max(0, d3.max(d3.merge(data)))
           ])
           .range([height, 0]);
 
@@ -117,14 +117,6 @@ define(function (require) {
 
     function Y2(d) {
       return yScale(d.min) - yScale(d.median);
-    }
-
-    function mapDomain(data) {
-      return data.map(function (d, i) {
-        return accessor.call(this, values.call(this, d, i));
-      }).reduce(function (a, b) {
-        return a.concat(b);
-      });
     }
 
     function gTransform(d, i) {
