@@ -124,11 +124,11 @@ define(function (require) {
           .data([layers])
           .enter().append("svg")
           .attr("width", width)
-          .attr("height", height)
-          .call(svgEvents);
+          .attr("height", height);
 
         var g = svg.append("g")
-          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")")
+          .call(svgEvents);
 
         // Brush
         if (listeners.brush && listeners.brush.length) {
