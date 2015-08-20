@@ -6,14 +6,16 @@ define(function (require) {
     var size = [500, 500]; // [width, height]
     var rowScale = d3.scale.linear();
     var columnScale = d3.scale.linear();
+    var numOfCols = 0;
 
-    function formatType(length, type) {
+    function formatType(length, type, cols) {
       var output = {};
 
       switch (type) {
         case "grid":
-          output.rows = Math.round(Math.sqrt(length));
-          output.columns = Math.ceil(Math.sqrt(length));
+          output.rows = cols ? Math.ceil(length / cols) :
+            Math.round(Math.sqrt(length));
+          output.columns = cols ? cols : Math.ceil(Math.sqrt(length));
           break;
 
         case "columns":
@@ -31,7 +33,7 @@ define(function (require) {
     }
 
     function layout(data) {
-      var format = formatType(data.length, type);
+      var format = formatType(data.length, type, numOfCols);
       var rows = format.rows;
       var columns = format.columns;
       var cellWidth = size[0] / columns;
@@ -60,6 +62,12 @@ define(function (require) {
     layout.type = function (_) {
       if (!arguments.length) { return type; }
       type = _;
+      return layout;
+    };
+
+    layout.columns = function (_) {
+      if (!arguments.length) { return numOfCols; }
+      numOfCols = _;
       return layout;
     };
 
