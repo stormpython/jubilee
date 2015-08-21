@@ -17,7 +17,7 @@ define(function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var path = d3.select(this).selectAll("path")
+        var path = d3.select(this).selectAll("paths")
           .data(data);
 
         path.exit().remove();

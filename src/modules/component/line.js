@@ -30,7 +30,7 @@ define(function (require) {
           .function(areaPath)
           .options(properties);
 
-        d3.select(this).call(build);
+        d3.select(this).append("g").call(build);
       });
     }
 

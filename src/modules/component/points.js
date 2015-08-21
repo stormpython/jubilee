@@ -23,7 +23,7 @@ define(function (require) {
           .function(circles)
           .options(properties);
 
-        d3.select(this)
+        d3.select(this).append("g")
           .datum(d3.merge(data))
           .call(element);
       });

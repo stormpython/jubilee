@@ -18,7 +18,7 @@ define(function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var circles = d3.select(this).selectAll("circle")
+        var circles = d3.select(this).selectAll("circles")
           .data(data);
 
         // Exit

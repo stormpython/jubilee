@@ -61,26 +61,60 @@
         var myChart = jubilee.chart.series()
           .width(width)
           .height(height)
-          .z(function (d) { return d.y; })
           .yScale({ nice: true })
+          .zAxis({ show: true })
+          .z(function (d, i) { return d.y; })
           .zeroLine({ add: false })
-          .line({
-            interpolate: "linear",
-            properties: {
-              stroke: function (d, i) {
-                var point = d.slice(0,1).pop();
-                return color(point.label);
+//          .area({
+//            interpolate: "linear",
+//            properties: {
+//              fill: function (d, i) {
+//                var point = d.slice(0,1).pop();
+//                return color(point.label);
+//              },
+//              stroke: function (d, i) {
+//                var point = d.slice(0,1).pop();
+//                return color(point.label);
+//              }
+//            }
+//          })
+          .line([
+            {
+              interpolate: "linear",
+              properties: {
+                stroke: function (d, i) {
+                  var point = d.slice(0,1).pop();
+                  return color(point.label);
+                }
+              }
+            },
+            {
+              scale: "z",
+              interpolate: "linear",
+              properties: {
+                stroke: function (d, i) {
+                  var point = d.slice(0,1).pop();
+                  return color(point.label);
+                }
               }
             }
-          })
-          .points({
+          ])
+          .points([{
             radius: 5,
             properties: {
               fill: "#ffffff",
               stroke: function (d, i) { return color(d.label); },
               strokeWidth: 3
             }
-          })
+          },{
+            scale: "z",
+            radius: 5,
+            properties: {
+              fill: "#ffffff",
+              stroke: function (d, i) { return color(d.label); },
+              strokeWidth: 3
+            }
+          }])
           .on("click", clickFunction)
           .on("brush", brushFunction);
 

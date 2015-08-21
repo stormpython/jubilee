@@ -20,12 +20,6 @@ define(function (require) {
     var height = 500;
     var color = d3.scale.category10();
     var accessor = function (d) { return d; };
-
-    var bar = {};
-    var line = {};
-    var area = {};
-    var points = {};
-
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var zValue = function (d) { return d.z; };
@@ -35,11 +29,17 @@ define(function (require) {
     var xAxis = { show: true };
     var yAxis = { show: true };
     var zAxis = { show: false };
-
     var brushOpts = {};
+    var zeroLine = {
+      add: false
+    };
+
     var stacks = {};
-    var zeroLine = {};
     var listeners = {};
+    var bar = {};
+    var line = {};
+    var area = {};
+    var points = {};
 
     function chart(selection)  {
       selection.each(function (data, index) {
@@ -50,9 +50,10 @@ define(function (require) {
         var svgEvents = events().listeners(listeners).accessor(xValue);
 
         /* Stacking Options ******************************** */
+        var stackValue = stacks.scale === "z" ? zValue : yValue;
         var stack = d3.layout.stack()
           .x(xValue)
-          .y(stacks.y || yValue)
+          .y(stackValue)
           .offset(stacks.offset || "zero")
           .order(stacks.order || "default")
           .out(stacks.out || stackOut);
@@ -183,18 +184,33 @@ define(function (require) {
         ];
 
         elements.forEach(function (d) {
-          if (d3.keys(d.opts).length) {
-            var element = constructor().function(d.func);
+          var element = constructor().function(d.func);
 
-            d.opts = applyAttrs(d.type, d.opts);
-            element.options(d.opts);
+          if (d3.keys(d.opts).length) {
+            if (Array.isArray(d.opts)) {
+              d.opts.forEach(function (props) {
+                props = applyAttrs(d.type, props);
+                element.options(props);
+                clippedG.call(element);
+              });
+            } else {
+              d.opts = applyAttrs(d.type, d.opts);
+              element.options(d.opts);
               clippedG.call(element);
+            }
           }
         });
         /* ******************************** */
 
+        function draw(d, f, s) {
+          d.opts = applyAttrs(d.type, d.opts);
+          f.options(d.opts);
+          s.call(f);
+        }
+
         function applyAttrs(type, opts) {
           var isZscale = (opts.scale === "z");
+          var isStacked = !!d3.keys(stacks).length;
           var scale = isZscale ? z : y;
           var value = isZscale ? zValue : yValue;
           var xDefault = function (d, i) {
@@ -209,14 +225,14 @@ define(function (require) {
               opts.x = xDefault;
               opts.y0 = function (d, i) {
                 var min = Math.max(0, scale.domain()[0]);
-                if (stacks.offset === "overlap") { return scale(min); }
-                return scale(d.y0);
+                if (isStacked) { return scale(d.y0); }
+                return scale(min);
               };
               opts.y1 = function (d, i) {
-                if (stacks.offset === "overlap") {
-                  return scale(value.call(this, d, i));
+                if (isStacked) {
+                  return scale(d.y0 + yValue.call(this, d, i));
                 }
-                return scale(d.y0 + yValue.call(this, d, i));
+                return scale(value.call(this, d, i));
               };
               break;
 
