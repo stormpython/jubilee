@@ -1,25 +1,23 @@
 define(function (require) {
   var d3 = require("d3");
-  var events = require("src/modules/component/events");
 
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var axis = require("src/modules/component/axis");
   var brushComponent = require("src/modules/component/brush");
   var clip = require("src/modules/element/svg/clipPath");
-  var deepCopy = require("src/modules/helpers/deep_copy");
+  var events = require("src/modules/component/events");
   var path = require("src/modules/element/svg/path");
-  var scaleValue = require("src/modules/helpers/scale_value");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var zeroAxisLine = require("src/modules/element/svg/line");
 
   // Options
-  var clipPathOptions = require("src/modules/helpers/options/clippath");
-  var marginOptions = require("src/modules/helpers/options/margin");
-  var scaleOptions = require("src/modules/helpers/options/scale");
-  var stackOptions = require("src/modules/helpers/options/stack");
-  var xAxisOptions = require("src/modules/helpers/options/x_axis");
-  var yAxisOptions = require("src/modules/helpers/options/y_axis");
-  var zeroLineOptions = require("src/modules/helpers/options/zero_line");
+  var _clipPath = require("src/modules/helpers/options/clippath");
+  var _margin = require("src/modules/helpers/options/margin");
+  var _scale = require("src/modules/helpers/options/scale");
+  var _stack = require("src/modules/helpers/options/stack");
+  var _xAxis = require("src/modules/helpers/options/x_axis");
+  var _yAxis = require("src/modules/helpers/options/y_axis");
+  var _zeroLine = require("src/modules/helpers/options/zero_line");
 
   // API
   var axisAPI = require("src/modules/helpers/api/axis");
@@ -33,7 +31,7 @@ define(function (require) {
 
   return function areaChart() {
     // Chart options
-    var margin = deepCopy(marginOptions, {});
+    var margin = _margin();
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();
@@ -41,21 +39,15 @@ define(function (require) {
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var interpolate = "linear";
+    var tension = 0.7;
     var defined = function () { return true; };
-
-    // Scale options
-    var xScaleOpts = deepCopy(scaleOptions, {});
-    var yScaleOpts = deepCopy(scaleOptions, {});
-    var xScale;
-    var yScale;
-
-    // Other options
-    var axisX = deepCopy(xAxisOptions, {});
-    var axisY = deepCopy(yAxisOptions, {});
-    var clipPath = deepCopy(clipPathOptions, {});
-    var stackOpts = deepCopy(stackOptions, {});
-    var zeroLine = deepCopy(zeroLineOptions, {});
-
+    var xScaleOpts = _scale();
+    var yScaleOpts = _scale();
+    var axisX = _xAxis();
+    var axisY = _yAxis();
+    var clipPath = _clipPath();
+    var stackOpts = _stack();
+    var zeroLine = _zeroLine();
     var listeners = {};
 
     // Area options
@@ -76,8 +68,6 @@ define(function (require) {
       stroke: function (d, i) { return color(i); },
       strokeWidth: 3,
       opacity: 1,
-      interpolate: interpolate,
-      tension:  0.7
     };
 
     function chart(selection) {
@@ -97,7 +87,7 @@ define(function (require) {
         var layers = stack(data);
 
         // Scales
-        xScale = xScaleOpts.scale || d3.time.scale.utc();
+        var xScale = xScaleOpts.scale || d3.time.scale.utc();
         xScale.domain(xScaleOpts.domain || d3.extent(d3.merge(layers), xValue));
 
         if (xScale.rangeBands) {
@@ -106,7 +96,7 @@ define(function (require) {
           xScale.range([0, adjustedWidth]);
         }
 
-        yScale = yScaleOpts.scale || d3.scale.linear();
+        var yScale = yScaleOpts.scale || d3.scale.linear();
         yScale.domain(yScaleOpts.domain || [
             Math.min(0, d3.min(d3.merge(layers), Y)),
             Math.max(0, d3.max(d3.merge(layers), Y))
@@ -140,14 +130,31 @@ define(function (require) {
         }
 
         // Add clippath and areas
-        var X = scaleValue(xScale, xValue);
+        var X = function (d, i) {
+          return xScale(xValue.call(null, d, i));
+        };
+
+        var Y1 = function (d, i) {
+          if (stackOpts.offset === "overlap") {
+            return yScale(yValue.call(null, d, i));
+          }
+          return yScale(d.y0 + yValue.call(null, d, i));
+        };
 
         var clippath = clip()
           .width(clipPath.width || adjustedWidth)
           .height(clipPath.height || adjustedHeight);
 
-        var area = d3.svg.area().x(X).y0(Y0).y1(Y1)
+        var area = d3.svg.area()
+          .x(X)
+          .y0(function Y0(d) {
+            var min = Math.max(0, yScale.domain()[0]);
+            if (stackOpts.offset === "overlap") { return yScale(min); }
+            return yScale(d.y0);
+          })
+          .y1(Y1)
           .interpolate(interpolate)
+          .tension(tension)
           .defined(defined);
 
         var areaPath = path()
@@ -168,6 +175,7 @@ define(function (require) {
         if (lines.show) {
           var line = d3.svg.line().x(X).y(Y1)
             .interpolate(interpolate)
+            .tension(tension)
             .defined(defined);
 
           var linePath = path()
@@ -199,7 +207,7 @@ define(function (require) {
         if (axisX.show) {
           var xAxis = axis()
             .scale(xScale)
-            .class(axisX.gClass)
+            .class(axisX.class)
             .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
             .tick(axisX.tick)
             .title(axisX.title);
@@ -212,7 +220,7 @@ define(function (require) {
           var yAxis = axis()
             .scale(yScale)
             .orient("left")
-            .class(axisY.gClass)
+            .class(axisY.class)
             .transform(axisY.transform || "translate(-1,0)")
             .tick(axisY.tick)
             .title(axisY.title);
@@ -229,18 +237,6 @@ define(function (require) {
       return d.y0 + yValue.call(null, d, i);
     }
 
-    function Y0(d) {
-      var min = Math.max(0, yScale.domain()[0]);
-      if (stackOpts.offset === "overlap") { return yScale(min); }
-      return yScale(d.y0);
-    }
-
-    function Y1(d, i) {
-      if (stackOpts.offset === "overlap") {
-        return yScale(yValue.call(null, d, i));
-      }
-      return yScale(d.y0 + yValue.call(null, d, i));
-    }
 
     // Public API
     chart.margin = function (_) {
@@ -294,6 +290,12 @@ define(function (require) {
     chart.interpolate = function (_) {
       if (!arguments.length) { return interpolate; }
       interpolate = _;
+      return chart;
+    };
+
+    chart.tension = function (_) {
+      if (!arguments.length) { return tension; }
+      tension = _;
       return chart;
     };
 

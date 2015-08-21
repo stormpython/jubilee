@@ -11,7 +11,7 @@ define(function (require) {
     var fill = "none";
     var stroke = function (d, i) { return d3.scale.category10()(i); };
     var strokeWidth = 1;
-    var opacity = null;
+    var opacity = 1;
 
     function element(selection) {
       selection.each(function (data, index) {

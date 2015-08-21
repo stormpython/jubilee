@@ -1,24 +1,22 @@
 define(function (require) {
   var d3 = require("d3");
-  var events = require("src/modules/component/events");
 
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var axis = require("src/modules/component/axis");
   var brushComponent = require("src/modules/component/brush");
   var circle = require("src/modules/element/svg/circle");
   var clip = require("src/modules/element/svg/clipPath");
-  var deepCopy = require("src/modules/helpers/deep_copy");
+  var events = require("src/modules/component/events");
   var path = require("src/modules/element/svg/path");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
-  var scaleValue = require("src/modules/helpers/scale_value");
   var zeroAxisLine = require("src/modules/element/svg/line");
 
-  var clipPathOptions = require("src/modules/helpers/options/clippath");
-  var marginOptions = require("src/modules/helpers/options/margin");
-  var scaleOptions = require("src/modules/helpers/options/scale");
-  var xAxisOptions = require("src/modules/helpers/options/x_axis");
-  var yAxisOptions = require("src/modules/helpers/options/y_axis");
-  var zeroLineOptions = require("src/modules/helpers/options/zero_line");
+  var _clipPath = require("src/modules/helpers/options/clippath");
+  var _margin = require("src/modules/helpers/options/margin");
+  var _scale = require("src/modules/helpers/options/scale");
+  var _xAxis = require("src/modules/helpers/options/x_axis");
+  var _yAxis = require("src/modules/helpers/options/y_axis");
+  var _zeroLine = require("src/modules/helpers/options/zero_line");
 
   var axisAPI = require("src/modules/helpers/api/axis");
   var circlesAPI = require("src/modules/helpers/api/circles");
@@ -30,7 +28,7 @@ define(function (require) {
 
   return function lineChart() {
     // Chart options
-    var margin = deepCopy(marginOptions, {});
+    var margin = _margin();
     var width = 760;
     var height = 120;
     var color = d3.scale.category20c();
@@ -40,18 +38,12 @@ define(function (require) {
     var defined = function () { return true; };
     var interpolate = "linear";
     var tension = 0.7;
-
-    // Scale options
-    var xScaleOpts = deepCopy(scaleOptions, {});
-    var yScaleOpts = deepCopy(scaleOptions, {});
-    var xScale;
-    var yScale;
-
-    // Other options
-    var axisX = deepCopy(xAxisOptions, {});
-    var axisY = deepCopy(yAxisOptions, {});
-    var clipPath = deepCopy(clipPathOptions, {});
-    var zeroLine = deepCopy(zeroLineOptions, {});
+    var xScaleOpts = _scale();
+    var yScaleOpts = _scale();
+    var axisX = _xAxis();
+    var axisY = _yAxis();
+    var clipPath = _clipPath();
+    var zeroLine = _zeroLine();
     var listeners = {};
 
     // Line Options
@@ -83,7 +75,7 @@ define(function (require) {
         var adjustedWidth = width - margin.left - margin.right;
         var adjustedHeight = height - margin.top - margin.bottom;
 
-        xScale = xScaleOpts.scale || d3.time.scale.utc();
+        var xScale = xScaleOpts.scale || d3.time.scale.utc();
         xScale.domain(xScaleOpts.domain || d3.extent(d3.merge(data), xValue));
 
         if (typeof xScale.rangeBands === "function") {
@@ -92,7 +84,7 @@ define(function (require) {
           xScale.range([0, adjustedWidth]);
         }
 
-        yScale = yScaleOpts.scale || d3.scale.linear();
+        var yScale = yScaleOpts.scale || d3.scale.linear();
         yScale.domain(yScaleOpts.domain || d3.extent(d3.merge(data), yValue))
           .range([adjustedHeight, 0]);
 
@@ -121,8 +113,14 @@ define(function (require) {
           g.call(brush);
         }
 
-        var X = scaleValue(xScale, xValue);
-        var Y = scaleValue(yScale, yValue);
+        var X = function (d, i) {
+          return xScale(xValue.call(null, d, i));
+        };
+
+        var Y = function (d, i) {
+          return yScale(yValue.call(null, d, i));
+        };
+
         var line = d3.svg.line().x(X).y(Y)
           .interpolate(interpolate)
           .tension(tension)
@@ -140,7 +138,7 @@ define(function (require) {
         if (axisX.show) {
           var xAxis = axis()
             .scale(xScale)
-            .class(axisX.gClass)
+            .class(axisX.class)
             .transform(axisX.transform || "translate(0," + (yScale.range()[0] + 1) + ")")
             .tick(axisX.tick)
             .title(axisX.title);
@@ -152,7 +150,7 @@ define(function (require) {
           var yAxis = axis()
             .scale(yScale)
             .orient("left")
-            .class(axisY.gClass)
+            .class(axisY.class)
             .transform(axisY.transform || "translate(-1,0)")
             .tick(axisY.tick)
             .title(axisY.title);

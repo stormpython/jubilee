@@ -11,6 +11,7 @@ define(function (require) {
       line: require("src/modules/chart/line"),
       pie: require("src/modules/chart/pie"),
       scatter : require("src/modules/chart/scatterplot"),
+      series: require("src/modules/chart/series"),
       sunburst: require("src/modules/chart/sunburst"),
       treemap: require("src/modules/chart/treemap"),
       xyzplot: require("src/modules/chart/xyzplot")

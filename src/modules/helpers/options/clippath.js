@@ -1,6 +1,5 @@
 define(function () {
-  return {
-    width: null,
-    height: null
+  return function clippath() {
+    return { width: null, height: null };
   };
 });
