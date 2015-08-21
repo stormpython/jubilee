@@ -164,34 +164,6 @@ define(function (require) {
         }
         /* ******************************** */
 
-        /* SVG Elements ******************************** */
-        if (d3.keys(area).length) {
-          area.x = function (d, i) {
-            return x(xValue.call(this, d, i));
-          };
-
-          area.y0 = function (d, i) {
-            var min = Math.max(0, y.domain()[0]);
-            if (stacks.offset === "overlap") { return y(min); }
-            return y(d.y0);
-          };
-
-          area.y1 = function (d, i) {
-            if (stacks.offset === "overlap") {
-              return y(yValue.call(this, d, i));
-            }
-            return y(d.y0 + yValue.call(this, d, i));
-          };
-        }
-
-        var elements = [
-          {type: "area", func: areas(), opts: area}, // need to generate path function
-          {type: "line", func: lines(), opts: line}, // need to generate path function
-          {type: "points", func: circles(), opts: points}
-          //{type: "bar", func: bars(), opts: bar}, // need to take care of stacking
-        ];
-
-
         /* ClipPath ******************************** */
         var clippath = clip()
           .width(adjustedWidth)
@@ -201,6 +173,14 @@ define(function (require) {
           .append("g")
           .attr("clip-path", "url(#" + clippath.id() + ")");
         /* ******************************** */
+
+        /* SVG Elements ******************************** */
+        var elements = [
+          {type: "area", func: areas(), opts: area}, // need to generate path function
+          {type: "line", func: lines(), opts: line}, // need to generate path function
+          {type: "points", func: circles(), opts: points}
+          //{type: "bar", func: bars(), opts: bar}, // need to take care of stacking
+        ];
 
         elements.forEach(function (d) {
           if (d3.keys(d.opts).length) {
