@@ -80,16 +80,16 @@ define(function (require) {
       opacity: 0.5
     };
     var stacks = {
+      scale: "y",
       offset: "zero",
       order: "default",
       out: stackOut
     };
-
-    var listeners = {};
     var bar = {};
     var line = {};
     var area = {};
     var points = {};
+    var listeners = {};
 
     function chart(selection)  {
       selection.each(function (data, index) {
@@ -100,10 +100,9 @@ define(function (require) {
         var svgEvents = events().listeners(listeners).accessor(xValue);
 
         /* Stacking Options ******************************** */
-        var stackValue = stacks.scale === "z" ? zValue : yValue;
         var stack = d3.layout.stack()
           .x(xValue)
-          .y(stackValue)
+          .y(stacks.scale === "z" ? zValue : yValue)
           .offset(stacks.offset)
           .order(stacks.order)
           .out(stacks.out);
@@ -327,6 +326,7 @@ define(function (require) {
 
     chart.stack = function (_) {
       if (!arguments.length) { return stacks; }
+      stacks.scale = typeof _.scale !== "undefined" ? _.scale : stacks.scale;
       stacks.offset = typeof _.offset !== "undefined" ? _.offset : stacks.offset;
       stacks.order = typeof _.order !== "undefined" ? _.order : stacks.order;
       stacks.out = typeof _.out !== "undefined" ? _.out : stacks.out;
