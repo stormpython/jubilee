@@ -5,8 +5,10 @@ define(function (require) {
 
   return function area() {
     var x = function (d) { return d.x; };
-    var y0 = function (d) { return d.y0; };
-    var y1 = function (d) { return d.y; };
+    var y = function (d) { return d.y; };
+    var xScale = d3.time.scale.utc();
+    var yScale = d3.scale.linear();
+    var offset = "zero";
     var interpolate = "linear";
     var tension = 0.7;
     var defined = function (d) { return d.y !== null; };
@@ -20,7 +22,7 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function (data, index) {
-        var areas = d3.svg.area().x(x).y0(y0).y1(y1)
+        var areas = d3.svg.area().x(X).y0(Y0).y1(Y1)
           .interpolate(interpolate)
           .tension(tension)
           .defined(defined);
@@ -35,21 +37,52 @@ define(function (require) {
       });
     }
 
+    function X(d, i) {
+      return xScale(x.call(this, d, i));
+    }
+
+    function Y0(d, i) {
+      var min = Math.max(0, yScale.domain()[0]);
+      if (offset === "overlap") {
+        return yScale(min);
+      }
+      return yScale(d.y0);
+    }
+
+    function Y1(d, i) {
+      if (offset === "overlap") {
+        return yScale(y.call(this, d, i));
+      }
+      return yScale(d.y0 + y.call(this, d, i));
+    }
+
     component.x = function (_) {
       if (!arguments.length) { return x; }
       x = _;
       return component;
     };
 
-    component.y0 = function (_) {
-      if (!arguments.length) { return y0; }
-      y0 = _;
+    component.y = function (_) {
+      if (!arguments.length) { return y; }
+      y = _;
       return component;
     };
 
-    component.y1 = function (_) {
-      if (!arguments.length) { return y1; }
-      y1 = _;
+    component.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale = _;
+      return component;
+    };
+
+    component.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale = _;
+      return component;
+    };
+
+    component.offset = function (_) {
+      if (!arguments.length) { return offset; }
+      offset = _;
       return component;
     };
 

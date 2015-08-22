@@ -33,8 +33,12 @@ define(function (require) {
     var zeroLine = {
       add: false
     };
+    var stacks = {
+      offset: "zero",
+      order: "default",
+      out: stackOut
+    };
 
-    var stacks = {};
     var listeners = {};
     var bar = {};
     var line = {};
@@ -54,9 +58,9 @@ define(function (require) {
         var stack = d3.layout.stack()
           .x(xValue)
           .y(stackValue)
-          .offset(stacks.offset || "zero")
-          .order(stacks.order || "default")
-          .out(stacks.out || stackOut);
+          .offset(stacks.offset)
+          .order(stacks.order)
+          .out(stacks.out);
 
         data = stack(data);
         /* ******************************** */
@@ -166,85 +170,50 @@ define(function (require) {
         /* ******************************** */
 
         /* ClipPath ******************************** */
-        var clippath = clip()
-          .width(adjustedWidth)
-          .height(adjustedHeight);
-
-        var clippedG = g.call(clippath)
-          .append("g")
+        var clippath = clip().width(adjustedWidth).height(adjustedHeight);
+        var clippedG = g.call(clippath).append("g")
           .attr("clip-path", "url(#" + clippath.id() + ")");
         /* ******************************** */
 
         /* SVG Elements ******************************** */
         var elements = [
-          {type: "area", func: areas(), opts: area}, // need to generate path function
-          {type: "line", func: lines(), opts: line}, // need to generate path function
+          {type: "area", func: areas(), opts: area},
+          {type: "line", func: lines(), opts: line},
           {type: "points", func: circles(), opts: points}
           //{type: "bar", func: bars(), opts: bar}, // need to take care of stacking
         ];
 
         elements.forEach(function (d) {
-          var element = constructor().function(d.func);
 
+          // Only render elements when api called
           if (d3.keys(d.opts).length) {
-            if (Array.isArray(d.opts)) {
+            var element = constructor().function(d.func);
+            var isArray = Array.isArray(d.opts);
+
+            if (d.type === "area") { d.opts.offset = stacks.offset; }
+
+            if (isArray) {
               d.opts.forEach(function (props) {
-                props = applyAttrs(d.type, props);
-                element.options(props);
-                clippedG.call(element);
+                var isZ = props.scale && props.scale.toLowerCase() === "z";
+                props.x = xValue;
+                props.y = isZ ? zValue : yValue;
+                props.xScale = x;
+                props.yScale = isZ ? z : y;
+
+                clippedG.call(element.options(props));
               });
             } else {
-              d.opts = applyAttrs(d.type, d.opts);
-              element.options(d.opts);
-              clippedG.call(element);
+              var isZ = d.opts.scale && d.opts.scale.toLowerCase() === "z";
+              d.opts.x = xValue;
+              d.opts.y = isZ ? zValue : yValue;
+              d.opts.xScale = x;
+              d.opts.yScale = isZ ? z : y;
+
+              clippedG.call(element.options(d.opts));
             }
           }
         });
         /* ******************************** */
-
-        function draw(d, f, s) {
-          d.opts = applyAttrs(d.type, d.opts);
-          f.options(d.opts);
-          s.call(f);
-        }
-
-        function applyAttrs(type, opts) {
-          var isZscale = (opts.scale === "z");
-          var isStacked = !!d3.keys(stacks).length;
-          var scale = isZscale ? z : y;
-          var value = isZscale ? zValue : yValue;
-          var xDefault = function (d, i) {
-            return x(xValue.call(this, d, i));
-          };
-          var yDefault = function (d, i) {
-            return scale(value.call(this, d, i));
-          };
-
-          switch (type) {
-            case "area":
-              opts.x = xDefault;
-              opts.y0 = function (d, i) {
-                var min = Math.max(0, scale.domain()[0]);
-                if (isStacked) { return scale(d.y0); }
-                return scale(min);
-              };
-              opts.y1 = function (d, i) {
-                if (isStacked) {
-                  return scale(d.y0 + yValue.call(this, d, i));
-                }
-                return scale(value.call(this, d, i));
-              };
-              break;
-
-            default:
-              opts.x = xDefault;
-              opts.y = yDefault;
-              break;
-          }
-
-          return opts;
-        }
-
       });
     }
 
@@ -257,11 +226,11 @@ define(function (require) {
 
     function getAccessor(accessor) {
       return function (d, i) {
-        var isStacked = d3.keys(stacks).length;
+        var isStacked = d3.keys(area).length;
         if (isStacked && stacks.offset !== "overlap") {
-          return d.y0 + accessor.call(null, d, i);
+          return d.y0 + accessor.call(this, d, i);
         }
-        return accessor.call(null, d, i);
+        return accessor.call(this, d, i);
       };
     }
 
@@ -330,7 +299,9 @@ define(function (require) {
 
     chart.stack = function (_) {
       if (!arguments.length) { return stacks; }
-      stacks = _;
+      stacks.offset = typeof _.offset !== "undefined" ? _.offset : stacks.offset;
+      stacks.order = typeof _.order !== "undefined" ? _.order : stacks.order;
+      stacks.out = typeof _.out !== "undefined" ? _.out : stacks.out;
       return chart;
     };
 

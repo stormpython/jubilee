@@ -6,11 +6,13 @@ define(function (require) {
   return function line() {
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
+    var xScale = d3.time.scale.utc();
+    var yScale = d3.scale.linear();
     var interpolate = "linear";
     var tension = 0.7;
     var defined = function (d) { return d.y !== null; };
     var properties = {
-      class: "area",
+      class: "line",
       fill: "none",
       stroke: function (d, i) { return d3.scale.category10()(i); },
       strokeWidth: 3,
@@ -19,19 +21,27 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function (data, index) {
-        var lines = d3.svg.line().x(x).y(y)
+        var lines = d3.svg.line().x(X).y(Y)
           .interpolate(interpolate)
           .tension(tension)
           .defined(defined);
 
-        var areaPath = path().pathGenerator(lines);
+        var linePath = path().pathGenerator(lines);
 
         var build = constructor()
-          .function(areaPath)
+          .function(linePath)
           .options(properties);
 
         d3.select(this).append("g").call(build);
       });
+    }
+
+    function X(d, i) {
+      return xScale(x.call(this, d, i));
+    }
+
+    function Y(d, i) {
+      return yScale(y.call(this, d, i));
     }
 
     component.x = function (_) {
@@ -43,6 +53,18 @@ define(function (require) {
     component.y = function (_) {
       if (!arguments.length) { return y; }
       y = _;
+      return component;
+    };
+
+    component.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale = _;
+      return component;
+    };
+
+    component.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale = _;
       return component;
     };
 

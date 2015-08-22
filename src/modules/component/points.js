@@ -6,9 +6,11 @@ define(function (require) {
   return function points() {
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
+    var xScale = d3.time.scale.utc();
+    var yScale = d3.scale.linear();
     var radius = 5;
     var properties = {
-      class: "area",
+      class: "point",
       fill: function (d, i) { return d3.scale.category10()(i); },
       stroke: function (d, i) { return d3.scale.category10()(i); },
       strokeWidth: 0,
@@ -17,7 +19,7 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function (data, index) {
-        var circles = circle().cx(x).cy(y).radius(radius);
+        var circles = circle().cx(X).cy(Y).radius(radius);
 
         var element = constructor()
           .function(circles)
@@ -29,6 +31,15 @@ define(function (require) {
       });
     }
 
+    function X(d, i) {
+      return xScale(x.call(this, d, i));
+    }
+
+    function Y(d, i) {
+      return yScale(y.call(this, d, i));
+    }
+
+    // Public API
     component.x = function (_) {
       if (!arguments.length) { return x; }
       x = _;
@@ -38,6 +49,18 @@ define(function (require) {
     component.y = function (_) {
       if (!arguments.length) { return y; }
       y = _;
+      return component;
+    };
+
+    component.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale = _;
+      return component;
+    };
+
+    component.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale = _;
       return component;
     };
 

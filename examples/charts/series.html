@@ -34,7 +34,7 @@
             [
               { x: 1411761450000, y: 91, label: "of"},
               { x: 1411761480000, y: 88, label: "of"},
-              { x: 1411761510000, y: 32, label: "of"},
+              { x: 1411761510000, y: 38, label: "of"},
               { x: 1411761540000, y: 47, label: "of"},
               { x: 1411761570000, y: 57, label: "of"}
             ],
@@ -48,8 +48,6 @@
           ]
         };
 
-        var width = 700;
-        var height = 400;
         var clickFunction = function (e, d, i) { console.log(e, d, i); };
         var brushFunction = function (brush) { console.log(brush.extent()); };
 
@@ -59,62 +57,41 @@
 
         // Example normal area chart configuration
         var myChart = jubilee.chart.series()
-          .width(width)
-          .height(height)
+          .width(700)
+          .height(400)
           .yScale({ nice: true })
-          .zAxis({ show: true })
-          .z(function (d, i) { return d.y; })
-          .zeroLine({ add: false })
-//          .area({
-//            interpolate: "linear",
-//            properties: {
-//              fill: function (d, i) {
-//                var point = d.slice(0,1).pop();
-//                return color(point.label);
-//              },
-//              stroke: function (d, i) {
-//                var point = d.slice(0,1).pop();
-//                return color(point.label);
-//              }
-//            }
-//          })
-          .line([
-            {
-              interpolate: "linear",
-              properties: {
-                stroke: function (d, i) {
-                  var point = d.slice(0,1).pop();
-                  return color(point.label);
-                }
-              }
-            },
-            {
-              scale: "z",
-              interpolate: "linear",
-              properties: {
-                stroke: function (d, i) {
-                  var point = d.slice(0,1).pop();
-                  return color(point.label);
-                }
+          .stack({ offset: "overlap" })
+          .area({
+            interpolate: "basis",
+            properties: {
+              fill: function (d, i) {
+                var point = d.slice(0,1).pop();
+                return color(point.label);
+              },
+              stroke: function (d, i) {
+                var point = d.slice(0,1).pop();
+                return color(point.label);
               }
             }
-          ])
-          .points([{
+          })
+          .line({
+            interpolate: "linear",
+            properties: {
+              stroke: function (d, i) {
+                var point = d.slice(0,1).pop();
+                return color(point.label);
+              }
+            }
+          })
+          .points({
+            class: "points",
             radius: 5,
             properties: {
               fill: "#ffffff",
               stroke: function (d, i) { return color(d.label); },
               strokeWidth: 3
             }
-          },{
-            scale: "z",
-            radius: 5,
-            properties: {
-              fill: "#ffffff",
-              stroke: function (d, i) { return color(d.label); },
-              strokeWidth: 3
-            }
-          }])
+          })
           .on("click", clickFunction)
           .on("brush", brushFunction);
 
