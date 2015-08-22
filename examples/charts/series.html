@@ -60,20 +60,20 @@
           .width(700)
           .height(400)
           .yScale({ nice: true })
-          .stack({ offset: "overlap" })
-          .area({
-            interpolate: "basis",
-            properties: {
-              fill: function (d, i) {
-                var point = d.slice(0,1).pop();
-                return color(point.label);
-              },
-              stroke: function (d, i) {
-                var point = d.slice(0,1).pop();
-                return color(point.label);
-              }
-            }
-          })
+          .stack({ offset: "zero" })
+//          .area({
+//            interpolate: "basis",
+//            properties: {
+//              fill: function (d, i) {
+//                var point = d.slice(0,1).pop();
+//                return color(point.label);
+//              },
+//              stroke: function (d, i) {
+//                var point = d.slice(0,1).pop();
+//                return color(point.label);
+//              }
+//            }
+//          })
           .line({
             interpolate: "linear",
             properties: {
@@ -93,7 +93,7 @@
             }
           })
           .on("click", clickFunction)
-          .on("brush", brushFunction);
+          .on("brushend", brushFunction);
 
         selection.call(myChart);
       });

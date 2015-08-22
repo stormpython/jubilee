@@ -2,6 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function box() {
+    // Private variables
     var values = function (d) { return d.values; };
     var accessor = function (d) { return d; };
 
@@ -19,6 +20,7 @@ define(function (require) {
       return data;
     }
 
+    // Public API
     layout.values = function (_) {
       if (!arguments.length) { return values; }
       values = _;

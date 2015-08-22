@@ -13,8 +13,7 @@ define(function (require) {
       scatter : require("src/modules/chart/scatterplot"),
       series: require("src/modules/chart/series"),
       sunburst: require("src/modules/chart/sunburst"),
-      treemap: require("src/modules/chart/treemap"),
-      xyzplot: require("src/modules/chart/xyzplot")
+      treemap: require("src/modules/chart/treemap")
     },
     map: {
       tile: require("src/modules/map/tile")
@@ -25,11 +24,13 @@ define(function (require) {
       grid: require("src/modules/layout/grid")
     },
     component: {
+      area: require("src/modules/component/area"),
       axis: require("src/modules/component/axis"),
       boxplot: require("src/modules/component/boxplot"),
       brush: require("src/modules/component/brush"),
-      chart: require("src/modules/component/chart"),
-      events: require("src/modules/component/events")
+      events: require("src/modules/component/events"),
+      line: require("src/modules/component/line"),
+      points: require("src/modules/component/points")
     },
     svg: {
       circle: require("src/modules/element/svg/circle"),
@@ -42,6 +43,7 @@ define(function (require) {
     },
     canvas: {
       rect: require("src/modules/element/canvas/rect")
-    }
+    },
+    functor: require("src/modules/functor")
   };
 });

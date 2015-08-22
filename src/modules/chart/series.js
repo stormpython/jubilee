@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var constructor = require("src/modules/component/build");
+  var functor = require("src/modules/functor");
   var clip = require("src/modules/element/svg/clipPath");
   var axis = require("src/modules/component/axis");
   var brushComponent = require("src/modules/component/brush");
@@ -8,9 +8,8 @@ define(function (require) {
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var zeroAxisLine = require("src/modules/element/svg/line");
-
-  //var bars;
   var areas = require("src/modules/component/area");
+  //var bars;
   var circles = require("src/modules/component/points");
   var lines = require("src/modules/component/line");
 
@@ -23,15 +22,62 @@ define(function (require) {
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
     var zValue = function (d) { return d.z; };
-    var xScale = {};
-    var yScale = {};
-    var zScale = {};
-    var xAxis = { show: true };
-    var yAxis = { show: true };
-    var zAxis = { show: false };
-    var brushOpts = {};
+    var xScale = {
+      scale: d3.time.scale.utc(),
+      domain: null,
+      clamp: false,
+      nice: true
+    };
+    var yScale = {
+      scale: d3.scale.linear(),
+      domain: null,
+      clamp: false,
+      nice: true
+    };
+    var zScale = {
+      scale: d3.scale.linear(),
+      domain: null,
+      clamp: false,
+      nice: true
+    };
+    var xAxis = {
+      show: true,
+      class: "x axis",
+      transform: null,
+      tick: {},
+      tickText: { anchor: "middle", x: 0, y: 9, dx: "", dy: ".71em" },
+      title: { anchor: "middle" }
+    };
+    var yAxis = {
+      show: true,
+      class: "y axis",
+      transform: null,
+      tick: {},
+      tickText: { anchor: "end", x: -9, y: 0, dy: ".32em" },
+      title: { x: 0, y: -40, anchor: "middle" }
+    };
+    var zAxis = {
+      show: false,
+      class: "z axis",
+      transform: null,
+      tick: {},
+      tickText: { anchor: "start", x: 9, y: 0, dy: ".32em" },
+      title: {}
+    };
+    var brushOpts = {
+      class: "brush",
+      x: true,
+      y: false,
+      opacity: 0.2,
+      extent: null,
+      clamp: false
+    };
     var zeroLine = {
-      add: false
+      show: false,
+      class: "zero-line",
+      stroke: "#000000",
+      strokeWidth: 1,
+      opacity: 0.5
     };
     var stacks = {
       offset: "zero",
@@ -66,20 +112,19 @@ define(function (require) {
         /* ******************************** */
 
         /* Scales ******************************** */
-        var x = xScale.scale || d3.time.scale.utc();
-        var y = yScale.scale || d3.scale.linear();
-        var z = zScale.scale || d3.scale.linear();
-
-        x.domain(xScale.domain || d3.extent(d3.merge(data), xValue))
-          .clamp(xScale.clamp || false)
+        var x = xScale.scale
+          .domain(xScale.domain || d3.extent(d3.merge(data), xValue))
+          .clamp(xScale.clamp)
           .range([0, adjustedWidth]);
 
-        y.domain(yScale.domain || domain(data, yValue))
-          .clamp(yScale.clamp || false)
+        var y = yScale.scale
+          .domain(yScale.domain || domain(data, yValue))
+          .clamp(yScale.clamp)
           .range([adjustedHeight, 0]);
 
-        z.domain(zScale.domain || domain(data, zValue))
-          .clamp(zScale.clamp || false)
+        var z = zScale.scale
+          .domain(zScale.domain || domain(data, zValue))
+          .clamp(zScale.clamp)
           .range([adjustedHeight, 0]);
 
         if (xScale.nice) { x.nice(); }
@@ -100,27 +145,36 @@ define(function (require) {
         /* ******************************** */
 
         /* Brush ******************************** */
-        if (listeners.brush && listeners.brush.length) {
+        if (listeners.brushstart && listeners.brushstart.length ||
+            listeners.brush && listeners.brush.length ||
+            listeners.brushend && listeners.brushend.length) {
           var brush = brushComponent()
+            .class(brushOpts.class)
+            .xScale(brushOpts.x ? x : null)
+            .yScale(brushOpts.y ? y : null)
+            .opacity(brushOpts.opacity)
+            .clamp(brushOpts.clamp)
+            .extent(brushOpts.extent)
             .height(adjustedHeight)
-            .xScale(x)
-            .brushend(listeners.brush);
+            .brushstart(listeners.brushstart)
+            .brush(listeners.brush)
+            .brushend(listeners.brushend);
 
           g.call(brush);
         }
         /* ******************************** */
 
         /* Zero-line ******************************** */
-        if (zeroLine.add) {
+        if (zeroLine.show) {
           var zLine = zeroAxisLine()
-            .class(zeroLine.class || "zero-line")
+            .class(zeroLine.class)
             .x1(function () { return x.range()[0]; })
             .x2(function () { return x.range()[1]; })
             .y1(function () { return y(0); })
             .y2(function () { return y(0); })
-            .stroke(zeroLine.stroke || "black")
-            .strokeWidth(zeroLine.strokeWidth || 1)
-            .opacity(zeroLine.opacity || 0.5);
+            .stroke(zeroLine.stroke)
+            .strokeWidth(zeroLine.strokeWidth)
+            .opacity(zeroLine.opacity);
 
           g.call(zLine);
         }
@@ -130,12 +184,11 @@ define(function (require) {
         if (xAxis.show) {
           var axisX = axis()
             .scale(x)
-            .class(xAxis.class || "x axis")
+            .class(xAxis.class)
             .transform(xAxis.transform || "translate(0," + (y.range()[0]) + ")")
-            .tick(xAxis.tick || {
-              text: { anchor: "middle", x: 0, y: 9, dx: "", dy: ".71em" }
-            })
-            .title(xAxis.title || { anchor: "middle"});
+            .tick(xAxis.tick)
+            .tickText(xAxis.tickText)
+            .title(xAxis.title);
 
           g.call(axisX);
         }
@@ -144,12 +197,11 @@ define(function (require) {
           var axisY = axis()
             .scale(y)
             .orient("left")
-            .class(yAxis.class || "y axis")
+            .class(yAxis.class)
             .transform(yAxis.transform || "translate(0,0)")
-            .tick(yAxis.tick || {
-              text: { anchor: "end", x: -9, y: 0, dy: ".32em" }
-            })
-            .title(yAxis.title || { x: 0, y: -40, anchor: "middle" });
+            .tick(yAxis.tick)
+            .tickText(yAxis.tickText)
+            .title(yAxis.title);
 
           g.call(axisY);
         }
@@ -158,12 +210,11 @@ define(function (require) {
           var axisZ = axis()
             .scale(z)
             .orient("right")
-            .class(zAxis.class || "z axis")
+            .class(zAxis.class)
             .transform(zAxis.transform || "translate(" + x.range()[1] + "," + "0)")
-            .tick(zAxis.tick || {
-              text: { anchor: "start", x: 9, y: 0, dy: ".32em" }
-            })
-            .title(zAxis.title || {});
+            .tick(zAxis.tick)
+            .tickText(zAxis.tickText)
+            .title(zAxis.title);
 
           g.call(axisZ);
         }
@@ -187,30 +238,20 @@ define(function (require) {
 
           // Only render elements when api called
           if (d3.keys(d.opts).length) {
-            var element = constructor().function(d.func);
-            var isArray = Array.isArray(d.opts);
+            var element = functor().function(d.func);
 
             if (d.type === "area") { d.opts.offset = stacks.offset; }
+            d.opts = !Array.isArray(d.opts) ? [d.opts] : d.opts;
 
-            if (isArray) {
-              d.opts.forEach(function (props) {
-                var isZ = props.scale && props.scale.toLowerCase() === "z";
-                props.x = xValue;
-                props.y = isZ ? zValue : yValue;
-                props.xScale = x;
-                props.yScale = isZ ? z : y;
+            d.opts.forEach(function (props) {
+              var isZ = props.scale && props.scale.toLowerCase() === "z";
+              props.x = xValue;
+              props.y = isZ ? zValue : yValue;
+              props.xScale = x;
+              props.yScale = isZ ? z : y;
 
-                clippedG.call(element.options(props));
-              });
-            } else {
-              var isZ = d.opts.scale && d.opts.scale.toLowerCase() === "z";
-              d.opts.x = xValue;
-              d.opts.y = isZ ? zValue : yValue;
-              d.opts.xScale = x;
-              d.opts.yScale = isZ ? z : y;
-
-              clippedG.call(element.options(d.opts));
-            }
+              clippedG.call(element.options(props));
+            });
           }
         });
         /* ******************************** */
@@ -226,7 +267,7 @@ define(function (require) {
 
     function getAccessor(accessor) {
       return function (d, i) {
-        var isStacked = d3.keys(area).length;
+        var isStacked = !!d3.keys(area).length;
         if (isStacked && stacks.offset !== "overlap") {
           return d.y0 + accessor.call(this, d, i);
         }
@@ -269,13 +310,26 @@ define(function (require) {
 
     chart.brush = function (_) {
       if (!arguments.length) { return brushOpts; }
-      brushOpts = _;
+      brushOpts.class = typeof _.clamp !== "undefined" ? _.clamp : brushOpts.clamp;
+      brushOpts.x = typeof _.x !== "undefined" ? _.x : brushOpts.x;
+      brushOpts.y = typeof _.y !== "undefined" ? _.y : brushOpts.y;
+      brushOpts.opacity = typeof _.opacity !== "undefined" ? _.opacity : brushOpts.opacity;
+      brushOpts.clamp = typeof _.clamp !== "undefined" ? _.clamp : brushOpts.clamp;
+      brushOpts.extent = typeof _.extent !== "undefined" ? _.extent : brushOpts.extent;
       return chart;
     };
 
     chart.accessor = function (_) {
       if (!arguments.length) { return accessor; }
       accessor = _;
+      return chart;
+    };
+
+    chart.stack = function (_) {
+      if (!arguments.length) { return stacks; }
+      stacks.offset = typeof _.offset !== "undefined" ? _.offset : stacks.offset;
+      stacks.order = typeof _.order !== "undefined" ? _.order : stacks.order;
+      stacks.out = typeof _.out !== "undefined" ? _.out : stacks.out;
       return chart;
     };
 
@@ -297,11 +351,73 @@ define(function (require) {
       return chart;
     };
 
-    chart.stack = function (_) {
-      if (!arguments.length) { return stacks; }
-      stacks.offset = typeof _.offset !== "undefined" ? _.offset : stacks.offset;
-      stacks.order = typeof _.order !== "undefined" ? _.order : stacks.order;
-      stacks.out = typeof _.out !== "undefined" ? _.out : stacks.out;
+    chart.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale.scale = typeof _.scale !== "undefined" ? _.scale : xScale.scale;
+      xScale.domain = typeof _.domain !== "undefined" ? _.domain : xScale.domain;
+      xScale.clamp = typeof _.clamp !== "undefined" ? _.clamp : xScale.clamp;
+      xScale.nice = typeof _.nice !== "undefined" ? _.nice : xScale.nice;
+      return chart;
+    };
+
+    chart.yScale = function (_) {
+      if (!arguments.length) { return yScale; }
+      yScale.scale = typeof _.scale !== "undefined" ? _.scale : yScale.scale;
+      yScale.domain = typeof _.domain !== "undefined" ? _.domain : yScale.domain;
+      yScale.clamp = typeof _.clamp !== "undefined" ? _.clamp : yScale.clamp;
+      yScale.nice = typeof _.nice !== "undefined" ? _.nice : yScale.nice;
+      return chart;
+    };
+
+    chart.zScale = function (_) {
+      if (!arguments.length) { return zScale; }
+      zScale.scale = typeof _.scale !== "undefined" ? _.scale : zScale.scale;
+      zScale.domain = typeof _.domain !== "undefined" ? _.domain : zScale.domain;
+      zScale.clamp = typeof _.clamp !== "undefined" ? _.clamp : zScale.clamp;
+      zScale.nice = typeof _.nice !== "undefined" ? _.nice : zScale.nice;
+      return chart;
+    };
+
+    chart.xAxis = function (_) {
+      if (!arguments.length) { return xAxis; }
+      xAxis.show = typeof _.show !== "undefined" ? _.show : xAxis.show;
+      xAxis.class = typeof _.class !== "undefined" ? _.class : xAxis.class;
+      xAxis.transform = typeof _.transform !== "undefined" ? _.transform : xAxis.transform;
+      xAxis.tick = typeof _.tick !== "undefined" ? _.tick : xAxis.tick;
+      xAxis.tickText = typeof _.tickText!== "undefined" ? _.tickText: xAxis.tickText;
+      xAxis.title = typeof _.title !== "undefined" ? _.title : xAxis.title;
+      return chart;
+    };
+
+    chart.yAxis = function (_) {
+      if (!arguments.length) { return yAxis; }
+      yAxis.show = typeof _.show !== "undefined" ? _.show : yAxis.show;
+      yAxis.class = typeof _.class !== "undefined" ? _.class : yAxis.class;
+      yAxis.transform = typeof _.transform !== "undefined" ? _.transform : yAxis.transform;
+      yAxis.tick = typeof _.tick !== "undefined" ? _.tick : yAxis.tick;
+      yAxis.tickText = typeof _.tickText!== "undefined" ? _.tickText: yAxis.tickText;
+      yAxis.title = typeof _.title !== "undefined" ? _.title : yAxis.title;
+      return chart;
+    };
+
+    chart.zAxis = function (_) {
+      if (!arguments.length) { return zAxis; }
+      zAxis.show = typeof _.show !== "undefined" ? _.show : zAxis.show;
+      zAxis.class = typeof _.class !== "undefined" ? _.class : zAxis.class;
+      zAxis.transform = typeof _.transform !== "undefined" ? _.transform : zAxis.transform;
+      zAxis.tick = typeof _.tick !== "undefined" ? _.tick : zAxis.tick;
+      zAxis.tickText = typeof _.tickText!== "undefined" ? _.tickText: zAxis.tickText;
+      zAxis.title = typeof _.title !== "undefined" ? _.title : zAxis.title;
+      return chart;
+    };
+
+    chart.zeroLine = function (_) {
+      if (!arguments.length) { return zeroLine; }
+      zeroLine.show = typeof _.show !== "undefined" ? _.show : margin.show;
+      zeroLine.class = typeof _.class !== "undefined" ? _.class : margin.class;
+      zeroLine.stroke = typeof _.stroke !== "undefined" ? _.stroke : margin.stroke;
+      zeroLine.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : margin.strokeWidth;
+      zeroLine.opacity = typeof _.opacity !== "undefined" ? _.opacity : margin.opacity;
       return chart;
     };
 
@@ -326,48 +442,6 @@ define(function (require) {
     chart.points = function (_) {
       if (!arguments.length) { return points; }
       points = _;
-      return chart;
-    };
-
-    chart.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
-      return chart;
-    };
-
-    chart.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
-      return chart;
-    };
-
-    chart.zScale = function (_) {
-      if (!arguments.length) { return zScale; }
-      zScale = _;
-      return chart;
-    };
-
-    chart.xAxis = function (_) {
-      if (!arguments.length) { return xAxis; }
-      xAxis = _;
-      return chart;
-    };
-
-    chart.yAxis = function (_) {
-      if (!arguments.length) { return yAxis; }
-      yAxis = _;
-      return chart;
-    };
-
-    chart.zAxis = function (_) {
-      if (!arguments.length) { return zAxis; }
-      zAxis = _;
-      return chart;
-    };
-
-    chart.zeroLine = function (_) {
-      if (!arguments.length) { return zeroLine; }
-      zeroLine = _;
       return chart;
     };
 

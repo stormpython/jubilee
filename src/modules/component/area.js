@@ -1,9 +1,10 @@
 define(function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
-  var constructor = require("src/modules/component/build");
+  var functor = require("src/modules/functor");
 
   return function area() {
+    // Private variables
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var xScale = d3.time.scale.utc();
@@ -29,11 +30,11 @@ define(function (require) {
 
         var areaPath = path().pathGenerator(areas);
 
-        var build = constructor()
+        var element = functor()
           .function(areaPath)
           .options(properties);
 
-        d3.select(this).append("g").call(build);
+        d3.select(this).append("g").call(element);
       });
     }
 
@@ -56,6 +57,7 @@ define(function (require) {
       return yScale(d.y0 + y.call(this, d, i));
     }
 
+    // Public API
     component.x = function (_) {
       if (!arguments.length) { return x; }
       x = _;

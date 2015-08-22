@@ -2,6 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function grid() {
+    // Private variables
     var gridSize = [500, 500];
     var rowScale = d3.scale.linear();
     var columnScale = d3.scale.linear();
@@ -31,6 +32,7 @@ define(function (require) {
       return data;
     }
 
+    // Public API
     layout.size = function (_) {
       if (!arguments.length) { return gridSize; }
       gridSize = _;

@@ -2,6 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function axes() {
+    // Private variables
     var scale = d3.scale.linear();
     var orient = "bottom";
     var tick = {
@@ -11,20 +12,18 @@ define(function (require) {
       innerTickSize: 6,
       outerTickSize: 6,
       padding: 3,
-      format: null,
-      rotate: 0,
-      text: {
-        anchor: "middle",
-        x: 0,
-        y: 9,
-        dx: "",
-        dy: ".71em"
-      }
+      format: null
     };
-
+    var tickText = {
+      anchor: "middle",
+      x: 0,
+      y: 9,
+      dx: "",
+      dy: ".71em",
+      rotate: 0
+    };
     var transform = "translate(0,0)";
     var gClass = "axis";
-
     var title = {
       class: "axis title",
       x: 6,
@@ -55,12 +54,12 @@ define(function (require) {
           .call(axis);
 
         g.selectAll(".tick text")
-          .attr("transform", "rotate(" + tick.rotate + ")")
-          .attr("x", tick.text.x)
-          .attr("y", tick.text.y)
-          .attr("dx", tick.text.dx)
-          .attr("dy", tick.text.dy)
-          .style("text-anchor", tick.text.anchor);
+          .attr("transform", "rotate(" + tickText.rotate + ")")
+          .attr("x", tickText.x)
+          .attr("y", tickText.y)
+          .attr("dx", tickText.dx)
+          .attr("dy", tickText.dy)
+          .style("text-anchor", tickText.anchor);
 
         g.append("text")
           .attr("class", title.class)
@@ -73,6 +72,19 @@ define(function (require) {
           .text(title.text);
       });
     }
+
+    // Public API
+    component.class = function (_) {
+      if (!arguments.length) { return gClass; }
+      gClass = _;
+      return component;
+    };
+
+    component.transform = function (_) {
+      if (!arguments.length) { return transform; }
+      transform = _;
+      return component;
+    };
 
     component.scale = function (_) {
       if (!arguments.length) { return scale; }
@@ -93,27 +105,19 @@ define(function (require) {
       tick.size = typeof _.size !== "undefined" ? _.size : tick.size;
       tick.padding = typeof _.padding !== "undefined" ? _.padding : tick.padding;
       tick.format = typeof _.format !== "undefined" ? _.format : tick.format;
-      tick.rotate = typeof _.rotate !== "undefined" ? _.rotate : tick.rotate;
       tick.innerTickSize = typeof _.innerTickSize !== "undefined" ? _.innerTickSize : tick.innerTickSize;
       tick.outerTickSize = typeof _.outerTickSize !== "undefined" ? _.outerTickSize : tick.outerTickSize;
-      tick.text = typeof _.text !== "undefined" ? _.text : tick.text || {};
-      tick.text.anchor = _.text && typeof _.text.anchor !== "undefined" ? _.text.anchor : tick.text.anchor;
-      tick.text.x = _.text && typeof _.text.x !== "undefined" ? _.text.x : tick.text.x;
-      tick.text.y = _.text && typeof _.text.y !== "undefined" ? _.text.y : tick.text.y;
-      tick.text.dx = _.text && typeof _.text.dx !== "undefined" ? _.text.dx : tick.text.dx;
-      tick.text.dy = _.text && typeof _.text.dy !== "undefined" ? _.text.dy : tick.text.dy;
       return component;
     };
 
-    component.class = function (_) {
-      if (!arguments.length) { return gClass; }
-      gClass = _;
-      return component;
-    };
-
-    component.transform = function (_) {
-      if (!arguments.length) { return transform; }
-      transform = _;
+    component.tickText = function (_) {
+      if (!arguments.length) { return tickText; }
+      tickText.anchor = typeof _.anchor !== "undefined" ? _.anchor : tickText.anchor;
+      tickText.x = typeof _.x !== "undefined" ? _.x : tickText.x;
+      tickText.y = typeof _.y !== "undefined" ? _.y : tickText.y;
+      tickText.dx = typeof _.dx !== "undefined" ? _.dx : tickText.dx;
+      tickText.dy = typeof _.dy !== "undefined" ? _.dy : tickText.dy;
+      tickText.rotate = typeof _.rotate !== "undefined" ? _.rotate : tickText.rotate;
       return component;
     };
 

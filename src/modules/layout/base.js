@@ -2,6 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function format() {
+    // Private variables
     var type = "rows"; // available types: 'rows', 'columns', 'grid'
     var size = [500, 500]; // [width, height]
     var rowScale = d3.scale.linear();

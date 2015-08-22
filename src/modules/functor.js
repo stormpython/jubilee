@@ -11,9 +11,7 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function (data, index) {
-        var keysLength = !!d3.keys(opts).length;
-
-        if (typeof func === "function" && keysLength) {
+        if (typeof func === "function") {
           d3.entries(opts).forEach(function (d, i) {
             if (typeof func[d.key] === "function") {
               func[d.key](d.value);

@@ -1,22 +1,20 @@
-/**
- * Creates a brush component and binds it to an <svg></svg>.
- */
 define(function (require) {
   var d3 = require("d3");
 
+  /**
+   * Creates a brush component and binds it to an <svg></svg>.
+   */
   return function brush() {
     // Private variables
-    var cssClass = "brush";
     var margin = { top: 0, right: 0, bottom: 0, left: 0 };
+    var cssClass = "brush";
+    var opacity = 0.2;
     var width = null;
     var height = null;
-    var opacity = 0.2;
-
     var xScale = null;
     var yScale = null;
     var extent = null;
-    var clamp = null;
-
+    var clamp = false;
     var brushStartCallback = [];
     var brushCallback = [];
     var brushEndCallback = [];
@@ -121,21 +119,21 @@ define(function (require) {
     component.brushstart = function (_) {
       if (!arguments.length) { return brushStartCallback; }
       if (typeof _ === "function") { brushStartCallback.push(_); }
-      else { brushStartCallback = _; }
+      else if (Array.isArray(_)) { brushStartCallback = _; }
       return component;
     };
 
     component.brush = function (_) {
       if (!arguments.length) { return brushCallback; }
       if (typeof _ === "function") { brushCallback.push(_); }
-      else { brushCallback = _; }
+      else if (Array.isArray(_)) { brushCallback = _; }
       return component;
     };
 
     component.brushend = function (_) {
       if (!arguments.length) { return brushEndCallback; }
       if (typeof _ === "function") { brushEndCallback.push(_); }
-      else { brushEndCallback = _; }
+      else if (Array.isArray(_)) { brushEndCallback = _; }
       return component;
     };
 

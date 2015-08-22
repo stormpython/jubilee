@@ -1,9 +1,10 @@
 define(function (require) {
   var d3 = require("d3");
   var circle = require("src/modules/element/svg/circle");
-  var constructor = require("src/modules/component/build");
+  var functor = require("src/modules/functor");
 
   return function points() {
+    // Private variables
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var xScale = d3.time.scale.utc();
@@ -21,7 +22,7 @@ define(function (require) {
       selection.each(function (data, index) {
         var circles = circle().cx(X).cy(Y).radius(radius);
 
-        var element = constructor()
+        var element = functor()
           .function(circles)
           .options(properties);
 

@@ -5,6 +5,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function events() {
+    // Private variables
     var accessor = function (d) { return d.x; };
     var listeners = {};
 
@@ -14,9 +15,8 @@ define(function (require) {
         var bisect = d3.bisector(accessor).left;
 
         d3.entries(listeners).forEach(function (e, i) {
-
-          // Stop listening for event types that have an empty listeners
-          // array or are set to null
+          // Stop listening for event types that have
+          // an empty listeners array or that is set to null
           if (!e.value || !e.value.length) {
             return element.on(e.key, null);
           }
