@@ -1,15 +1,18 @@
 define(function (require) {
   var d3 = require("d3");
-  var circle = require("src/modules/element/svg/circle");
+  var rect = require("src/modules/element/svg/rect");
   var functor = require("src/modules/functor");
 
   return function points() {
     // Private variables
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
+    var rx = 0;
+    var ry = 0;
+    var width;
+    var height;
     var xScale = d3.time.scale.utc();
     var yScale = d3.scale.linear();
-    var radius = 5;
     var properties = {
       class: "point",
       fill: function (d, i) { return d3.scale.category10()(i); },
@@ -20,17 +23,15 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function (data, index) {
-        var circles = circle().cx(X).cy(Y).radius(radius);
+        var rects = rect().x(X).y(Y).rx(rx).ry(ry)
+          .width(width)
+          .height(height);
 
         var element = functor()
-          .function(circles)
+          .function(rects)
           .options(properties);
 
-        d3.select(this).append("g")
-          .datum(data.reduce(function (a, b) {
-            return a.concat(b);
-          },[]))
-          .call(element);
+        d3.select(this).append("g").call(element);
       });
     }
 
@@ -55,9 +56,27 @@ define(function (require) {
       return component;
     };
 
-    component.radius = function (_) {
-      if (!arguments.length) { return radius; }
-      radius = _;
+    component.rx = function (_) {
+      if (!arguments.length) { return rx; }
+      rx = _;
+      return component;
+    };
+
+    component.ry = function (_) {
+      if (!arguments.length) { return ry; }
+      ry = _;
+      return component;
+    };
+
+    component.width = function (_) {
+      if (!arguments.length) { return width; }
+      width = _;
+      return component;
+    };
+
+    component.height = function (_) {
+      if (!arguments.length) { return height; }
+      height = _;
       return component;
     };
 

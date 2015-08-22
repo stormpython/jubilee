@@ -40,7 +40,7 @@
             ],
             [
               { x: 1411761450000, y: 191, label: "brothers"},
-              { x: 1411761480000, y: 188, label: "brothers"},
+              { x: 1411761480000, y: -188, label: "brothers"},
               { x: 1411761510000, y: 12, label: "brothers"},
               { x: 1411761540000, y: 17, label: "brothers"},
               { x: 1411761570000, y: 17, label: "brothers"}
@@ -52,7 +52,9 @@
         var brushFunction = function (brush) { console.log(brush.extent()); };
 
         // D3 selection
-        var selection = d3.select("#chart").datum(data.series);
+        var selection = d3.select("#chart")
+          .datum(data.series);
+
         var color = d3.scale.category10(["band", "of", "brothers"]);
 
         // Example normal area chart configuration
@@ -60,7 +62,7 @@
           .width(700)
           .height(400)
           .yScale({ nice: true })
-          .stack({ offset: "zero" })
+          .zeroLine({ show: true })
 //          .area({
 //            interpolate: "basis",
 //            properties: {

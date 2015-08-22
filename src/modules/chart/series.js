@@ -26,19 +26,19 @@ define(function (require) {
       scale: d3.time.scale.utc(),
       domain: null,
       clamp: false,
-      nice: true
+      nice: false
     };
     var yScale = {
       scale: d3.scale.linear(),
       domain: null,
       clamp: false,
-      nice: true
+      nice: false
     };
     var zScale = {
       scale: d3.scale.linear(),
       domain: null,
       clamp: false,
-      nice: true
+      nice: false
     };
     var xAxis = {
       show: true,
@@ -83,7 +83,10 @@ define(function (require) {
       scale: "y",
       offset: "zero",
       order: "default",
-      out: stackOut
+      out: function stackOut(d, y0, y) {
+        d.y0 = y0;
+        d.y = y;
+      }
     };
     var bar = {};
     var line = {};
@@ -112,17 +115,17 @@ define(function (require) {
 
         /* Scales ******************************** */
         var x = xScale.scale
-          .domain(xScale.domain || d3.extent(d3.merge(data), xValue))
+          .domain(xScale.domain ? xScale.domain.call(this, data) : d3.extent(d3.merge(data), xValue))
           .clamp(xScale.clamp)
           .range([0, adjustedWidth]);
 
         var y = yScale.scale
-          .domain(yScale.domain || domain(data, yValue))
+          .domain(yScale.domain ? yScale.domain.call(this, data) : domain(data, yValue))
           .clamp(yScale.clamp)
           .range([adjustedHeight, 0]);
 
         var z = zScale.scale
-          .domain(zScale.domain || domain(data, zValue))
+          .domain(zScale.domain ? zScale.domain.call(this, data) : domain(data, zValue))
           .clamp(zScale.clamp)
           .range([adjustedHeight, 0]);
 
@@ -274,11 +277,6 @@ define(function (require) {
       };
     }
 
-    function stackOut(d, y0, y) {
-      d.y0 = y0;
-      d.y = y;
-    }
-
     // Public API
     chart.margin = function (_) {
       if (!arguments.length) { return margin; }
@@ -354,7 +352,7 @@ define(function (require) {
     chart.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale.scale = typeof _.scale !== "undefined" ? _.scale : xScale.scale;
-      xScale.domain = typeof _.domain !== "undefined" ? _.domain : xScale.domain;
+      xScale.domain = typeof _.domain !== "undefined" ? d3.functor(_.domain) : xScale.domain;
       xScale.clamp = typeof _.clamp !== "undefined" ? _.clamp : xScale.clamp;
       xScale.nice = typeof _.nice !== "undefined" ? _.nice : xScale.nice;
       return chart;
@@ -363,7 +361,7 @@ define(function (require) {
     chart.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale.scale = typeof _.scale !== "undefined" ? _.scale : yScale.scale;
-      yScale.domain = typeof _.domain !== "undefined" ? _.domain : yScale.domain;
+      yScale.domain = typeof _.domain !== "undefined" ? d3.functor(_.domain) : yScale.domain;
       yScale.clamp = typeof _.clamp !== "undefined" ? _.clamp : yScale.clamp;
       yScale.nice = typeof _.nice !== "undefined" ? _.nice : yScale.nice;
       return chart;
@@ -372,7 +370,7 @@ define(function (require) {
     chart.zScale = function (_) {
       if (!arguments.length) { return zScale; }
       zScale.scale = typeof _.scale !== "undefined" ? _.scale : zScale.scale;
-      zScale.domain = typeof _.domain !== "undefined" ? _.domain : zScale.domain;
+      zScale.domain = typeof _.domain !== "undefined" ? d3.functor(_.domain) : zScale.domain;
       zScale.clamp = typeof _.clamp !== "undefined" ? _.clamp : zScale.clamp;
       zScale.nice = typeof _.nice !== "undefined" ? _.nice : zScale.nice;
       return chart;
