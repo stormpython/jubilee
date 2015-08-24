@@ -6,13 +6,12 @@ define(function (require) {
   return function points() {
     // Private variables
     var x = function (d) { return d.x; };
-    var y = function (d) { return d.y; };
-    var rx = 0;
-    var ry = 0;
-    var width;
-    var height;
+    var y = function (d) { return d.y0 + d.y; };
     var xScale = d3.time.scale.utc();
     var yScale = d3.scale.linear();
+    var rx = 0;
+    var ry = 0;
+    var padding = 0.4;
     var properties = {
       class: "point",
       fill: function (d, i) { return d3.scale.category10()(i); },
@@ -23,24 +22,37 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function (data, index) {
-        var rects = rect().x(X).y(Y).rx(rx).ry(ry)
-          .width(width)
-          .height(height);
+        // Used only to determine the width of bars
+        // for time scales
+        var timeScale = d3.scale.ordinal()
+          .domain(xScale.domain())
+          .rangeBands(xScale.range(), padding, 0);
+
+        var rects = rect()
+          .x(function (d, i) {
+            return xScale(x.call(this, d, i));
+          })
+          .y(function (d, i) {
+            return yScale(d.y0 + y.call(this, d, i));
+          })
+          .width(function () {
+            return timeScale.rangeBand();
+          })
+          .height(function (d, i) {
+            return yScale(d.y0) - yScale(d.y0 + y.call(this, d, i));
+          })
+          .rx(rx)
+          .ry(ry);
 
         var element = functor()
           .function(rects)
           .options(properties);
 
-        d3.select(this).append("g").call(element);
+        d3.select(this).selectAll("g")
+          .data(data)
+          .enter().append("g")
+          .call(element);
       });
-    }
-
-    function X(d, i) {
-      return xScale(x.call(this, d, i));
-    }
-
-    function Y(d, i) {
-      return yScale(y.call(this, d, i));
     }
 
     // Public API
@@ -68,15 +80,9 @@ define(function (require) {
       return component;
     };
 
-    component.width = function (_) {
-      if (!arguments.length) { return width; }
-      width = _;
-      return component;
-    };
-
-    component.height = function (_) {
-      if (!arguments.length) { return height; }
-      height = _;
+    component.padding = function (_) {
+      if (!arguments.length) { return padding; }
+      padding = _;
       return component;
     };
 

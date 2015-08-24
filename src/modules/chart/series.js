@@ -9,7 +9,7 @@ define(function (require) {
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var zeroAxisLine = require("src/modules/element/svg/line");
   var areas = require("src/modules/component/area");
-  //var bars;
+  var bars = require("src/modules/component/bars");
   var circles = require("src/modules/component/points");
   var lines = require("src/modules/component/line");
 
@@ -178,7 +178,7 @@ define(function (require) {
             .strokeWidth(zeroLine.strokeWidth)
             .opacity(zeroLine.opacity);
 
-          g.call(zLine);
+          g.append("g").datum([{}]).call(zLine);
         }
         /* ******************************** */
 
@@ -232,8 +232,8 @@ define(function (require) {
         var elements = [
           {type: "area", func: areas(), opts: area},
           {type: "line", func: lines(), opts: line},
-          {type: "points", func: circles(), opts: points}
-          //{type: "bar", func: bars(), opts: bar}, // need to take care of stacking
+          {type: "points", func: circles(), opts: points},
+          {type: "bar", func: bars(), opts: bar}
         ];
 
         elements.forEach(function (d) {
@@ -269,7 +269,7 @@ define(function (require) {
 
     function getAccessor(accessor) {
       return function (d, i) {
-        var isStacked = !!d3.keys(area).length;
+        var isStacked = !!d3.keys(area).length || !!d3.keys(bar).length;
         if (isStacked && stacks.offset !== "overlap") {
           return d.y0 + accessor.call(this, d, i);
         }

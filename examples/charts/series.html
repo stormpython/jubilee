@@ -40,7 +40,7 @@
             ],
             [
               { x: 1411761450000, y: 191, label: "brothers"},
-              { x: 1411761480000, y: -188, label: "brothers"},
+              { x: 1411761480000, y: 188, label: "brothers"},
               { x: 1411761510000, y: 12, label: "brothers"},
               { x: 1411761540000, y: 17, label: "brothers"},
               { x: 1411761570000, y: 17, label: "brothers"}
@@ -63,6 +63,7 @@
           .height(400)
           .yScale({ nice: true })
           .zeroLine({ show: true })
+          .stack({ offset: "zero" })
 //          .area({
 //            interpolate: "basis",
 //            properties: {
@@ -76,22 +77,31 @@
 //              }
 //            }
 //          })
-          .line({
-            interpolate: "linear",
+//          .line({
+//            interpolate: "linear",
+//            properties: {
+//              stroke: function (d, i) {
+//                var point = d.slice(0,1).pop();
+//                return color(point.label);
+//              }
+//            }
+//          })
+//          .points({
+//            class: "points",
+//            radius: 5,
+//            properties: {
+//              fill: "#ffffff",
+//              stroke: function (d, i) { return color(d.label); },
+//              strokeWidth: 3
+//            }
+//          })
+          .bar({
+            rx: 0,
+            ry: 0,
+            padding: 0.7,
             properties: {
-              stroke: function (d, i) {
-                var point = d.slice(0,1).pop();
-                return color(point.label);
-              }
-            }
-          })
-          .points({
-            class: "points",
-            radius: 5,
-            properties: {
-              fill: "#ffffff",
-              stroke: function (d, i) { return color(d.label); },
-              strokeWidth: 3
+              class: "bars",
+              fill: function (d, i) { return color(d.label); }
             }
           })
           .on("click", clickFunction)
