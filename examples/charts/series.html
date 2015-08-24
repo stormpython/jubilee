@@ -25,25 +25,25 @@
         var data = {
           series: [
             [
-              { x: 1411761450000, y: 41, label: "band"},
-              { x: 1411761480000, y: 18, label: "band"},
-              { x: 1411761510000, y: 22, label: "band"},
-              { x: 1411761540000, y: 17, label: "band"},
-              { x: 1411761570000, y: 17, label: "band"}
+              { x: 1411761450000, y: 41, label: "band", z: 10},
+              { x: 1411761480000, y: 18, label: "band", z: 13},
+              { x: 1411761510000, y: 22, label: "band", z: 24},
+              { x: 1411761540000, y: 17, label: "band", z: 36},
+              { x: 1411761570000, y: 17, label: "band", z: 29}
             ],
             [
-              { x: 1411761450000, y: 91, label: "of"},
-              { x: 1411761480000, y: 88, label: "of"},
-              { x: 1411761510000, y: 38, label: "of"},
-              { x: 1411761540000, y: 47, label: "of"},
-              { x: 1411761570000, y: 57, label: "of"}
+              { x: 1411761450000, y: 91, label: "of", z: 10},
+              { x: 1411761480000, y: 88, label: "of", z: 45},
+              { x: 1411761510000, y: 38, label: "of", z: 13},
+              { x: 1411761540000, y: 47, label: "of", z: 24},
+              { x: 1411761570000, y: 57, label: "of", z: 90}
             ],
             [
-              { x: 1411761450000, y: 191, label: "brothers"},
-              { x: 1411761480000, y: 188, label: "brothers"},
-              { x: 1411761510000, y: 12, label: "brothers"},
-              { x: 1411761540000, y: 17, label: "brothers"},
-              { x: 1411761570000, y: 17, label: "brothers"}
+              { x: 1411761450000, y: 191, label: "brothers", z: 27},
+              { x: 1411761480000, y: 188, label: "brothers", z: 93},
+              { x: 1411761510000, y: 12, label: "brothers", z: 45},
+              { x: 1411761540000, y: 17, label: "brothers", z: 39},
+              { x: 1411761570000, y: 17, label: "brothers", z: 67}
             ]
           ]
         };
@@ -63,47 +63,78 @@
           .height(400)
           .yScale({ nice: true })
           .zeroLine({ show: true })
-          .stack({ offset: "zero" })
-//          .area({
-//            interpolate: "basis",
-//            properties: {
-//              fill: function (d, i) {
-//                var point = d.slice(0,1).pop();
-//                return color(point.label);
-//              },
-//              stroke: function (d, i) {
-//                var point = d.slice(0,1).pop();
-//                return color(point.label);
-//              }
-//            }
-//          })
-//          .line({
-//            interpolate: "linear",
-//            properties: {
-//              stroke: function (d, i) {
-//                var point = d.slice(0,1).pop();
-//                return color(point.label);
-//              }
-//            }
-//          })
-//          .points({
-//            class: "points",
-//            radius: 5,
-//            properties: {
-//              fill: "#ffffff",
-//              stroke: function (d, i) { return color(d.label); },
-//              strokeWidth: 3
-//            }
-//          })
-          .bar({
-            rx: 0,
-            ry: 0,
-            padding: 0.7,
+          .z("z")
+          .zScale({
+            domain: function (data) {
+              return d3.extent(data, function (d) { return d.z; });
+            },
+//            nice: true
+          })
+          .zAxis({ show: true })
+          .area({
+            interpolate: "basis",
             properties: {
-              class: "bars",
-              fill: function (d, i) { return color(d.label); }
+              fill: function (d) {
+                var point = d.slice(0,1).pop();
+                return color(point.label);
+              },
+              stroke: function (d) {
+                var point = d.slice(0,1).pop();
+                return color(point.label);
+              },
+              opacity: 0.5
             }
           })
+          .points([
+//            {
+//              class: "points",
+//              radius: 5,
+//              properties: {
+//                fill: "#ffffff",
+//                stroke: function (d, i) { return color(d.label); },
+//                strokeWidth: 3
+//              }
+//            },
+            {
+              class: "points",
+              scale: "z",
+              radius: 5,
+              properties: {
+                fill: "#ffffff",
+                stroke: function () { return "#000000"; },
+                strokeWidth: 3
+              }
+            }
+          ])
+//          .bar({
+//            rx: 0,
+//            ry: 0,
+//            padding: 0.9,
+//            properties: {
+//              class: "bars",
+//              fill: function (d, i) { return color(d.label); }
+//            }
+//          })
+          .line([
+//            {
+//              interpolate: "linear",
+//              properties: {
+//                stroke: function (d, i) {
+//                  var point = d.slice(0,1).pop();
+//                  return color(point.label);
+//                }
+//              }
+//            },
+            {
+              scale: "z",
+              interpolate: "linear",
+              properties: {
+                stroke: function () {
+                  return "#000000";
+                }
+              }
+            }
+          ])
           .on("click", clickFunction)
           .on("brushend", brushFunction);
 

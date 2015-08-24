@@ -3,6 +3,8 @@
  */
 define(function (require) {
   var d3 = require("d3");
+  var valuator = require("src/modules/valuator");
+  var targetIndex = require("src/modules/helpers/target_index");
 
   return function events() {
     // Private variables
@@ -12,7 +14,6 @@ define(function (require) {
     function component(selection) {
       selection.each(function (data, index) {
         var element = d3.select(this);
-        var bisect = d3.bisector(accessor).left;
 
         d3.entries(listeners).forEach(function (e, i) {
           // Stop listening for event types that have
@@ -27,9 +28,9 @@ define(function (require) {
             e.value.forEach(function (listener) {
               // References the data point to calculate the correct index value
               var target = d3.select(d3.event.target);
-              var parentDatum = d3.select(target.node().parentNode).datum();
+              var parent = d3.select(d3.event.target.farthestViewportElement);
               var datum = target.datum();
-              var index = bisect(parentDatum, accessor.call(null, datum));
+              var index = targetIndex(parent, target);
 
               listener.call(this, d3.event, datum, index);
             });
@@ -41,7 +42,7 @@ define(function (require) {
     // Public API
     component.accessor = function (_) {
       if (!arguments.length) { return accessor; }
-      accessor = _;
+      accessor = valuator(_);
       return component;
     };
 

@@ -1,6 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
   var functor = require("src/modules/functor");
+  var valuator = require("src/modules/valuator");
   var clip = require("src/modules/element/svg/clipPath");
   var axis = require("src/modules/component/axis");
   var brushComponent = require("src/modules/component/brush");
@@ -42,6 +43,7 @@ define(function (require) {
     };
     var xAxis = {
       show: true,
+      gridlines: false,
       class: "x axis",
       transform: null,
       tick: {},
@@ -50,6 +52,7 @@ define(function (require) {
     };
     var yAxis = {
       show: true,
+      gridlines: false,
       class: "y axis",
       transform: null,
       tick: {},
@@ -58,6 +61,7 @@ define(function (require) {
     };
     var zAxis = {
       show: false,
+      gridlines: false,
       class: "z axis",
       transform: null,
       tick: {},
@@ -115,17 +119,17 @@ define(function (require) {
 
         /* Scales ******************************** */
         var x = xScale.scale
-          .domain(xScale.domain ? xScale.domain.call(this, data) : d3.extent(d3.merge(data), xValue))
+          .domain(xScale.domain ? xScale.domain.call(this, d3.merge(data)) : xDomain(data, xValue))
           .clamp(xScale.clamp)
           .range([0, adjustedWidth]);
 
         var y = yScale.scale
-          .domain(yScale.domain ? yScale.domain.call(this, data) : domain(data, yValue))
+          .domain(yScale.domain ? yScale.domain.call(this, d3.merge(data)) : domain(data, yValue))
           .clamp(yScale.clamp)
           .range([adjustedHeight, 0]);
 
         var z = zScale.scale
-          .domain(zScale.domain ? zScale.domain.call(this, data) : domain(data, zValue))
+          .domain(zScale.domain ? zScale.domain.call(this, d3.merge(data)) : domain(data, zValue))
           .clamp(zScale.clamp)
           .range([adjustedHeight, 0]);
 
@@ -183,6 +187,13 @@ define(function (require) {
         /* ******************************** */
 
         /* Axes ******************************** */
+        if (xAxis.gridlines) {
+          xAxis.tick.innerTickSize = -adjustedHeight;
+        }
+        if (yAxis.gridlines) {
+          yAxis.tick.innerTickSize = -adjustedWidth;
+        }
+
         if (xAxis.show) {
           var axisX = axis()
             .scale(x)
@@ -231,9 +242,9 @@ define(function (require) {
         /* SVG Elements ******************************** */
         var elements = [
           {type: "area", func: areas(), opts: area},
+          {type: "bar", func: bars(), opts: bar},
           {type: "line", func: lines(), opts: line},
-          {type: "points", func: circles(), opts: points},
-          {type: "bar", func: bars(), opts: bar}
+          {type: "points", func: circles(), opts: points}
         ];
 
         elements.forEach(function (d) {
@@ -260,6 +271,16 @@ define(function (require) {
       });
     }
 
+    function xDomain(data, accessor) {
+      if (d3.keys(bar).length) {
+        return [
+          d3.min(d3.merge(data), accessor),
+          d3.time.minute.offset(d3.max(d3.merge(data), accessor), 1)
+        ];
+      }
+      return d3.extent(d3.merge(data), accessor);
+    }
+
     function domain(data, accessor) {
       return [
         Math.min(0, d3.min(d3.merge(data), getAccessor(accessor))),
@@ -268,9 +289,15 @@ define(function (require) {
     }
 
     function getAccessor(accessor) {
+      var obj = {y: true, z: false};
+      var val = accessor.call(this, obj) ? "y" : "z";
+
       return function (d, i) {
         var isStacked = !!d3.keys(area).length || !!d3.keys(bar).length;
-        if (isStacked && stacks.offset !== "overlap") {
+        var properlyOffset = stacks.offset !== "overlap" && stacks.offset !== "group";
+        var scalesEqual = val === stacks.scale;
+
+        if (isStacked && properlyOffset && scalesEqual) {
           return d.y0 + accessor.call(this, d, i);
         }
         return accessor.call(this, d, i);
@@ -318,7 +345,7 @@ define(function (require) {
 
     chart.accessor = function (_) {
       if (!arguments.length) { return accessor; }
-      accessor = _;
+      accessor = valuator(_);
       return chart;
     };
 
@@ -333,19 +360,19 @@ define(function (require) {
 
     chart.x = function (_) {
       if (!arguments.length) { return xValue; }
-      xValue = _;
+      xValue = valuator(_);
       return chart;
     };
 
     chart.y = function (_) {
       if (!arguments.length) { return yValue; }
-      yValue = _;
+      yValue = valuator(_);
       return chart;
     };
 
     chart.z = function (_) {
       if (!arguments.length) { return zValue; }
-      zValue = _;
+      zValue = valuator(_);
       return chart;
     };
 
@@ -379,6 +406,7 @@ define(function (require) {
     chart.xAxis = function (_) {
       if (!arguments.length) { return xAxis; }
       xAxis.show = typeof _.show !== "undefined" ? _.show : xAxis.show;
+      xAxis.gridlines = typeof _.gridlines !== "undefined" ? _.gridlines : xAxis.gridlines;
       xAxis.class = typeof _.class !== "undefined" ? _.class : xAxis.class;
       xAxis.transform = typeof _.transform !== "undefined" ? _.transform : xAxis.transform;
       xAxis.tick = typeof _.tick !== "undefined" ? _.tick : xAxis.tick;
@@ -390,6 +418,7 @@ define(function (require) {
     chart.yAxis = function (_) {
       if (!arguments.length) { return yAxis; }
       yAxis.show = typeof _.show !== "undefined" ? _.show : yAxis.show;
+      yAxis.gridlines = typeof _.gridlines !== "undefined" ? _.gridlines : yAxis.gridlines;
       yAxis.class = typeof _.class !== "undefined" ? _.class : yAxis.class;
       yAxis.transform = typeof _.transform !== "undefined" ? _.transform : yAxis.transform;
       yAxis.tick = typeof _.tick !== "undefined" ? _.tick : yAxis.tick;
@@ -401,6 +430,7 @@ define(function (require) {
     chart.zAxis = function (_) {
       if (!arguments.length) { return zAxis; }
       zAxis.show = typeof _.show !== "undefined" ? _.show : zAxis.show;
+      zAxis.gridlines = typeof _.gridlines !== "undefined" ? _.gridlines : zAxis.gridlines;
       zAxis.class = typeof _.class !== "undefined" ? _.class : zAxis.class;
       zAxis.transform = typeof _.transform !== "undefined" ? _.transform : zAxis.transform;
       zAxis.tick = typeof _.tick !== "undefined" ? _.tick : zAxis.tick;

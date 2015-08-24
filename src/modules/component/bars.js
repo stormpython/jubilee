@@ -2,6 +2,7 @@ define(function (require) {
   var d3 = require("d3");
   var rect = require("src/modules/element/svg/rect");
   var functor = require("src/modules/functor");
+  var valuator = require("src/modules/valuator");
 
   return function points() {
     // Private variables
@@ -48,7 +49,8 @@ define(function (require) {
           .function(rects)
           .options(properties);
 
-        d3.select(this).selectAll("g")
+        d3.select(this).append("g")
+          .selectAll("g")
           .data(data)
           .enter().append("g")
           .call(element);
@@ -58,13 +60,13 @@ define(function (require) {
     // Public API
     component.x = function (_) {
       if (!arguments.length) { return x; }
-      x = _;
+      x = valuator(_);
       return component;
     };
 
     component.y = function (_) {
       if (!arguments.length) { return y; }
-      y = _;
+      y = valuator(_);
       return component;
     };
 

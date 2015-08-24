@@ -2,6 +2,7 @@ define(function (require) {
   var d3 = require("d3");
   var circle = require("src/modules/element/svg/circle");
   var functor = require("src/modules/functor");
+  var valuator = require("src/modules/valuator");
 
   return function points() {
     // Private variables
@@ -45,13 +46,13 @@ define(function (require) {
     // Public API
     component.x = function (_) {
       if (!arguments.length) { return x; }
-      x = _;
+      x = valuator(_);
       return component;
     };
 
     component.y = function (_) {
       if (!arguments.length) { return y; }
-      y = _;
+      y = valuator(_);
       return component;
     };
 
