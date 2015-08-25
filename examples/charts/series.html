@@ -56,84 +56,95 @@
           .datum(data.series);
 
         var color = d3.scale.category10(["band", "of", "brothers"]);
+        var barColorScale = d3.scale.category20c(["band", "of", "brothers"]);
 
         // Example normal area chart configuration
         var myChart = jubilee.chart.series()
           .width(700)
           .height(400)
-          .yScale({ nice: true })
-          .zeroLine({ show: true })
-          .z("z")
-          .zScale({
-            domain: function (data) {
-              return d3.extent(data, function (d) { return d.z; });
-            },
+//          .x("z")
+//          .xScale({
+//            scale: d3.scale.linear(),
 //            nice: true
-          })
+//          })
+          .zScale({ nice: true })
+          .yScale({ nice: true })
           .zAxis({ show: true })
-          .area({
-            interpolate: "basis",
-            properties: {
-              fill: function (d) {
-                var point = d.slice(0,1).pop();
-                return color(point.label);
-              },
-              stroke: function (d) {
-                var point = d.slice(0,1).pop();
-                return color(point.label);
-              },
-              opacity: 0.5
-            }
+          .stack({
+            scale: "z"
           })
-          .points([
-//            {
-//              class: "points",
-//              radius: 5,
-//              properties: {
-//                fill: "#ffffff",
-//                stroke: function (d, i) { return color(d.label); },
-//                strokeWidth: 3
-//              }
+//          .zeroLine({ show: true })
+//          .z("z")
+//          .zScale({
+//            domain: function (data) {
+//              return d3.extent(data, function (d) { return d.z; });
 //            },
+//            nice: true
+//          })
+//          .zAxis({ show: true })
+//          .area({
+//            interpolate: "basis",
+//            properties: {
+//              fill: function (d) {
+//                var point = d.slice(0,1).pop();
+//                return color(point.label);
+//              },
+//              stroke: function (d) {
+//                var point = d.slice(0,1).pop();
+//                return color(point.label);
+//              },
+//              opacity: 0.5
+//            }
+//          })
+          .points([
             {
               class: "points",
-              scale: "z",
               radius: 5,
               properties: {
                 fill: "#ffffff",
-                stroke: function () { return "#000000"; },
+                stroke: function (d, i) { return color(d.label); },
                 strokeWidth: 3
               }
-            }
-          ])
-//          .bar({
-//            rx: 0,
-//            ry: 0,
-//            padding: 0.9,
-//            properties: {
-//              class: "bars",
-//              fill: function (d, i) { return color(d.label); }
-//            }
-//          })
-          .line([
+            },
 //            {
-//              interpolate: "linear",
+//              class: "points",
+//              scale: "z",
+//              radius: 5,
 //              properties: {
-//                stroke: function (d, i) {
-//                  var point = d.slice(0,1).pop();
-//                  return color(point.label);
-//                }
+//                fill: "#ffffff",
+//                stroke: function () { return "#000000"; },
+//                strokeWidth: 3
 //              }
-//            },
+//            }
+          ])
+          .bar({
+            scale: "z",
+            padding: 0.1,
+            interval: "30s",
+            properties: {
+              class: "bars",
+              fill: function (d) { return barColorScale(d.label); }
+            }
+          })
+          .line([
             {
-              scale: "z",
               interpolate: "linear",
               properties: {
-                stroke: function () {
-                  return "#000000";
+                stroke: function (d, i) {
+                  var point = d.slice(0,1).pop();
+                  return color(point.label);
                 }
               }
-            }
+            },
+//            {
+//              scale: "z",
+//              interpolate: "linear",
+//              properties: {
+//                stroke: function () {
+//                  return "#000000";
+//                }
+//              }
+//            }
           ])
           .on("click", clickFunction)
           .on("brushend", brushFunction);

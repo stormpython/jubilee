@@ -2,6 +2,7 @@ define(function (require) {
   var d3 = require("d3");
   var functor = require("src/modules/functor");
   var valuator = require("src/modules/valuator");
+  var parseTime = require("src/modules/timeparser");
   var clip = require("src/modules/element/svg/clipPath");
   var axis = require("src/modules/component/axis");
   var brushComponent = require("src/modules/component/brush");
@@ -273,9 +274,14 @@ define(function (require) {
 
     function xDomain(data, accessor) {
       if (d3.keys(bar).length) {
+        var interval = bar.interval ? bar.interval : "30s";
+        var offset = parseFloat(interval);
+        var timeInterval = parseTime(interval);
+        console.log(offset);
+
         return [
           d3.min(d3.merge(data), accessor),
-          d3.time.minute.offset(d3.max(d3.merge(data), accessor), 1)
+          d3.time[timeInterval].offset(d3.max(d3.merge(data), accessor), offset)
         ];
       }
       return d3.extent(d3.merge(data), accessor);

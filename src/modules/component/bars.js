@@ -12,7 +12,8 @@ define(function (require) {
     var yScale = d3.scale.linear();
     var rx = 0;
     var ry = 0;
-    var padding = 0.4;
+    var interval = "30s";
+    var padding = 0.1;
     var properties = {
       class: "point",
       fill: function (d, i) { return d3.scale.category10()(i); },
@@ -26,7 +27,9 @@ define(function (require) {
         // Used only to determine the width of bars
         // for time scales
         var timeScale = d3.scale.ordinal()
-          .domain(xScale.domain())
+          .domain(d3.merge(data).map(function (d, i) {
+            return x.call(this, d, i);
+          }))
           .rangeBands(xScale.range(), padding, 0);
 
         var rects = rect()
@@ -79,6 +82,12 @@ define(function (require) {
     component.ry = function (_) {
       if (!arguments.length) { return ry; }
       ry = _;
+      return component;
+    };
+
+    component.interval = function (_) {
+      if (!arguments.length) { return interval; }
+      interval = _;
       return component;
     };
 
