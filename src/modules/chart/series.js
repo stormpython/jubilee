@@ -277,7 +277,6 @@ define(function (require) {
         var interval = bar.interval ? bar.interval : "30s";
         var offset = parseFloat(interval);
         var timeInterval = parseTime(interval);
-        console.log(offset);
 
         return [
           d3.min(d3.merge(data), accessor),

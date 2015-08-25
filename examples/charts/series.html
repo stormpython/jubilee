@@ -69,7 +69,8 @@
 //          })
           .zScale({ nice: true })
           .yScale({ nice: true })
-          .zAxis({ show: true })
+          .yAxis({ gridlines: true })
+          .zAxis({ tick: { innerTickSize: 0 }, show: true })
           .stack({
             scale: "z"
           })
