@@ -29,60 +29,43 @@
               { x: 1411761480000, y: 18, label: "band", z: 13},
               { x: 1411761510000, y: 22, label: "band", z: 24},
               { x: 1411761540000, y: 17, label: "band", z: 36},
-              { x: 1411761570000, y: 17, label: "band", z: 29}
+              { x: 1411761570000, y: 17, label: "band", z: 29},
+              { x: 1411761600000, y: 25, label: "band", z: 29}
             ],
             [
               { x: 1411761450000, y: 91, label: "of", z: 10},
               { x: 1411761480000, y: 88, label: "of", z: 45},
               { x: 1411761510000, y: 38, label: "of", z: 13},
               { x: 1411761540000, y: 47, label: "of", z: 24},
-              { x: 1411761570000, y: 57, label: "of", z: 90}
+              { x: 1411761570000, y: 57, label: "of", z: 90},
+              { x: 1411761600000, y: 97, label: "of", z: 90}
             ],
             [
               { x: 1411761450000, y: 191, label: "brothers", z: 27},
               { x: 1411761480000, y: 188, label: "brothers", z: 93},
               { x: 1411761510000, y: 12, label: "brothers", z: 45},
               { x: 1411761540000, y: 17, label: "brothers", z: 39},
-              { x: 1411761570000, y: 17, label: "brothers", z: 67}
+              { x: 1411761570000, y: 17, label: "brothers", z: 67},
+              { x: 1411761600000, y: 197, label: "brothers", z: 90}
             ]
           ]
         };
 
         var clickFunction = function (e, d, i) { console.log(e, d, i); };
         var brushFunction = function (brush) { console.log(brush.extent()); };
-
-        // D3 selection
-        var selection = d3.select("#chart")
-          .datum(data.series);
-
         var color = d3.scale.category10(["band", "of", "brothers"]);
         var barColorScale = d3.scale.category20c(["band", "of", "brothers"]);
+
+        // D3 selection
+        var selection = d3.select("#chart").datum(data.series);
 
         // Example normal area chart configuration
         var myChart = jubilee.chart.series()
           .width(700)
           .height(400)
-//          .x("z")
-//          .xScale({
-//            scale: d3.scale.linear(),
-//            nice: true
-//          })
-          .zScale({ nice: true })
           .yScale({ nice: true })
-          .yAxis({ gridlines: true })
-          .zAxis({ tick: { innerTickSize: 0 }, show: true })
-          .stack({
-            scale: "z"
-          })
-//          .zeroLine({ show: true })
-//          .z("z")
-//          .zScale({
-//            domain: function (data) {
-//              return d3.extent(data, function (d) { return d.z; });
-//            },
-//            nice: true
-//          })
-//          .zAxis({ show: true })
+          .zScale({ nice: true })
+          .zAxis({ show: true })
 //          .area({
 //            interpolate: "basis",
 //            properties: {
@@ -97,16 +80,16 @@
 //              opacity: 0.5
 //            }
 //          })
-          .points([
-            {
-              class: "points",
-              radius: 5,
-              properties: {
-                fill: "#ffffff",
-                stroke: function (d, i) { return color(d.label); },
-                strokeWidth: 3
-              }
-            },
+//          .points([
+//            {
+//              class: "points",
+//              radius: 5,
+//              properties: {
+//                fill: "#ffffff",
+//                stroke: function (d, i) { return color(d.label); },
+//                strokeWidth: 3
+//              }
+//            },
 //            {
 //              class: "points",
 //              scale: "z",
@@ -117,9 +100,9 @@
 //                strokeWidth: 3
 //              }
 //            }
-          ])
+//          ])
           .bar({
-            scale: "z",
+            group: true,
             padding: 0.1,
             interval: "30s",
             properties: {
@@ -127,26 +110,15 @@
               fill: function (d) { return barColorScale(d.label); }
             }
           })
-          .line([
-            {
-              interpolate: "linear",
-              properties: {
-                stroke: function (d, i) {
-                  var point = d.slice(0,1).pop();
-                  return color(point.label);
-                }
+          .line({
+            scale: "z",
+            properties: {
+              stroke: function (d) {
+                var point = d.slice(0,1).pop();
+                return color(point.label);
               }
-            },
-//            {
-//              scale: "z",
-//              interpolate: "linear",
-//              properties: {
-//                stroke: function () {
-//                  return "#000000";
-//                }
-//              }
-//            }
-          ])
+            }
+          })
           .on("click", clickFunction)
           .on("brushend", brushFunction);
 

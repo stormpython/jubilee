@@ -299,7 +299,7 @@ define(function (require) {
 
       return function (d, i) {
         var isStacked = !!d3.keys(area).length || !!d3.keys(bar).length;
-        var properlyOffset = stacks.offset !== "overlap" && stacks.offset !== "group";
+        var properlyOffset = stacks.offset !== "overlap" && !bar.group;
         var scalesEqual = val === stacks.scale;
 
         if (isStacked && properlyOffset && scalesEqual) {

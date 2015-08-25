@@ -12,8 +12,10 @@ define(function (require) {
     var yScale = d3.scale.linear();
     var rx = 0;
     var ry = 0;
+    var group = false;
     var interval = "30s";
     var padding = 0.1;
+    var groupPadding = 0;
     var properties = {
       class: "point",
       fill: function (d, i) { return d3.scale.category10()(i); },
@@ -32,14 +34,30 @@ define(function (require) {
           }))
           .rangeBands(xScale.range(), padding, 0);
 
+        var groupScale = d3.scale.ordinal()
+          .domain(d3.range(data.length))
+          .rangeRoundBands([0, timeScale.rangeBand()], groupPadding, 0);
+
+        var j = -1;
+
         var rects = rect()
           .x(function (d, i) {
+            if (i === 0) { j++; }
+            if (group) {
+              return xScale(x.call(this, d, i)) + groupScale(j);
+            }
             return xScale(x.call(this, d, i));
           })
           .y(function (d, i) {
+            if (group) {
+              return yScale(y.call(this, d, i));
+            }
             return yScale(d.y0 + y.call(this, d, i));
           })
           .width(function () {
+            if (group) {
+              return groupScale.rangeBand();
+            }
             return timeScale.rangeBand();
           })
           .height(function (d, i) {
@@ -52,8 +70,7 @@ define(function (require) {
           .function(rects)
           .options(properties);
 
-        d3.select(this).append("g")
-          .selectAll("g")
+        d3.select(this).append("g").selectAll("g")
           .data(data)
           .enter().append("g")
           .call(element);
@@ -91,9 +108,21 @@ define(function (require) {
       return component;
     };
 
+    component.group = function (_) {
+      if (!arguments.length) { return group; }
+      group = _;
+      return component;
+    };
+
     component.padding = function (_) {
       if (!arguments.length) { return padding; }
       padding = _;
+      return component;
+    };
+
+    component.groupPadding = function (_) {
+      if (!arguments.length) { return groupPadding; }
+      groupPadding = _;
       return component;
     };
 
