@@ -30,7 +30,6 @@ define(function (require) {
               var svg = d3.event.target.farthestViewportElement;
               var target = d3.select(d3.event.target);
               var parent = !svg ? d3.select(d3.event.target) : d3.select(svg);
-
               var datum = target.datum();
               var index = targetIndex(parent, target) || 0;
 
