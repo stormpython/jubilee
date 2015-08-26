@@ -12,17 +12,17 @@ define(function (require) {
     var listeners = {};
 
     function component(selection) {
-      selection.each(function (data, index) {
+      selection.each(function () {
         var element = d3.select(this);
 
-        d3.entries(listeners).forEach(function (e, i) {
+        d3.entries(listeners).forEach(function (e) {
           // Stop listening for event types that have
           // an empty listeners array or that is set to null
           if (!e.value || !e.value.length) {
             return element.on(e.key, null);
           }
 
-          element.on(e.key, function (d, i) {
+          element.on(e.key, function () {
             d3.event.stopPropagation(); // => event.stopPropagation()
 
             e.value.forEach(function (listener) {
