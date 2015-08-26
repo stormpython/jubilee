@@ -106,7 +106,7 @@ define(function (require) {
 
         var adjustedWidth = width - margin.left - margin.right;
         var adjustedHeight = height - margin.top - margin.bottom;
-        var svgEvents = events().listeners(listeners).accessor(xValue);
+        var svgEvents = events().listeners(listeners);
 
         /* Stacking Options ******************************** */
         var stack = d3.layout.stack()
