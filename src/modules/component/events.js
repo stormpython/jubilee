@@ -8,7 +8,6 @@ define(function (require) {
 
   return function events() {
     // Private variables
-    var accessor = function (d) { return d.x; };
     var listeners = {};
 
     function component(selection) {
@@ -41,12 +40,6 @@ define(function (require) {
     }
 
     // Public API
-    component.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = valuator(_);
-      return component;
-    };
-
     component.listeners = function (_) {
       if (!arguments.length) { return listeners; }
       listeners = _;
