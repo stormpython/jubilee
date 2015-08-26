@@ -64,8 +64,6 @@
           .width(700)
           .height(400)
           .yScale({ nice: true })
-          .zScale({ nice: true })
-          .zAxis({ show: true })
 //          .area({
 //            interpolate: "basis",
 //            properties: {
@@ -102,23 +100,16 @@
 //            }
 //          ])
           .bar({
-            group: true,
-            padding: 0.1,
             interval: "30s",
+            padding: 0.1, // 0.1 -> 0.9
             properties: {
               class: "bars",
-              fill: function (d) { return barColorScale(d.label); }
-            }
-          })
-          .line({
-            scale: "z",
-            properties: {
-              stroke: function (d) {
-                var point = d.slice(0,1).pop();
-                return color(point.label);
+                  fill: function (d) { return barColorScale(d.label); }
               }
-            }
           })
+//          .line({
+//            interpolate: "basis",
+//          })
           .on("click", clickFunction)
           .on("brushend", brushFunction);
 

@@ -27,8 +27,10 @@ define(function (require) {
 
             e.value.forEach(function (listener) {
               // References the data point to calculate the correct index value
+              var svg = d3.event.target.farthestViewportElement;
               var target = d3.select(d3.event.target);
-              var parent = d3.select(d3.event.target.farthestViewportElement);
+              var parent = !svg ? d3.select(d3.event.target) : d3.select(svg);
+
               var datum = target.datum();
               var index = targetIndex(parent, target);
 

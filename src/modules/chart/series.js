@@ -144,11 +144,11 @@ define(function (require) {
           .data([data])
           .enter().append("svg")
           .attr("width", width)
-          .attr("height", height);
+          .attr("height", height)
+          .call(svgEvents);
 
         var g = svg.append("g")
-          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")")
-          .call(svgEvents);
+          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
         /* ******************************** */
 
         /* Brush ******************************** */
