@@ -32,7 +32,7 @@ define(function (require) {
               var parent = !svg ? d3.select(d3.event.target) : d3.select(svg);
 
               var datum = target.datum();
-              var index = targetIndex(parent, target);
+              var index = targetIndex(parent, target) || 0;
 
               listener.call(this, d3.event, datum, index);
             });
