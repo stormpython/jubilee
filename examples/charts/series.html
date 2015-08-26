@@ -83,6 +83,7 @@
         var myChart = jubilee.chart.series()
           .width(700)
           .height(400)
+//          .brush({ class: "brush", y: true })
           .yScale({ nice: true })
 //          .stack({ out: buildOut(3) })
 //          .area({
@@ -129,12 +130,12 @@
 //              fill: function (d) { return barColorScale(d.label); }
 //            }
 //          })
-          .line({
-            interpolate: "linear",
-            properties: {
-              stroke: function (d) { return color(d[0].label); }
-            }
-          })
+//          .line({
+//            interpolate: "linear",
+//            properties: {
+//              stroke: function (d) { return color(d[0].label); }
+//            }
+//          })
           .on("click", clickFunction)
           .on("brushend", brushFunction);
 

@@ -38,7 +38,7 @@ define(function (require) {
           .on("brushend", function () {
             brushEndCallback.forEach(function (listener) {
               listener.call(this, brush, data, index);
-              d3.selectAll("g.brush").call(brush.clear()); // Clear brush
+              d3.selectAll("g." + cssClass).call(brush.clear()); // Clear brush
             });
           });
 
