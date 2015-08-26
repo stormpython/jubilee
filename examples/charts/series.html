@@ -26,27 +26,27 @@
           series: [
             [
               { x: 1411761450000, y: 41, label: "band", z: 10},
-              { x: 1411761480000, y: 18, label: "band", z: 13},
-              { x: 1411761510000, y: 22, label: "band", z: 24},
-              { x: 1411761540000, y: 17, label: "band", z: 36},
-              { x: 1411761570000, y: 17, label: "band", z: 29},
-              { x: 1411761600000, y: 25, label: "band", z: 29}
+              { x: 1411761510000, y: 18, label: "band", z: 13},
+              { x: 1411761570000, y: 22, label: "band", z: 24},
+              { x: 1411761630000, y: 17, label: "band", z: 36},
+              { x: 1411761690000, y: 17, label: "band", z: 29},
+              { x: 1411761750000, y: 25, label: "band", z: 29}
             ],
             [
               { x: 1411761450000, y: 91, label: "of", z: 10},
-              { x: 1411761480000, y: 88, label: "of", z: 45},
-              { x: 1411761510000, y: 38, label: "of", z: 13},
-              { x: 1411761540000, y: 47, label: "of", z: 24},
-              { x: 1411761570000, y: 57, label: "of", z: 90},
-              { x: 1411761600000, y: 97, label: "of", z: 90}
+              { x: 1411761510000, y: 88, label: "of", z: 45},
+              { x: 1411761570000, y: 38, label: "of", z: 13},
+              { x: 1411761630000, y: 47, label: "of", z: 24},
+              { x: 1411761690000, y: 57, label: "of", z: 90},
+              { x: 1411761750000, y: 97, label: "of", z: 90}
             ],
             [
               { x: 1411761450000, y: 191, label: "brothers", z: 27},
-              { x: 1411761480000, y: 188, label: "brothers", z: 93},
-              { x: 1411761510000, y: 12, label: "brothers", z: 45},
-              { x: 1411761540000, y: 17, label: "brothers", z: 39},
-              { x: 1411761570000, y: 17, label: "brothers", z: 67},
-              { x: 1411761600000, y: 197, label: "brothers", z: 90}
+              { x: 1411761510000, y: 188, label: "brothers", z: 93},
+              { x: 1411761570000, y: 12, label: "brothers", z: 45},
+              { x: 1411761630000, y: 17, label: "brothers", z: 39},
+              { x: 1411761690000, y: 17, label: "brothers", z: 67},
+              { x: 1411761750000, y: 197, label: "brothers", z: 90}
             ]
           ]
         };
@@ -56,6 +56,25 @@
         var color = d3.scale.category10(["band", "of", "brothers"]);
         var barColorScale = d3.scale.category20c(["band", "of", "brothers"]);
 
+        var buildOut = function(dataSeriesCount) {
+          var currentXOffsets = [];
+          var current_xIndex = 0;
+
+          return function(d, y0, y){
+            if (current_xIndex++ % dataSeriesCount === 0){
+              currentXOffsets = [0, 0];
+            }
+
+            if (y >= 0) {
+              d.y0 = currentXOffsets[1];
+              currentXOffsets[1] += y;
+            } else {
+              d.y0 = currentXOffsets[0] + y;
+              currentXOffsets[0] += y;
+            }
+          }
+        };
+
         // D3 selection
         var selection = d3.select("#chart").datum(data.series);
 
@@ -64,6 +83,7 @@
           .width(700)
           .height(400)
           .yScale({ nice: true })
+//          .stack({ out: buildOut(3) })
 //          .area({
 //            interpolate: "basis",
 //            properties: {
@@ -101,8 +121,9 @@
 //          ])
           .bar({
             group: true,
-            interval: "30s",
+            interval: "1m",
             padding: 0.1, // 0.1 -> 0.9
+            groupPadding: 0,
             properties: {
               class: "bars",
                   fill: function (d) { return barColorScale(d.label); }

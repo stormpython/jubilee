@@ -52,14 +52,14 @@ define(function (require) {
           })
           .y(function (d, i) {
             if (group) { return yScale(y.call(this, d, i)); }
-            return yScale(d.y0 + y.call(this, d, i));
+            return yScale(d.y0 + Math.abs(y.call(this, d, i)));
           })
           .width(function () {
             if (group) { return groupScale.rangeBand(); }
             return timeScale.rangeBand();
           })
           .height(function (d, i) {
-            return yScale(d.y0) - yScale(d.y0 + y.call(this, d, i));
+            return yScale(d.y0) - yScale(d.y0 + Math.abs(y.call(this, d, i)));
           })
           .rx(rx)
           .ry(ry);
