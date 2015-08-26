@@ -51,6 +51,7 @@
           ]
         };
 
+        var mouseEnterFunction = function (e, d, i) { console.log(e, d, i); };
         var clickFunction = function (e, d, i) { console.log(e, d, i); };
         var brushFunction = function (brush) { console.log(brush.extent()); };
         var color = d3.scale.category10(["band", "of", "brothers"]);
@@ -83,7 +84,7 @@
         var myChart = jubilee.chart.series()
           .width(700)
           .height(400)
-//          .brush({ class: "brush", y: true })
+          .brush({ class: "brush", y: true })
           .yScale({ nice: true })
 //          .stack({ out: buildOut(3) })
 //          .area({
@@ -136,8 +137,9 @@
 //              stroke: function (d) { return color(d[0].label); }
 //            }
 //          })
-          .on("click", clickFunction)
-          .on("brushend", brushFunction);
+          .on("mousemove", mouseEnterFunction);
+//          .on("click", clickFunction)
+//          .on("brushend", brushFunction);
 
         selection.call(myChart);
       });
