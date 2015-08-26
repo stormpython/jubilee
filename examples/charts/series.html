@@ -56,6 +56,7 @@
         var color = d3.scale.category10(["band", "of", "brothers"]);
         var barColorScale = d3.scale.category20c(["band", "of", "brothers"]);
 
+        // Stacking positive and negative values (Bar Chart)
         var buildOut = function(dataSeriesCount) {
           var currentXOffsets = [];
           var current_xIndex = 0;
@@ -98,16 +99,16 @@
 //              opacity: 0.5
 //            }
 //          })
-//          .points([
-//            {
-//              class: "points",
-//              radius: 5,
-//              properties: {
-//                fill: "#ffffff",
-//                stroke: function (d, i) { return color(d.label); },
-//                strokeWidth: 3
-//              }
-//            },
+          .points([
+            {
+              class: "points",
+              radius: 5,
+              properties: {
+                fill: "#ffffff",
+                stroke: function (d, i) { return color(d.label); },
+                strokeWidth: 3
+              }
+            },
 //            {
 //              class: "points",
 //              scale: "z",
@@ -118,20 +119,22 @@
 //                strokeWidth: 3
 //              }
 //            }
-//          ])
-          .bar({
-            group: true,
-            interval: "1m",
-            padding: 0.1, // 0.1 -> 0.9
-            groupPadding: 0,
-            properties: {
-              class: "bars",
-                  fill: function (d) { return barColorScale(d.label); }
-              }
-          })
-//          .line({
-//            interpolate: "basis",
+          ])
+//          .bar({
+//            interval: "1m",
+//            padding: 0.1, // 0.1 -> 0.9
+//            groupPadding: 0,
+//            properties: {
+//              class: "bars",
+//              fill: function (d) { return barColorScale(d.label); }
+//            }
 //          })
+          .line({
+            interpolate: "linear",
+            properties: {
+              stroke: function (d) { return color(d[0].label); }
+            }
+          })
           .on("click", clickFunction)
           .on("brushend", brushFunction);
 

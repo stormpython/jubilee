@@ -2,6 +2,7 @@ define(function (require) {
   var d3 = require("d3");
   var functor = require("src/modules/functor");
   var valuator = require("src/modules/valuator");
+  var scaletor = require("src/modules/helpers/scaletor");
   var parseTime = require("src/modules/helpers/timeparser");
   var clip = require("src/modules/element/svg/clipPath");
   var axis = require("src/modules/component/axis");
@@ -383,7 +384,7 @@ define(function (require) {
 
     chart.xScale = function (_) {
       if (!arguments.length) { return xScale; }
-      xScale.scale = typeof _.scale !== "undefined" ? _.scale : xScale.scale;
+      xScale.scale = typeof _.scale !== "undefined" ? scaletor(_.scale) : xScale.scale;
       xScale.domain = typeof _.domain !== "undefined" ? d3.functor(_.domain) : xScale.domain;
       xScale.clamp = typeof _.clamp !== "undefined" ? _.clamp : xScale.clamp;
       xScale.nice = typeof _.nice !== "undefined" ? _.nice : xScale.nice;
@@ -392,7 +393,7 @@ define(function (require) {
 
     chart.yScale = function (_) {
       if (!arguments.length) { return yScale; }
-      yScale.scale = typeof _.scale !== "undefined" ? _.scale : yScale.scale;
+      yScale.scale = typeof _.scale !== "undefined" ? scaletor(_.scale) : yScale.scale;
       yScale.domain = typeof _.domain !== "undefined" ? d3.functor(_.domain) : yScale.domain;
       yScale.clamp = typeof _.clamp !== "undefined" ? _.clamp : yScale.clamp;
       yScale.nice = typeof _.nice !== "undefined" ? _.nice : yScale.nice;
@@ -401,7 +402,7 @@ define(function (require) {
 
     chart.zScale = function (_) {
       if (!arguments.length) { return zScale; }
-      zScale.scale = typeof _.scale !== "undefined" ? _.scale : zScale.scale;
+      zScale.scale = typeof _.scale !== "undefined" ? scaletor(_.scale) : zScale.scale;
       zScale.domain = typeof _.domain !== "undefined" ? d3.functor(_.domain) : zScale.domain;
       zScale.clamp = typeof _.clamp !== "undefined" ? _.clamp : zScale.clamp;
       zScale.nice = typeof _.nice !== "undefined" ? _.nice : zScale.nice;
