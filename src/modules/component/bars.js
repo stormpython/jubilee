@@ -3,6 +3,7 @@ define(function (require) {
   var rect = require("src/modules/element/svg/rect");
   var functor = require("src/modules/functor");
   var valuator = require("src/modules/valuator");
+  var parseTime = require("src/modules/helpers/timeparser");
 
   return function points() {
     // Private variables
@@ -26,12 +27,15 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function (data, index) {
-        // Used only to determine the width of bars
-        // for time scales
+        var timeNotation = parseTime(interval);
+        var step = parseFloat(interval);
+        var extent = d3.extent(d3.merge(data), x);
+        var start = extent[0];
+        var stop = d3.time[timeNotation].offset(extent[1], step);
+
+        // Used only to determine the width of bars for time scales
         var timeScale = d3.scale.ordinal()
-          .domain(d3.merge(data).map(function (d, i) {
-            return x.call(this, d, i);
-          }))
+          .domain(d3.time[timeNotation].range(start, stop, step))
           .rangeBands(xScale.range(), padding, 0);
 
         var groupScale = d3.scale.ordinal()
