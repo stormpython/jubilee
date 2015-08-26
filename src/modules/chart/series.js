@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
   var functor = require("src/modules/functor");
   var valuator = require("src/modules/valuator");
-  var parseTime = require("src/modules/timeparser");
+  var parseTime = require("src/modules/helpers/timeparser");
   var clip = require("src/modules/element/svg/clipPath");
   var axis = require("src/modules/component/axis");
   var brushComponent = require("src/modules/component/brush");

@@ -2,15 +2,11 @@ define(function (require) {
   return {
     version: "0.1.0",
     chart: {
-      area: require("src/modules/chart/area"),
-      bar: require("src/modules/chart/bar"),
       boxplot: require("src/modules/chart/boxplot"),
       dendrogram: require("src/modules/chart/dendrogram"),
       heatmap: require("src/modules/chart/heatmap"),
       histogram: require("src/modules/chart/histogram"),
-      line: require("src/modules/chart/line"),
       pie: require("src/modules/chart/pie"),
-      scatter : require("src/modules/chart/scatterplot"),
       series: require("src/modules/chart/series"),
       sunburst: require("src/modules/chart/sunburst"),
       treemap: require("src/modules/chart/treemap")
@@ -26,6 +22,7 @@ define(function (require) {
     component: {
       area: require("src/modules/component/area"),
       axis: require("src/modules/component/axis"),
+      bars: require("src/modules/component/bars"),
       boxplot: require("src/modules/component/boxplot"),
       brush: require("src/modules/component/brush"),
       events: require("src/modules/component/events"),
@@ -44,6 +41,7 @@ define(function (require) {
     canvas: {
       rect: require("src/modules/element/canvas/rect")
     },
-    functor: require("src/modules/functor")
+    functor: require("src/modules/functor"),
+    valuator: require("src/modules/valuator")
   };
 });
