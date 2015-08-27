@@ -35,7 +35,7 @@
             [
               { x: 1411761450000, y: 91, label: "of", z: 10},
               { x: 1411761510000, y: 88, label: "of", z: 45},
-              { x: 1411761570000, y: 38, label: "of", z: 13},
+              { x: 1411761570000, y: null, label: "of", z: 13},
               { x: 1411761630000, y: 47, label: "of", z: 24},
               { x: 1411761690000, y: 57, label: "of", z: 90},
               { x: 1411761750000, y: 97, label: "of", z: 90}
@@ -85,21 +85,21 @@
           .height(400)
 //          .brush({ class: "brush", y: true })
           .yScale({ nice: true })
-//          .stack({ out: buildOut(3) })
-//          .area({
-//            interpolate: "basis",
-//            properties: {
-//              fill: function (d) {
-//                var point = d.slice(0,1).pop();
-//                return color(point.label);
-//              },
-//              stroke: function (d) {
-//                var point = d.slice(0,1).pop();
-//                return color(point.label);
-//              },
-//              opacity: 0.5
-//            }
-//          })
+          .stack({ offset: "overlap" })
+          .area({
+            interpolate: "linear",
+            properties: {
+              fill: function (d) {
+                var point = d.slice(0,1).pop();
+                return color(point.label);
+              },
+              stroke: function (d) {
+                var point = d.slice(0,1).pop();
+                return color(point.label);
+              },
+              opacity: 0.5
+            }
+          })
           .points([
             {
               class: "points",
@@ -130,14 +130,14 @@
 //              fill: function (d) { return barColorScale(d.label); }
 //            }
 //          })
-//          .line({
-//            interpolate: "linear",
-//            properties: {
-//              stroke: function (d) { return color(d[0].label); }
-//            }
-//          })
-          .on("click", clickFunction)
-          .on("brushend", brushFunction);
+          .line({
+            interpolate: "linear",
+            properties: {
+              stroke: function (d) { return color(d[0].label); }
+            }
+          })
+//          .on("click", clickFunction)
+//          .on("brushend", brushFunction);
 
         selection.call(myChart);
       });

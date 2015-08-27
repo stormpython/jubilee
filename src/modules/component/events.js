@@ -3,12 +3,13 @@
  */
 define(function (require) {
   var d3 = require("d3");
-  var valuator = require("src/modules/valuator");
   var targetIndex = require("src/modules/helpers/target_index");
 
   return function events() {
     // Private variables
     var listeners = {};
+    var xScale = null;
+    var threshold = 30000;
 
     function component(selection) {
       selection.each(function () {
@@ -32,6 +33,20 @@ define(function (require) {
               var datum = target.datum();
               var index = targetIndex(parent, target) || 0;
 
+              var chart = parent.select("g").node();
+              var coordinate = xScale.invert(d3.mouse(chart)[0]).getTime();
+              var range = [coordinate - threshold, coordinate + threshold];
+
+              var values = parent.datum().map(function (datum) {
+                return datum.filter(function (d, i) {
+                  var date = function (d, i) { return d.x; }.call(this, d, i);
+                  return date > range[0] && date < range[1];
+                });
+              });
+              console.log(d3.merge(values));
+
+
+
               listener.call(this, d3.event, datum, index);
             });
           });
@@ -45,6 +60,18 @@ define(function (require) {
       listeners = _;
       return component;
     };
+
+    component.xScale = function (_) {
+      if (!arguments.length) { return xScale; }
+      xScale = _;
+      return component;
+    };
+
+    component.threshold = function (_) {
+      if (!arguments.length) { return threshold; }
+      threshold = _;
+      return component;
+    }
 
     return component;
   };

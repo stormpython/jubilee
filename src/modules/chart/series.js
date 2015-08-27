@@ -106,7 +106,6 @@ define(function (require) {
 
         var adjustedWidth = width - margin.left - margin.right;
         var adjustedHeight = height - margin.top - margin.bottom;
-        var svgEvents = events().listeners(listeners);
 
         /* Stacking Options ******************************** */
         var stack = d3.layout.stack()
@@ -141,6 +140,8 @@ define(function (require) {
         /* ******************************** */
 
         /* Canvas ******************************** */
+        var svgEvents = events().listeners(listeners).xScale(x);
+
         var svg = d3.select(this).selectAll("svg")
           .data([data])
           .enter().append("svg")
