@@ -20,7 +20,6 @@ define(function (require) {
     var margin = {top: 20, right: 50, bottom: 20, left: 50};
     var width = 960;
     var height = 500;
-    var color = d3.scale.category10();
     var accessor = function (d) { return d; };
     var xValue = function (d) { return d.x; };
     var yValue = function (d) { return d.y; };
@@ -332,12 +331,6 @@ define(function (require) {
       return chart;
     };
 
-    chart.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
-      return chart;
-    };
-
     chart.brush = function (_) {
       if (!arguments.length) { return brushOpts; }
       brushOpts.class = typeof _.clamp !== "undefined" ? _.clamp : brushOpts.clamp;
@@ -457,31 +450,31 @@ define(function (require) {
 
     chart.bar = function (_) {
       if (!arguments.length) { return bar; }
-      bar = _;
+      bar = typeof _ !== "object" ? bar : _;
       return chart;
     };
 
     chart.line = function (_) {
       if (!arguments.length) { return line; }
-      line = _;
+      line = typeof _ !== "object" ? line : _;
       return chart;
     };
 
     chart.area = function (_) {
       if (!arguments.length) { return area; }
-      area = _;
+      area = typeof _ !== "object" ? area : _;
       return chart;
     };
 
     chart.points = function (_) {
       if (!arguments.length) { return points; }
-      points = _;
+      points = typeof _ !== "object" ? points : _;
       return chart;
     };
 
     chart.listeners = function (_) {
       if (!arguments.length) { return listeners; }
-      listeners = _;
+      listeners = typeof _ !== "object" ? listeners : _;
       return chart;
     };
 
