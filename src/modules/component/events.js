@@ -38,13 +38,37 @@ define(function (require) {
               var range = [coordinate - threshold, coordinate + threshold];
 
               var values = parent.datum().map(function (datum) {
-                return datum.filter(function (d, i) {
-                  var date = function (d, i) { return d.x; }.call(this, d, i);
-                  return date > range[0] && date < range[1];
-                });
+                return binarySearch(datum)
+                //return datum.filter(function (d, i) {
+                //  var date = function (d, i) { return d.x; }.call(this, d, i);
+                //  return date > range[0] && date < range[1];
+                //});
               });
-              console.log(d3.merge(values));
+              console.log(values);
+              function comparator (find) {
+                var threshold = 30000;
 
+                return function (val) {
+                  return val > (find - threshold) && val < (find + threshold);
+                };
+              }
+
+              function binarySearch(arr, comparator, accessor) {
+                if (!arr.length) { return null; }
+
+                var index = Math.floor(arr.length / 2);
+                var midPoint = accessor(arr[index]);
+
+                if (comparator()) {
+                  return binarySearch(arr.slice(0, index), find, accessor);
+                }
+
+                if (midPoint < find) {
+                  return binarySearch(arr.slice(index + 1), find, accessor);
+                }
+
+                return arr[index];
+              }
 
 
               listener.call(this, d3.event, datum, index);
