@@ -30,7 +30,7 @@ define(function (require) {
         d3.select(this).append("g")
           .datum(data.reduce(function (a, b) {
             return a.concat(b);
-          },[]))
+          },[]).filter(y))
           .call(element);
       });
     }
