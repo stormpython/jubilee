@@ -7,6 +7,7 @@ define(function (require) {
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
 
   return function pieChart() {
+    // Private variables
     var width = 300;
     var height = 300;
     var color = d3.scale.category10();
