@@ -10,6 +10,7 @@ define(function (require) {
     // Private variables
     var width = 500;
     var height = 500;
+    var color = d3.scale.category10();
     var sort = null;
     var value = function (d) { return d.size; };
     var xScale = d3.scale.linear().range([0, 2 * Math.PI]);
@@ -28,11 +29,11 @@ define(function (require) {
     };
 
     // Pie options
-    var pieClass = "pie";
-    var stroke = "#fff";
+    var pieClass = "slice";
+    var stroke = "#ffffff";
     var fill = function (d, i) {
       if (d.depth === 0) { return "none"; }
-      return d3.scale.category10()(i);
+      return color(i);
     };
 
     var listeners = {};
@@ -65,7 +66,7 @@ define(function (require) {
         var arcPath = path()
           .pathGenerator(arc)
           .accessor(partition.nodes)
-          .cssClass(pieClass)
+          .class(pieClass)
           .stroke(stroke)
           .fill(fill);
 
@@ -83,6 +84,12 @@ define(function (require) {
     chart.height = function (_) {
       if (!arguments.length) { return height; }
       height = _;
+      return chart;
+    };
+
+    chart.color = function (_) {
+      if (!arguments.length) { return color; }
+      color = typeof _ !== "function" ? color : _;
       return chart;
     };
 

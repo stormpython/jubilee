@@ -47,8 +47,8 @@
             fill: function (d) { return colorScale(d.z); },
             opacity: function (d) { return opacityScale(d.z); }
           })
-          .xAxis({ show: true, filterTicksBy: 2 })
-          .yAxis({ show: true, filterTicksBy: 2 })
+          .xAxis({ show: true, filterTicksBy: 1 })
+          .yAxis({ show: true, filterTicksBy: 1 })
           .on("mouseover", function (e, d, i) {
             console.log(e, d, i);
           });

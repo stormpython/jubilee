@@ -22,24 +22,32 @@
       var data = {
         children: [
           {
-            size: 20
+            size: 40
           },
           {
-            size: 60
+            size: 80
           },
           {
-            size: 140,
+            size: 130,
             children: [
-              {size: 50},
-              {size: 50}
+              {size: 60},
+              {size: 20}
             ]
           }
         ]
       };
 
+      var color = d3.scale.category10();
+      var yScale = d3.scale.sqrt();
       var sunburst = jubilee.chart.sunburst()
         .width(800)
-        .height(500);
+        .height(500)
+        .stroke("none")
+        .yScale(yScale)
+        .fill(function (d, i) {
+          if (d.depth === 0) { return "none"; }
+          return color(i);
+        });
 
 
       d3.select("#chart")

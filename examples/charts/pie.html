@@ -33,8 +33,8 @@
     var myChart = jubilee.chart.pie()
         .width(500)
         .height(500)
-        .value(function (d) { return d.y; })
-        .label(function (d) { return d.label; });
+        .value("y")
+        .label("label");
 
     d3.select("#chart")
       .datum(data.series)
