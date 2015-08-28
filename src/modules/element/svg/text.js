@@ -12,8 +12,8 @@ define(function (require) {
     // Options
     var cssClass = "text";
     var fill = "#ffffff";
-    var stroke = "#ffffff";
-    var strokeWidth = 1;
+    var anchor = "middle";
+    var texts = "";
 
     function element(selection) {
       selection.each(function (data, index) {
@@ -28,13 +28,14 @@ define(function (require) {
 
         text
           .attr("class", cssClass)
+          .attr("transform", transform)
           .attr("x", x)
           .attr("y", y)
           .attr("dx", dx)
           .attr("dy", dy)
+          .style("text-anchor", anchor)
           .style("fill", fill)
-          .style("stroke", stroke)
-          .style("strokeWidth", strokeWidth);
+          .text(texts);
       });
     }
 
@@ -81,21 +82,21 @@ define(function (require) {
       return element;
     };
 
+    element.anchor = function (_) {
+      if (!arguments.length) { return anchor; }
+      anchor = _;
+      return element;
+    };
+
     element.fill = function (_) {
       if (!arguments.length) { return fill; }
       fill = _;
       return element;
     };
 
-    element.stroke = function (_) {
-      if (!arguments.length) { return stroke; }
-      stroke = _;
-      return element;
-    };
-
-    element.strokeWidth = function (_) {
-      if (!arguments.length) { return strokeWidth; }
-      strokeWidth = _;
+    element.text = function (_) {
+      if (!arguments.length) { return texts; }
+      texts = _;
       return element;
     };
 

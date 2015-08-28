@@ -1,6 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
+  var textElement = require("src/modules/element/svg/text");
   var events = require("src/modules/component/events");
   var valuator = require("src/modules/valuator");
   var addEventListener = require("src/modules/helpers/add_event_listener");
@@ -65,23 +66,22 @@ define(function (require) {
           .fill(fill)
           .stroke(stroke);
 
-        g.selectAll("groups")
-          .data(data)
-          .enter().append("g")
-          .call(piePath);
-
-        g.selectAll("g")
-          .data(d3.merge(data))
-          .append("text")
-          .attr("transform", text.transform || function (d) {
+        var pieText = textElement()
+          .transform(text.transform || function (d) {
             return "translate(" + arc.centroid(d) + ")";
           })
-          .attr("dy", text.dy)
-          .style("text-anchor", text.anchor)
-          .style("fill", text.fill)
+          .dy(text.dy)
+          .anchor(text.anchor)
+          .fill(text.fill)
           .text(function (d, i) {
             return label.call(this, d.data, i);
           });
+
+        g.selectAll("groups")
+          .data(data)
+          .enter().append("g")
+          .call(piePath)
+          .call(pieText);
       });
     }
 
