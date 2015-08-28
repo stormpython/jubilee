@@ -1,149 +1,99 @@
 define(function (require) {
   var d3 = require("d3");
+  var valuator = require("src/modules/valuator");
 
   return function histogram() {
-    var margin = {top: 20, right: 20, bottom: 20, left: 50};
-    var width = 760 - margin.left - margin.right;
-    var height = 120 - margin.top - margin.bottom;
-    var color = d3.scale.category20c();
-    var xValue = function (d) { return d[0]; };
-    var yValue = function (d) { return d[1]; };
-    var offset = "zero";
-    var xAxis = d3.svg.axis().orient("bottom").ticks(5);
-    var yAxis = d3.svg.axis().orient("left");
-    var xScale = d3.time.scale.utc().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]).nice();
-    var xDomain = function (data) {
-      return d3.extent(data, function (d) { return d[0]; });
-    };
-    var yDomain = function (data) {
-      return [
-        Math.min(0, getYStackExtent.call(data, "min")),
-        Math.max(0, getYStackExtent.call(data, "max"))
-      ];
-    };
-    var dispatch = d3.dispatch("brush", "hover", "mouseover", "mouseout");
+    // Private variables
+    var margin = { top: 20, right: 20, bottom: 20, left: 50 };
+    var width = 900;
+    var height = 500;
+    var bins = null;
+    var range = null;
+    var frequency = "frequency";
+    var value = function (d) { return d.y; };
 
-    // Axis options
-    var showXAxis = true;
-    var showYAxis = true;
-    var xAxisTitle = "";
-    var yAxisTitle = "";
+    var bars = {
+      class: "rect",
+      fill: "blue",
+      stroke: "white",
+      strokeWidth: 1,
+      opacity: 1
+    };
 
-    // Histogram options
-    var stackClass;
-    var barClass;
-    var barFill;
+    var text = {
+      class: "text",
+      dy: "0.71em",
+      textAnchor: "middle",
+      fill: "black"
+    };
 
     function chart(selection) {
-      selection.each(function (data) {
-        var stack = d3.layout.stack().x(xValue).y(yValue).offset(offset || "zero");
-        var layers = stack(data);
-        var n = layers.length; // number of layers
-        var svg;
-        var g;
-        var stackLayer;
-        var bars;
+      selection.each(function (data, index) {
+        width = width - margin.left - margin.right;
+        height = height - margin.top - margin.bottom;
 
-        layers = layers.map(function (d) {
-          return d.map(function (e, i) {
-            return [xValue.call(d, e, i), yValue.call(d, e, i), y0.call(d, e, i)];
-          });
-        });
+        var histogram = d3.layout.histogram()
+          .bins(bins)
+          .value(value)
+          .frequency(frequency)
+          .range(range || d3.extent(data, value));
 
-        xScale.domain(xDomain.call(d3.merge(layers)));
-        yScale.domain(yDomain.call(d3.merge(layers)));
+        data = histogram(data);
 
-        svg = d3.select(this).append("svg")
-          .data([layers])
+        var xScale = d3.scale.linear()
+          .domain(d3.extent(bins))
+          .range([0, width]);
+
+        var yScale = d3.scale.linear()
+          .domain([0, d3.max(data, yValue)])
+          .range([height, 0]);
+
+        var svg = d3.select(this).append("svg")
           .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom);
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        g = svg.append("g")
-          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+        var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+        var yAxis = d3.svg.axis().scale(yScale).orient("left");
 
-        stackLayer = g.selectAll(".layer")
-          .data(function (d) { return d; })
-          .enter().append("g")
-          .attr("class", stackClass);
+        svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + yScale.range()[0] + ")")
+          .call(xAxis);
 
-        // Enter
-        bars = stackLayer.selectAll("rect")
-          .data(function (d) { return d; })
-          .enter().append("rect")
-          .attr("class", barClass)
-          .attr("fill", barFill);
-
-        // Update
-        bars.attr("x", function (d, i, j) {
-            if (offset === "grouped") {
-              return xScale(d[0]) + xScale.rangeBand() / n * j;
-            }
-            return xScale(d[0]);
-          })
-          .attr("width", function () {
-            if (offset === "grouped") {
-              return xScale.rangeBand() / n;
-            }
-            return xScale.rangeBand();
-          })
-          .attr("y", function (d) {
-            if (offset === "grouped") {
-              return yScale(d.y);
-            }
-            return yScale(d.y0) - yScale(d.y0 + d.y);
-          })
-          .attr("height", function (d) {
-            if (offset === "grouped") {
-              return height - yScale(d.y);
-            }
-            return yScale(d.y0) - yScale(d.y0 + d.y);
-          });
+        var group = svg.selectAll("groups")
+          .data(data);
 
         // Exit
-        bars.exit().remove();
+        group.exit().remove();
 
-        g.append("g").attr("class", "x axis");
-        g.append("g").attr("class", "y axis");
+        // Enter
+        group.enter().append("g");
 
-        if (showXAxis) {
-          g.select(".x.axis")
-            .attr("transform", "translate(0," + yScale.range()[0] + ")")
-            .call(xAxis.scale(xScale))
-            .append("text")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(xAxisTitle);
-        }
+        // Update
+        group.append("rect")
+          .attr("class", bars.class)
+          .attr("fill", bars.fill)
+          .attr("stroke", bars.stroke)
+          .attr("stroke-width", bars.strokeWidth)
+          .attr("x", function (d) { return xScale(d.x); })
+          .attr("y", function (d) { return yScale(d.y); })
+          .attr("width", function (d) { return xScale(d.dx); })
+          .attr("height", function (d) { return yScale.range()[0] - yScale(d.y); });
 
-        if (showYAxis) {
-          g.select(".y.axis")
-            .call(yAxis.scale(yScale))
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(yAxisTitle);
-        }
+        group.append("text")
+          .attr("class", text.class)
+          .attr("dy", text.dy)
+          .attr("y", function (d) { return yScale(d.y - 0.1); })
+          .attr("x", function (d) { return xScale(d.x) + (xScale(d.dx) / 2); })
+          .attr("text-anchor", text.textAnchor)
+          .attr("fill", text.fill)
+          .text(function (d) { return !d.y ? "" : d.y; });
       });
     }
 
-    function y0(d) {
-      return d.y0;
-    }
-
-    function Y(d) {
-      return yScale(d.y0 + d.y);
-    }
-
-    function getYStackExtent(data, extent) {
-      return d3[extent](data, function (d) {
-        return d3[extent](d, Y);
-      });
-    }
-
+    // Public API
     chart.margin = function (_) {
       if (!arguments.length) { return margin; }
       margin.top = typeof _.top !== "undefined" ? _.top : margin.top;
@@ -155,103 +105,55 @@ define(function (require) {
 
     chart.width = function (_) {
       if (!arguments.length) { return width; }
-      width = _;
+      width = typeof _ !== "number" ? width : _;
       return chart;
     };
 
     chart.height = function (_) {
       if (!arguments.length) { return height; }
-      height = _;
+      height = typeof _ !== "number" ? height : _;
       return chart;
     };
 
-    chart.color = function (_) {
-      if (!arguments.length) { return color; }
-      color = _;
+    chart.value = function (_) {
+      if (!arguments.length) { return value; }
+      value = valuator(_);
       return chart;
     };
 
-    chart.x = function (_) {
-      if (!arguments.length) { return xValue; }
-      xValue = _;
+    chart.bins = function (_) {
+      if (!arguments.length) { return bins; }
+      bins = _;
       return chart;
     };
 
-    chart.y = function (_) {
-      if (!arguments.length) { return yValue; }
-      yValue = _;
+    chart.frequency = function (_) {
+      if (!arguments.length) { return frequency; }
+      frequency = typeof _ !== "string" ? frequency : _;
       return chart;
     };
 
-    chart.offset = function (_) {
-      if (!arguments.length) { return offset; }
-      offset = _;
+    chart.range = function (_) {
+      if (!arguments.length) return range;
+      range = d3.functor(_);
       return chart;
     };
 
-    chart.xAxis = function (_) {
-      if (!arguments.length) { return xAxis; }
-      xAxis = _;
+    chart.bars = function (_) {
+      if (!arguments.length) { return bars; }
+      bars.class = typeof _.class !== "undefined" ? _.class : bars.class;
+      bars.fill = typeof _.fill !== "undefined" ? _.fill : bars.fill;
+      bars.stroke = typeof _.stroke !== "undefined" ? _.stroke : bars.stroke;
+      bars.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : bars.strokeWidth;
       return chart;
     };
 
-    chart.yAxis = function (_) {
-      if (!arguments.length) { return yAxis; }
-      yAxis = _;
-      return chart;
-    };
-
-    chart.xScale = function (_) {
-      if (!arguments.length) { return xScale; }
-      xScale = _;
-      return chart;
-    };
-
-    chart.yScale = function (_) {
-      if (!arguments.length) { return yScale; }
-      yScale = _;
-      return chart;
-    };
-
-    chart.xDomain = function (_) {
-      if (!arguments.length) { return xDomain; }
-      xDomain = _;
-      return chart;
-    };
-
-    chart.yDomain = function (_) {
-      if (!arguments.length) { return yDomain; }
-      yDomain = _;
-      return chart;
-    };
-
-    chart.dispatch = function (_) {
-      if (!arguments.length) { return dispatch; }
-      dispatch = _;
-      return chart;
-    };
-
-    chart.showXAxis = function (_) {
-      if (!arguments.length) { return showXAxis; }
-      showXAxis = _;
-      return chart;
-    };
-
-    chart.showYAxis = function (_) {
-      if (!arguments.length) { return showYAxis; }
-      showYAxis = _;
-      return chart;
-    };
-
-    chart.xAxisTitle = function (_) {
-      if (!arguments.length) { return xAxisTitle; }
-      xAxisTitle = _;
-      return chart;
-    };
-
-    chart.yAxisTitle = function (_) {
-      if (!arguments.length) { return yAxisTitle; }
-      yAxisTitle = _;
+    chart.text = function (_) {
+      if (!arguments.length) { return text; }
+      text.class = typeof _.class !== "undefined" ? _.class : text.class;
+      text.fill = typeof _.fill !== "undefined" ? _.fill : text.fill;
+      text.dy = typeof _.dy !== "undefined" ? _.dy : text.dy;
+      text.textAnchor = typeof _.textAnchor !== "undefined" ? _.textAnchor : text.textAnchor;
       return chart;
     };
 

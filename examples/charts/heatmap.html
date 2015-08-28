@@ -31,67 +31,30 @@
     <script>
       require(["../../src/index"], function (jubilee) {
         var data = createHeatMapData(50);
-        var rawData = [
-          [
-            { day: "Sun", y: 41, week: 1, z: 10},
-            { day: "Mon", y: 18, week: 1, z: 13},
-            { day: "Tue", y: 22, week: 1, z: 24},
-            { day: "Wed", y: 17, week: 1, z: 36},
-            { day: "Thu", y: 17, week: 1, z: 29},
-            { day: "Fri", y: 25, week: 1, z: 29},
-            { day: "Sat", y: 25, week: 1, z: 29}
-          ],
-          [
-            { day: "Sun", y: 41, week: 2, z: 10},
-            { day: "Mon", y: 18, week: 2, z: 13},
-            { day: "Tue", y: 22, week: 2, z: 24},
-            { day: "Wed", y: 17, week: 2, z: 36},
-            { day: "Thu", y: 17, week: 2, z: 29},
-            { day: "Fri", y: 25, week: 2, z: 29},
-            { day: "Sat", y: 25, week: 2, z: 29}
-          ],
-          [
-            { day: "Sun", y: 41, week: 3, z: 10},
-            { day: "Mon", y: 18, week: 3, z: 13},
-            { day: "Tue", y: 22, week: 3, z: 24},
-            { day: "Wed", y: 17, week: 3, z: 36},
-            { day: "Thu", y: 17, week: 3, z: 29},
-            { day: "Fri", y: 25, week: 3, z: 29},
-            { day: "Sat", y: 25, week: 3, z: 29}
-          ]
-        ];
-
-        var timeData = d3.merge(rawData);
-        timeData.forEach(function (d) {
-          d.x = new Date(d.x);
-        });
-
-        var colorDomain = d3.extent(timeData, function (d) { return d.z; });
-        var opacityDomain = d3.extent(timeData, function (d) { return d.z; });
+        var colorDomain = d3.extent(data, function (d) { return d.z; });
+        var opacityDomain = d3.extent(data, function (d) { return d.z; });
         var colorScale = d3.scale.linear().domain(colorDomain).range(["blue", "red"]);
         var opacityScale = d3.scale.linear().domain(opacityDomain).range([0, 1]);
 
         var chart = jubilee.chart.heatmap()
-          .margin({left: 100, bottom: 75})
+          .margin({left: 50, bottom: 50})
           .height(500)
           .width(500)
           .padding(0.1)
-          .x("week")
-          .y("day")
-          .xScale({ reverse: true })
           .canvas(false)
+          .yScale({ reverse: true })
           .rect({
             fill: function (d) { return colorScale(d.z); },
             opacity: function (d) { return opacityScale(d.z); }
           })
-          .xAxis({ show: true, filterTicksBy: 1 })
-          .yAxis({ show: true, filterTicksBy: 1 })
+          .xAxis({ show: true, filterTicksBy: 2 })
+          .yAxis({ show: true, filterTicksBy: 2 })
           .on("mouseover", function (e, d, i) {
             console.log(e, d, i);
           });
 
         d3.select("#heatmap")
-          .datum(timeData)
+          .datum(data)
           .call(chart);
 
         function createHeatMapData(num) {

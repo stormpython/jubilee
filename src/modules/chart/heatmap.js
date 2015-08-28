@@ -93,7 +93,7 @@ define(function (require) {
 
         var y = d3.scale.ordinal()
           .domain(yDomain)
-          .rangeBands([height, 0], rectPadding);
+          .rangeBands([0, height], rectPadding);
 
         data.forEach(function (d, i) {
           d.dx = xValue.call(data, d, i);
@@ -149,18 +149,20 @@ define(function (require) {
             .strokeWidth(rect.strokeWidth)
             .opacity(rect.opacity);
 
-          g.append("g").datum(data).call(svgRects);
+          g.append("g")
+            .attr("class", "heat-rect")
+            .datum(data).call(svgRects);
         }
 
         if (xAxis.show) {
           var axisX = axis()
             .scale(x)
             .class(xAxis.class)
-            .transform("translate(0," + height + ")")
+            .transform(xAxis.transform || "translate(0," + height + ")")
             .tick({
               values: x.domain()
                 .filter(function (d, i) {
-                  return !(i % xAxis.filterTicksBy);
+                  return (i % xAxis.filterTicksBy) === 0;
                 })
             })
             .tickText(xAxis.tickText)
@@ -184,7 +186,7 @@ define(function (require) {
             .tick({
               values: y.domain()
                 .filter(function (d, i) {
-                  return !(i % yAxis.filterTicksBy);
+                  return (i % yAxis.filterTicksBy) === 0;
                 })
             })
             .tickText(yAxis.tickText)
