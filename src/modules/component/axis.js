@@ -15,6 +15,7 @@ define(function (require) {
       format: null
     };
     var tickText = {
+      transform: null,
       anchor: "middle",
       x: 0,
       y: 9,
@@ -54,7 +55,7 @@ define(function (require) {
           .call(axis);
 
         g.selectAll(".tick text")
-          .attr("transform", "rotate(" + tickText.rotate + ")")
+          .attr("transform", tickText.transform || "translate(0,0)rotate(" + tickText.rotate + ")")
           .attr("x", tickText.x)
           .attr("y", tickText.y)
           .attr("dx", tickText.dx)
@@ -112,6 +113,7 @@ define(function (require) {
 
     component.tickText = function (_) {
       if (!arguments.length) { return tickText; }
+      tickText.transform = typeof _.transform !== "undefined" ? _.transform : tickText.transform;
       tickText.anchor = typeof _.anchor !== "undefined" ? _.anchor : tickText.anchor;
       tickText.x = typeof _.x !== "undefined" ? _.x : tickText.x;
       tickText.y = typeof _.y !== "undefined" ? _.y : tickText.y;

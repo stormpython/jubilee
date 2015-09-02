@@ -2,6 +2,7 @@ define(function (require) {
   return {
     version: "0.1.0",
     chart: {
+      bar: require("src/modules/chart/bar"),
       boxplot: require("src/modules/chart/boxplot"),
       dendrogram: require("src/modules/chart/dendrogram"),
       heatmap: require("src/modules/chart/heatmap"),

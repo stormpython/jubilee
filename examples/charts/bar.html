@@ -21,64 +21,65 @@
             src="../../../node_modules/requirejs/require.js"></script>
     <script>
       require(["../../src/index"], function (jubilee) {
-        var data = {
-          series: [
-            {
-              values: [
-                { x: 1411761450000, y: 41, label: "a" },
-                { x: 1411761480000, y: 18, label: "a" },
-                { x: 1411761510000, y: 22, label: "a" },
-                { x: 1411761540000, y: 17, label: "a" },
-                { x: 1411761570000, y: 17, label: "a" }
-              ]
-            },
-            {
-              values: [
-                { x: 1411761450000, y: 51, label: "b" },
-                { x: 1411761480000, y: 8, label: "b" },
-                { x: 1411761510000, y: 42, label: "b" },
-                { x: 1411761540000, y: 7, label: "b" },
-                { x: 1411761570000, y: 7, label: "b" }
-              ]
-            },
-            {
-              values: [
-                { x: 1411761450000, y: 141, label: "c" },
-                { x: 1411761480000, y: 118, label: "c" },
-                { x: 1411761510000, y: 122, label: "c" },
-                { x: 1411761540000, y: 117, label: "c" },
-                { x: 1411761570000, y: 117, label: "c" }
-              ]
-            }
+        var data = [
+          [
+            { x: "apple", y: 41, label: "a" },
+            { x: "banana", y: 7, label: "b" },
+            { x: "cranberry", y: 117, label: "c" }
+          ],
+          [
+            { x: "apple", y: 18, label: "d" },
+            { x: "banana", y: 51, label: "d" },
+            { x: "cranberry", y: 122, label: "f" }
+          ],
+          [
+            { x: "apple", y: 22, label: "g" },
+            { x: "banana", y: 7, label: "h" },
+            { x: "cranberry", y: 117, label: "i" }
           ]
-        };
+        ];
+//          [
+//            { x: "apple", y: 41, label: "a" },
+//            { x: "apple", y: 18, label: "a" },
+//            { x: "apple", y: 22, label: "a" },
+//            { x: "apple", y: 17, label: "a" },
+//            { x: "apple", y: 17, label: "a" }
+//          ],
+//          [
+//            { x: "banana", y: 51, label: "b" },
+//            { x: "banana", y: 8, label: "b" },
+//            { x: "banana", y: 42, label: "b" },
+//            { x: "banana", y: 7, label: "b" },
+//            { x: "banana", y: 7, label: "b" }
+//          ],
+//          [
+//            { x: "cranberry", y: 141, label: "c" },
+//            { x: "cranberry", y: 118, label: "c" },
+//            { x: "cranberry", y: 122, label: "c" },
+//            { x: "cranberry", y: 117, label: "c" },
+//            { x: "cranberry", y: 117, label: "c" }
+//          ]
+//        ];
 
-        var color = d3.scale.category10(["a", "b", "c", "d", "e"]);
+        var color = d3.scale.category10();
         var bar = jubilee.chart.bar()
-          .accessor(function (d) { return d.series; })
-          .values(function (d) { return d.values; })
           .width(760)
           .height(500)
-          .color(color)
-          .zeroLine({ add: false })
-          .xScale({ nice: true })
-          .yScale({ nice: true })
-          .rects({
-            fill: function (d) { return d.label; },
-            y: function (d, i, j, scale) {
-              if (d.y < 0) {
-                d.y0 = 0;
-                return scale(d.y0);
-              }
-              return scale(d.y0 + d.y);
-            },
-            width: function (d, i, j, scale) {
-              return (scale.range()[1] / 5) - 2;
-            },
-            height: function (d, i, j, scale) {
-              if (d.y < 0) return (scale.range()[0] - (scale(0)) - scale(d.y));
-              return scale(d.y0) - scale(d.y0 + d.y);
-            }
+          .xScale({
+            scale: d3.scale.linear(),
+            domain: d3.max(d3.merge(data), function (d) {
+              return d.y0 + d.y;
+            }),
+            nice: true
+          })
+          .yScale({
+            scale: d3.scale.ordinal(),
+            domain: ["apple", "banana", "cranberry"]
+          })
+          .group(false)
+          .rect({
+            fill: function (d) { return color(d.label); },
+            stroke: function (d) { return color(d.label); }
           })
           .on("brush", function (brush) { console.log(brush.extent()); });
 

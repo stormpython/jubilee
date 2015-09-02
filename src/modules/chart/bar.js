@@ -72,14 +72,15 @@ define(function (require) {
       strokeWidth: 1,
       opacity: 0.5
     };
-    var bar = {
-      x: null,
-      y: null,
-      width: null,
-      height: null,
-      rx: 0,
-      ry: 0
-    };
+
+    var color = d3.scale.category10();
+
+    var cssClass = "bar";
+    var fill = function (d, i) { return color(i); };
+    var stroke = function (d, i) { return color(i); };
+    var strokeWidth = 1;
+    var opacity = 1;
+
     var group = false;
     var barPadding = 0.1;
     var groupPadding = 0;
@@ -102,10 +103,17 @@ define(function (require) {
         /* ******************************** */
 
         var x = xScale.scale
-          .domain(xScale.domain || getDomain(d3.merge(data), xValue));
+          .domain(xScale.domain || getXDomain(d3.merge(data), xValue));
 
         var y = yScale.scale
-          .domain(yScale.domain || [0, d3.max(d3.merge(data), yValue)]);
+          .domain(yScale.domain ||
+          [
+            0,
+            d3.max(d3.merge(data), function (d) {
+              if (group) { return d.y; }
+              return d.y0 + d.y;
+            })
+          ]);
 
         if (typeof x.rangeRoundBands === "function") {
           x.rangeRoundBands([0, adjustedWidth], barPadding, 0);
@@ -186,7 +194,7 @@ define(function (require) {
           var axisX = axis()
             .scale(x)
             .class(xAxis.class)
-            .transform(xAxis.transform || "translate(0," + (y.range()[0]) + ")")
+            .transform(xAxis.transform || "translate(0," + adjustedHeight + ")")
             .tick(xAxis.tick)
             .tickText(xAxis.tickText)
             .title(xAxis.title);
@@ -214,41 +222,50 @@ define(function (require) {
           .attr("clip-path", "url(#" + clippath.id() + ")");
         /* ******************************** */
 
-        var groupScale = d3.scale.ordinal()
-          .domain(d3.range(data.length))
-          .rangeRoundBands([0, x.rangeBand()], groupPadding, 0);
+        if (group) {
+          var groupScale = d3.scale.ordinal()
+            .domain(d3.range(data.length))
+            .rangeRoundBands([0, x.rangeBand()], groupPadding, 0);
+        }
 
         var j = -1;
 
         var rects = rect()
-          .x(bar.x || function (d, i) {
+          .x(rect.x || function (d, i) {
             if (group) {
               if (i === 0) { j++; }
               return x(xValue.call(this, d, i)) + groupScale(j);
             }
             return x(xValue.call(this, d, i));
           })
-          .y(bar.y || function (d, i) {
-            if (group) { return y(y.call(this, d, i)); }
+          .y(rect.y || function (d, i) {
+            if (group) { return y(yValue.call(this, d, i)); }
             return y(d.y0 + Math.abs(yValue.call(this, d, i)));
           })
-          .width(bar.width || function () {
+          .width(rect.width || function (d, i) {
             if (group) { return groupScale.rangeBand(); }
             return x.rangeBand();
           })
-          .height(bar.height || function (d, i) {
+          .height(rect.height || function (d, i) {
             return y(d.y0) - y(d.y0 + Math.abs(yValue.call(this, d, i)));
           })
-          .rx(bar.rx)
-          .ry(bar.ry);
+          .rx(rect.rx)
+          .ry(rect.ry)
+          .class(rect.class)
+          .fill(rect.fill)
+          .stroke(rect.stroke)
+          .strokeWidth(rect.strokeWidth)
+          .opacity(rect.opacity);
 
-
-        clippedG.call(rects);
+        clippedG.append("g").selectAll("g")
+          .data(data)
+          .enter().append("g")
+          .call(rects);
       });
     }
 
     // Creates a unique array of items
-    function getDomain(data, accessor) {
+    function getXDomain(data, accessor) {
       return data
         .map(function (item) {
           return accessor.call(this, item);
@@ -364,19 +381,38 @@ define(function (require) {
       return chart;
     };
 
-    chart.listeners = function (_) {
-      if (!arguments.length) { return listeners; }
-      listeners = typeof _ !== "object" ? listeners : _;
+    chart.group = function (_) {
+      if (!arguments.length) { return group; }
+      group = typeof _ !== "boolean" ? group : _;
       return chart;
     };
 
-    chart.bar = function (_) {
-      if (!arguments.length) { return bar; }
-      bar.class = typeof _.class !== "undefined" ? _.class : bar.class;
-      bar.fill = typeof _.fill !== "undefined" ? _.fill : bar.fill;
-      bar.stroke = typeof _.stroke !== "undefined" ? _.stroke : bar.stroke;
-      bar.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : bar.strokeWidth;
-      bar.opacity = typeof _.opacity !== "undefined" ? _.opacity : bar.opacity;
+    chart.barPadding = function (_) {
+      if (!arguments.length) { return barPadding; }
+      barPadding = typeof _ !== "number" ? barPadding : _;
+      return chart;
+    };
+
+    chart.groupPadding = function (_) {
+      if (!arguments.length) { return groupPadding; }
+      groupPadding = typeof _ !== "number" ? groupPadding : _;
+      return chart;
+    };
+
+    chart.rect = function (_) {
+      if (!arguments.length) { return rect; }
+      rect.x = typeof _.x !== "undefined" ? _.x : rect.x;
+      rect.y = typeof _.y !== "undefined" ? _.y : rect.y;
+      rect.fill = typeof _.fill !== "undefined" ? _.fill : rect.fill;
+      rect.stroke = typeof _.stroke !== "undefined" ? _.stroke : rect.stroke;
+      rect.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : rect.strokeWidth;
+      rect.opacity = typeof _.opacity !== "undefined" ? _.opacity : rect.opacity;
+      return chart;
+    };
+
+    chart.listeners = function (_) {
+      if (!arguments.length) { return listeners; }
+      listeners = typeof _ !== "object" ? listeners : _;
       return chart;
     };
 
