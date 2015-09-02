@@ -1,6 +1,6 @@
 define(function (require) {
   describe("Component: Events tests", function () {
-    var eventsFunction = require("src/modules/component/events");
+    var eventsFunction = require("src/modules/component/events/events");
     var d3fixture = require("fixtures/fixture");
     var remove = require("fixtures/remove");
     var totalListenerCount;

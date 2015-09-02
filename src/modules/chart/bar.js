@@ -1,12 +1,11 @@
 define(function (require) {
   var d3 = require("d3");
   var valuator = require("src/modules/valuator");
-  var functor = require("src/modules/functor");
   var scaletor = require("src/modules/helpers/scaletor");
   var clip = require("src/modules/element/svg/clipPath");
-  var axis = require("src/modules/component/axis");
-  var brushComponent = require("src/modules/component/brush");
-  var events = require("src/modules/component/events");
+  var axis = require("src/modules/component/axis/axis");
+  var brushComponent = require("src/modules/component/events/brush");
+  var events = require("src/modules/component/events/events");
   var rect = require("src/modules/element/svg/rect");
   var zeroAxisLine = require("src/modules/element/svg/line");
   var addEventListener = require("src/modules/helpers/add_event_listener");

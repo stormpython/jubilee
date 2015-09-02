@@ -2,8 +2,8 @@ define(function (require) {
   var d3 = require("d3");
   var svgRect = require("src/modules/element/svg/rect");
   var canvasRect = require("src/modules/element/canvas/rect");
-  var axis = require("src/modules/component/axis");
-  var events = require("src/modules/component/events");
+  var axis = require("src/modules/component/axis/axis");
+  var events = require("src/modules/component/events/events");
   var valuator = require("src/modules/valuator");
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");

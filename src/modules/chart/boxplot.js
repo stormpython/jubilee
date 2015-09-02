@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
   var box = require("src/modules/layout/box");
   var boxPlot = require("src/modules/component/boxplot");
-  var axis = require("src/modules/component/axis");
+  var axis = require("src/modules/component/axis/axis");
 
   return function boxplot() {
     var margin = { top:20, right: 20, bottom: 50, left: 50 };

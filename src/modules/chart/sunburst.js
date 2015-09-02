@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
-  var events = require("src/modules/component/events");
+  var events = require("src/modules/component/events/events");
   var valuator = require("src/modules/valuator");
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");

@@ -5,9 +5,9 @@ define(function (require) {
   var scaletor = require("src/modules/helpers/scaletor");
   var parseTime = require("src/modules/helpers/timeparser");
   var clip = require("src/modules/element/svg/clipPath");
-  var axis = require("src/modules/component/axis");
-  var brushComponent = require("src/modules/component/brush");
-  var events = require("src/modules/component/events");
+  var axis = require("src/modules/component/axis/axis");
+  var brushComponent = require("src/modules/component/events/brush");
+  var events = require("src/modules/component/events/events");
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var zeroAxisLine = require("src/modules/element/svg/line");
@@ -49,6 +49,7 @@ define(function (require) {
       transform: null,
       tick: {},
       tickText: { anchor: "middle", x: 0, y: 9, dx: "", dy: ".71em" },
+      rotateLabels: { allow: true },
       title: { anchor: "middle" }
     };
     var yAxis = {
@@ -58,6 +59,7 @@ define(function (require) {
       transform: null,
       tick: {},
       tickText: { anchor: "end", x: -9, y: 0, dy: ".32em" },
+      rotateLabels: {},
       title: { x: 0, y: -40, anchor: "middle" }
     };
     var zAxis = {
@@ -67,6 +69,7 @@ define(function (require) {
       transform: null,
       tick: {},
       tickText: { anchor: "start", x: 9, y: 0, dy: ".32em" },
+      rotateLabels: {},
       title: {}
     };
     var brushOpts = {
@@ -202,6 +205,7 @@ define(function (require) {
             .transform(xAxis.transform || "translate(0," + (y.range()[0]) + ")")
             .tick(xAxis.tick)
             .tickText(xAxis.tickText)
+            .rotateLabels(xAxis.rotateLabels)
             .title(xAxis.title);
 
           g.call(axisX);
@@ -410,6 +414,7 @@ define(function (require) {
       xAxis.transform = typeof _.transform !== "undefined" ? _.transform : xAxis.transform;
       xAxis.tick = typeof _.tick !== "undefined" ? _.tick : xAxis.tick;
       xAxis.tickText = typeof _.tickText!== "undefined" ? _.tickText: xAxis.tickText;
+      xAxis.rotateLabels = typeof _.rotateLabels !== "undefined" ? _.rotateLabels : xAxis.rotateLabels;
       xAxis.title = typeof _.title !== "undefined" ? _.title : xAxis.title;
       return chart;
     };

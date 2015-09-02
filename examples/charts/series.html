@@ -81,32 +81,15 @@
 
         // Example normal area chart configuration
         var myChart = jubilee.chart.series()
-          .margin({ bottom: 100 })
-          .width(700)
-          .height(500)
-          .x("z")
+          .margin({ bottom: 50 })
+          .width(500)
+          .height(300)
+          .x("x")
           .y("y")
-//          .brush({ class: "brush", y: true })
-          .xScale({
-            scale: d3.scale.linear()
-          })
+          .brush({ class: "brush", y: true })
           .xAxis({
-            tick: {
-              format: function (d, i) {
-                return new Date(d);
-              }
-            },
-            tickText: {
-              anchor: "start",
-              transform: function (d, i) {
-                var margins = myChart.margin();
-                var axisWidth = myChart.width();
-                var scaleWidth = axisWidth - margins.left - margins.right;
-                console.log(this.getComputedTextLength() * 10, scaleWidth);
-
-                return "translate(12,3)rotate(45)";
-              }
-            }
+            rotateLabels: { allow: true },
+            tick: { format: function (d) { return new Date(d); } }
           })
           .yScale({ nice: true })
 //          .zScale({ nice: true })
