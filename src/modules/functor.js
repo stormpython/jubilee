@@ -5,14 +5,14 @@ define(function (require) {
    * Builds and return a function based on key value pairs
    * and calls it on a d3 selection.
    */
-  return function constructor() {
+  return function functor() {
     var func = function () {};
     var opts = {};
 
-    function component(selection) {
-      selection.each(function (data, index) {
+    function constructor(selection) {
+      selection.each(function () {
         if (typeof func === "function") {
-          d3.entries(opts).forEach(function (d, i) {
+          d3.entries(opts).forEach(function (d) {
             if (typeof func[d.key] === "function") {
               func[d.key](d.value);
             }
@@ -23,18 +23,18 @@ define(function (require) {
       });
     }
 
-    component.function = function (_) {
+    constructor.function = function (_) {
       if (!arguments.length) { return func; }
-      func = _;
-      return component;
+      func = typeof _ !== "function" ? func : _;
+      return constructor;
     };
 
-    component.options = function (_) {
+    constructor.options = function (_) {
       if (!arguments.length) { return opts; }
-      opts = _;
-      return component;
+      opts = typeof _ !== "object" ? opts : _;
+      return constructor;
     };
 
-    return component;
+    return constructor;
   };
 });
