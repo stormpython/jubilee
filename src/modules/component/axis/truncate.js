@@ -13,7 +13,7 @@ define(function (require) {
         // Shorten and append ...
         // Subtract 3 from maxCharLength to make room for "..."
         if (labelCharLength > maxCharLength) {
-          var truncatedLabel = txt.text().slice(0, maxCharLength - 3) + "...";
+          var truncatedLabel = txt.text().slice(0, maxCharLength) + "..";
           txt.text(truncatedLabel);
         }
       });

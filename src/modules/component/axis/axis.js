@@ -1,6 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
   var rotate = require("src/modules/component/axis/rotate");
+  var functor = require("src/modules/functor");
 
   return function axes() {
     // Private variables
@@ -23,15 +24,7 @@ define(function (require) {
       dx: "",
       dy: ".71em"
     };
-    var rotateLabels = {
-      allow: false,
-      transform: "translate(12,3)rotate(45)", // Default for x axis
-      anchor: "start", // Default for x axis
-      x: 0,
-      y: 9,
-      dx: "",
-      dy: ".71em"
-    };
+    var rotateLabels = { allow: false };
     var transform = "translate(0,0)";
     var gClass = "axis";
     var title = {
@@ -64,28 +57,13 @@ define(function (require) {
           .call(axis);
 
         if (rotateLabels.allow) {
-          var rotation = rotate()
-            .axisWidth(Math.abs(scale.range()[1] - scale.range()[0]))
-            .labelPadding(rotateLabels.labelPadding)
-            .truncateLength(rotateLabels.truncateLength)
-            .text({
-              transform: tickText.transform,
-              x: tickText.x,
-              y: tickText.y,
-              dx: tickText.dx,
-              dy: tickText.dy,
-              anchor: tickText.anchor
-            })
-            .rotatedText({
-              transform: rotateLabels.transform,
-              x: rotateLabels.x,
-              y: rotateLabels.y,
-              dx: rotateLabels.dx,
-              dy: rotateLabels.dy,
-              anchor: rotateLabels.anchor
-            });
+          var axisLength = Math.abs(scale.range()[1] - scale.range()[0]);
+          var rotation = rotate().axisLength(axisLength);
+          var func = functor()
+            .function(rotation)
+            .options(rotateLabels);
 
-          g.call(rotation);
+          g.call(func);
         }
 
         g.append("text")
@@ -150,15 +128,7 @@ define(function (require) {
 
     component.rotateLabels = function (_) {
       if (!arguments.length) { return rotateLabels; }
-      rotateLabels.allow = typeof _.allow !== "undefined" ? _.allow : rotateLabels.allow;
-      rotateLabels.labelPadding = typeof _.labelPadding !== "undefined" ? _.labelPadding : rotateLabels.labelPadding;
-      rotateLabels.truncateLength = typeof _.truncateLength !== "undefined" ? _.truncateLength : rotateLabels.truncateLength;
-      rotateLabels.transform = typeof _.transform !== "undefined" ? _.transform : rotateLabels.transform;
-      rotateLabels.anchor = typeof _.anchor !== "undefined" ? _.anchor : rotateLabels.anchor;
-      rotateLabels.x = typeof _.x !== "undefined" ? _.x : rotateLabels.x;
-      rotateLabels.y = typeof _.y !== "undefined" ? _.y : rotateLabels.y;
-      rotateLabels.dx = typeof _.dx !== "undefined" ? _.dx : rotateLabels.dx;
-      rotateLabels.dy = typeof _.dy !== "undefined" ? _.dy : rotateLabels.dy;
+      rotateLabels = typeof _ !== "object" ? rotateLabels : _;
       return component;
     };
 

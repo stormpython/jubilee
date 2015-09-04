@@ -4,39 +4,34 @@ define(function (require) {
 
   return function rotate() {
     // Private variables
-    var axisWidth = 100;
+    var axisLength = 100;
+    var measure = "width";
     var labelPadding = 5;
     var truncateLength = 10;
     var text = {
-      transform: "translate(0,0)",
-      x: 9,
-      y: 0,
+      transform: "translate(0,0)rotate(-45)",
+      x: 0,
+      y: 6,
       dx: "",
       dy: ".71em",
-      anchor: "middle"
-    };
-    var rotatedText = {
-      transform: "translate(12,3)rotate(45)",
-      x: 9,
-      y: 0,
-      dx: "",
-      dy: ".71em",
-      anchor: "start"
+      anchor: "end"
     };
 
     function component(g) {
       g.each(function () {
         var ticks = d3.select(this).selectAll(".tick text");
         var numOfTicks = ticks[0].length;
-        var maxTickLabelLength = (axisWidth / numOfTicks) - labelPadding;
+        var maxTickLabelLength = (axisLength / numOfTicks) - labelPadding;
         var isRotated;
 
         ticks.each(function () {
-          var labelLength = this.getComputedTextLength();
+          //var labelLength = this.getComputedTextLength();
+          var labelLength = this.getBBox()[measure];
           if (labelLength >= maxTickLabelLength) { isRotated = true; }
         });
 
-        if (!isRotated) {
+        // Rotate and truncate
+        if (isRotated) {
           ticks
             .attr("transform", text.transform)
             .attr("x", text.x)
@@ -44,17 +39,6 @@ define(function (require) {
             .attr("dx", text.dx)
             .attr("dy", text.dy)
             .style("text-anchor", text.anchor);
-        }
-
-        // Rotate and truncate
-        if (isRotated) {
-          ticks
-            .attr("transform", rotatedText.transform)
-            .attr("x", rotatedText.x)
-            .attr("y", rotatedText.y)
-            .attr("dx", rotatedText.dx)
-            .attr("dy", rotatedText.dy)
-            .style("text-anchor", rotatedText.anchor);
 
           // Truncation logic goes here
           ticks.each(function () {
@@ -65,9 +49,15 @@ define(function (require) {
     }
 
     // Public API
-    component.axisWidth = function (_) {
-      if (!arguments.length) { return axisWidth; }
-      axisWidth = typeof _ !== "number" ? axisWidth : _;
+    component.axisLength = function (_) {
+      if (!arguments.length) { return axisLength; }
+      axisLength = typeof _ !== "number" ? axisLength : _;
+      return component;
+    };
+
+    component.measure = function (_) {
+      if (!arguments.length) { return measure; }
+      measure = typeof _ !== "string" ? measure : _;
       return component;
     };
 
@@ -91,17 +81,6 @@ define(function (require) {
       text.dx = typeof _.dx !== "undefined" ? _.dx : text.dx;
       text.dy = typeof _.dy !== "undefined" ? _.dy : text.dy;
       text.anchor = typeof _.anchor !== "undefined" ? _.anchor : text.anchor;
-      return component;
-    };
-
-    component.rotatedText = function (_) {
-      if (!arguments.length) { return rotatedText; }
-      rotatedText.transform = typeof _.transform !== "undefined" ? _.transform : rotatedText.transform;
-      rotatedText.x = typeof _.x !== "undefined" ? _.x : rotatedText.x;
-      rotatedText.y = typeof _.y !== "undefined" ? _.y : rotatedText.y;
-      rotatedText.dx = typeof _.dx !== "undefined" ? _.dx : rotatedText.dx;
-      rotatedText.dy = typeof _.dy !== "undefined" ? _.dy : rotatedText.dy;
-      rotatedText.anchor = typeof _.anchor !== "undefined" ? _.anchor : rotatedText.anchor;
       return component;
     };
 
