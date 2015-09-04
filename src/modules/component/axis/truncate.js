@@ -10,8 +10,7 @@ define(function (require) {
         var txt = d3.select(this);
         var labelCharLength = txt.text().length;
 
-        // Shorten and append ...
-        // Subtract 3 from maxCharLength to make room for "..."
+        // Shorten label and append ..
         if (labelCharLength > maxCharLength) {
           var truncatedLabel = txt.text().slice(0, maxCharLength) + "..";
           txt.text(truncatedLabel);
