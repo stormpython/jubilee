@@ -174,16 +174,13 @@ define(function (require) {
         /* Zero-line ******************************** */
         if (zeroLine.show) {
           var zLine = zeroAxisLine()
-            .class(zeroLine.class)
             .x1(function () { return x.range()[0]; })
             .x2(function () { return x.range()[1]; })
             .y1(function () { return y(0); })
-            .y2(function () { return y(0); })
-            .stroke(zeroLine.stroke)
-            .strokeWidth(zeroLine.strokeWidth)
-            .opacity(zeroLine.opacity);
+            .y2(function () { return y(0); });
+          var zLineFunc = functor().function(zLine).options(zeroLine);
 
-          g.append("g").datum([{}]).call(zLine);
+          g.append("g").datum([{}]).call(zLineFunc);
         }
         /* ******************************** */
 
@@ -440,11 +437,7 @@ define(function (require) {
 
     chart.zeroLine = function (_) {
       if (!arguments.length) { return zeroLine; }
-      zeroLine.show = typeof _.show !== "undefined" ? _.show : margin.show;
-      zeroLine.class = typeof _.class !== "undefined" ? _.class : margin.class;
-      zeroLine.stroke = typeof _.stroke !== "undefined" ? _.stroke : margin.stroke;
-      zeroLine.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : margin.strokeWidth;
-      zeroLine.opacity = typeof _.opacity !== "undefined" ? _.opacity : margin.opacity;
+      zeroLine = typeof _ !== "object" ? zeroLine : _;
       return chart;
     };
 
