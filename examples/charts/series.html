@@ -89,7 +89,8 @@
           .brush({ class: "brush", y: true })
           .xAxis({
             rotateLabels: { allow: true },
-            tick: { format: function (d) { return new Date(d); } }
+            tick: { format: function (d) { return new Date(d); } },
+            title: { text: "It works" }
           })
           .yScale({ nice: true })
 //          .zScale({ nice: true })

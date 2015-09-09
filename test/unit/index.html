@@ -28,7 +28,6 @@
 
       <!-- Tests -->
       require([
-        "specs/modules/chart/line",
         "specs/modules/element/circle",
         "specs/modules/element/rect",
         "specs/modules/element/ellipse",
@@ -36,16 +35,14 @@
         "specs/modules/element/line",
         "specs/modules/element/clipPath",
         "specs/modules/element/path",
-        "specs/modules/helpers/deep_copy",
         "specs/modules/helpers/add_event_listener",
         "specs/modules/helpers/remove_event_listener",
-        "specs/modules/helpers/map_domain",
-        "specs/modules/helpers/scale_value",
         "specs/modules/layout/base",
         "specs/modules/layout/grid",
-        "specs/modules/component/events/events",
-        "specs/modules/component/events/brush",
-        "specs/modules/component/axis/axis",
+        "specs/modules/component/events",
+        "specs/modules/component/brush",
+        "specs/modules/component/axis",
+        "specs/modules/functor"
       ], function () {
         mocha.run();
       });

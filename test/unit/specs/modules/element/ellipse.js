@@ -145,32 +145,32 @@ define(function (require) {
       });
     });
 
-    describe("cssClass API", function () {
+    describe("class API", function () {
       var defaultClass;
 
       beforeEach(function () {
         removeChildren(fixture);
         defaultClass = "ellipses";
-        element.cssClass(defaultClass);
+        element.class(defaultClass);
       });
 
       it("should get the property", function () {
-        chai.assert.equal(element.cssClass(), defaultClass);
+        chai.assert.equal(element.class(), defaultClass);
       });
 
       it("should set the property", function () {
         var newClass = "ovals";
-        element.cssClass(newClass);
-        chai.assert.equal(element.cssClass(), newClass);
+        element.class(newClass);
+        chai.assert.equal(element.class(), newClass);
       });
 
       it("should set the proper value of the DOM attribute", function () {
-        element.cssClass(defaultClass);
+        element.class(defaultClass);
         fixture.call(element); // Redraw
 
         fixture.selectAll("ellipse")
           .each(function () {
-            chai.assert.equal(this.getAttribute("class"), element.cssClass());
+            chai.assert.equal(this.getAttribute("class"), element.class());
           });
       });
     });
@@ -231,38 +231,6 @@ define(function (require) {
         fixture.selectAll("ellipse")
           .each(function () {
             chai.assert.equal(this.style.opacity, element.opacity());
-          });
-      });
-    });
-
-    describe("color API", function () {
-      var defaultColor;
-
-      beforeEach(function () {
-        removeChildren(fixture);
-        defaultColor = function () { return "#FF0000"; }; // must be a function
-        element.color(defaultColor);
-      });
-
-      it("should get the property", function () {
-        chai.assert.equal(element.color(), defaultColor);
-      });
-
-      it("should set the property", function () {
-        var newColor = function () { return "#0000FF"; };
-        element.color(newColor);
-        chai.assert.equal(element.color(), newColor);
-      });
-
-      it("should set the proper value of the DOM attribute", function () {
-        element.color(defaultColor);
-        fixture.call(element); // Redraw
-        var color = element.color();
-
-        fixture.selectAll("ellipse")
-          .each(function () {
-            chai.assert.equal(this.getAttribute("fill"), color());
-            chai.assert.equal(this.getAttribute("stroke"), color());
           });
       });
     });

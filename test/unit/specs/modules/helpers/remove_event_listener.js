@@ -1,7 +1,7 @@
 define(function (require) {
   describe("removeEventListener tests", function () {
     var removeEventListener = require("src/modules/helpers/remove_event_listener");
-    var events = require("src/modules/component/events");
+    var events = require("src/modules/component/events/events");
     var clickFunction1 = function () { console.log("click function 1"); };
     var clickFunction2 = function () { console.log("click function 2"); };
     var chart;

@@ -62,7 +62,6 @@ define(function (require) {
       it("should return the tick object", function () {
         chai.assert.isObject(axis.tick());
         chai.assert.property(axis.tick(), "number");
-        chai.assert.property(axis.tick(), "text");
         chai.assert.property(axis.tick(), "values");
         chai.assert.property(axis.tick(), "format");
       });
@@ -74,21 +73,21 @@ define(function (require) {
       });
     });
 
-    describe("gClass API", function () {
+    describe("class API", function () {
       var gClass = "axis";
       var newClass = "x axis";
 
       beforeEach(function () {
-        axis.gClass(gClass);
+        axis.class(gClass);
       });
 
       it("should return the css class", function () {
-        chai.assert.equal(axis.gClass(), gClass);
+        chai.assert.equal(axis.class(), gClass);
       });
 
       it("should set the css class property", function () {
-        axis.gClass(newClass);
-        chai.assert.equal(axis.gClass(), newClass);
+        axis.class(newClass);
+        chai.assert.equal(axis.class(), newClass);
       });
     });
 

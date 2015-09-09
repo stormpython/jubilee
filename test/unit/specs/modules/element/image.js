@@ -145,32 +145,33 @@ define(function (require) {
       });
     });
 
-    describe("cssClass API", function () {
+    describe("class API", function () {
+
       var defaultClass;
 
       beforeEach(function () {
         removeChildren(fixture);
         defaultClass = "images";
-        element.cssClass(defaultClass);
+        element.class(defaultClass);
       });
 
       it("should get the property", function () {
-        chai.assert.equal(element.cssClass(), defaultClass);
+        chai.assert.equal(element.class(), defaultClass);
       });
 
       it("should set the property", function () {
         var newClass = "jubilee";
-        element.cssClass(newClass);
-        chai.assert.equal(element.cssClass(), newClass);
+        element.class(newClass);
+        chai.assert.equal(element.class(), newClass);
       });
 
       it("should set the proper value of the DOM attribute", function () {
-        element.cssClass(defaultClass); // Set new attribute
+        element.class(defaultClass); // Set new attribute
         fixture.call(element); // Redraw images
 
         fixture.selectAll("image")
           .each(function () {
-            chai.assert.equal(this.getAttribute("class"), element.cssClass());
+            chai.assert.equal(this.getAttribute("class"), element.class());
           });
       });
     });

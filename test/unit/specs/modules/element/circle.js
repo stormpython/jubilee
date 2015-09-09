@@ -115,65 +115,31 @@ define(function (require) {
       });
     });
 
-    describe("cssClass API", function () {
+    describe("class API", function () {
       var defaultClass;
 
       beforeEach(function () {
         removeChildren(fixture);
         defaultClass = "circles";
-        element.cssClass(defaultClass);
+        element.class(defaultClass);
       });
 
       it("should get the property", function () {
-        chai.assert.equal(element.cssClass(), defaultClass);
+        chai.assert.equal(element.class(), defaultClass);
       });
 
       it("should set the property", function () {
-        element.cssClass("test");
-        chai.assert.equal(element.cssClass(), "test");
+        element.class("test");
+        chai.assert.equal(element.class(), "test");
       });
 
       it("should set the proper value of the DOM attribute", function () {
-        element.cssClass("dots"); // Set new class attribute
+        element.class("dots"); // Set new class attribute
         fixture.call(element); // Redraw circles
 
         fixture.selectAll("circle")
           .each(function () {
-            chai.assert.equal(this.getAttribute("class"), element.cssClass());
-          });
-      });
-    });
-
-    describe("color API", function () {
-      var defaultColor;
-
-      beforeEach(function () {
-        removeChildren(fixture);
-        defaultColor = function () { return "#0000FF"; }; // must be a function
-        element.color(defaultColor);
-      });
-
-      it("should get the property", function () {
-        chai.assert.equal(element.color(), defaultColor);
-      });
-
-      it("should set the property", function () {
-        var newColor = function () { return "#FF0000"; };
-        element.color(newColor);
-        chai.assert.equal(element.color(), newColor);
-      });
-
-      it("should set the proper value of the DOM attribute", function () {
-        element.color(defaultColor); // Set new color attribute
-        fixture.call(element); // Redraw circles
-        var color = element.color();
-
-        // When fill and stroke are not set, they should default to the color
-        // function value(s).
-        fixture.selectAll("circle")
-          .each(function () {
-            chai.assert.equal(this.getAttribute("fill"), color());
-            chai.assert.equal(this.getAttribute("stroke"), color());
+            chai.assert.equal(this.getAttribute("class"), element.class());
           });
       });
     });

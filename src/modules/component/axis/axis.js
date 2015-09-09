@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
-  var rotate = require("src/modules/component/axis/rotate");
   var functor = require("src/modules/functor");
+  var rotate = require("src/modules/component/axis/rotate");
 
   return function axes() {
     // Private variables

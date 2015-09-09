@@ -1,7 +1,7 @@
 define(function (require) {
   describe("addEventListener tests", function () {
     var addEventListener = require("src/modules/helpers/add_event_listener");
-    var events = require("src/modules/component/events");
+    var events = require("src/modules/component/events/events");
     var chart;
     var addListener;
 

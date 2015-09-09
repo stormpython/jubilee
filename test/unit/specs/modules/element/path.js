@@ -1,5 +1,6 @@
 define(function (require) {
   describe("Element: Path SVG Tests", function () {
+    var d3 = require("d3");
     var path = require("src/modules/element/svg/path");
     var d3fixture = require("fixtures/fixture");
     var pathGenerator = require("fixtures/path_generator")("line");
@@ -110,32 +111,32 @@ define(function (require) {
       });
     });
 
-    describe("cssClass API", function () {
+    describe("class API", function () {
       var defaultClass;
 
       beforeEach(function () {
         removeChildren(fixture);
         defaultClass = "paths";
-        element.cssClass(defaultClass);
+        element.class(defaultClass);
       });
 
       it("should get the property", function () {
-        chai.assert.equal(element.cssClass(), defaultClass);
+        chai.assert.equal(element.class(), defaultClass);
       });
 
       it("should set the property", function () {
         var newClass = "lines";
-        element.cssClass(newClass);
-        chai.assert.equal(element.cssClass(), newClass);
+        element.class(newClass);
+        chai.assert.equal(element.class(), newClass);
       });
 
       it("should set the proper value of the DOM attribute", function () {
-        element.cssClass(defaultClass);
+        element.class(defaultClass);
         fixture.call(element);
 
         fixture.selectAll("path")
           .each(function () {
-            chai.assert.equal(this.getAttribute("class"), element.cssClass());
+            chai.assert.equal(this.getAttribute("class"), element.class());
           });
       });
     });
@@ -200,43 +201,12 @@ define(function (require) {
       });
     });
 
-    describe("color API", function () {
-      var defaultColor;
-
-      beforeEach(function () {
-        removeChildren(fixture);
-        defaultColor = function () { return "#FF0000"; }; // must be a function
-        element.color(defaultColor);
-      });
-
-      it("should get the property", function () {
-        chai.assert.equal(element.color(), defaultColor);
-      });
-
-      it("should set the property", function () {
-        var newColor = function () { return "#0000FF"; };
-        element.color(newColor);
-        chai.assert.equal(element.color(), newColor);
-      });
-
-      it("should set the proper value of the DOM attribute", function () {
-        element.color(defaultColor);
-        fixture.call(element);
-        var color = element.color();
-
-        fixture.selectAll("path")
-          .each(function () {
-            chai.assert.equal(this.getAttribute("stroke"), color());
-          });
-      });
-    });
-
     describe("stroke API", function () {
       var defaultStroke;
 
       beforeEach(function () {
         removeChildren(fixture);
-        defaultStroke = "#FF0000";
+        defaultStroke = d3.functor("#FF0000");
         element.stroke(defaultStroke);
       });
 
@@ -245,7 +215,7 @@ define(function (require) {
       });
 
       it("should set the property", function () {
-        var newStroke = "#0000FF";
+        var newStroke = d3.functor("#0000FF");
         element.stroke(newStroke);
         chai.assert.equal(element.stroke(), newStroke);
       });
@@ -256,7 +226,8 @@ define(function (require) {
 
         fixture.selectAll("path")
           .each(function () {
-            chai.assert.equal(this.getAttribute("stroke"), element.stroke());
+            // element.stroke() returns a function that needs to be called
+            chai.assert.equal(this.getAttribute("stroke"), element.stroke()());
           });
       });
     });
