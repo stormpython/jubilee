@@ -20,7 +20,6 @@ define(function (require) {
     describe("function API", function () {
       it("should return the function", function () {
         var testFunc = functor().function(func);
-        console.log(testFunc.function(), func);
         chai.assert.equal(testFunc.function(), func);
       });
     });
