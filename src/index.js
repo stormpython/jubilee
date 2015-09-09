@@ -20,13 +20,17 @@ define(function (require) {
       box: require("src/modules/layout/box"),
       grid: require("src/modules/layout/grid")
     },
+    axis: {
+      rotate: require("src/modules/component/axis/rotate"),
+      truncate: require("src/modules/component/axis/truncate")
+    },
     component: {
       area: require("src/modules/component/area"),
-      axis: require("src/modules/component/axis"),
+      axis: require("src/modules/component/axis/axis"),
       bars: require("src/modules/component/bars"),
       boxplot: require("src/modules/component/boxplot"),
-      brush: require("src/modules/component/brush"),
-      events: require("src/modules/component/events"),
+      brush: require("src/modules/component/events/brush"),
+      events: require("src/modules/component/events/events"),
       line: require("src/modules/component/line"),
       points: require("src/modules/component/points")
     },

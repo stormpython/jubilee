@@ -1,5 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
+  var rotate = require("src/modules/component/axis/rotate");
+  var functor = require("src/modules/functor");
 
   return function axes() {
     // Private variables
@@ -20,9 +22,9 @@ define(function (require) {
       x: 0,
       y: 9,
       dx: "",
-      dy: ".71em",
-      rotate: 0
+      dy: ".71em"
     };
+    var rotateLabels = { allow: false };
     var transform = "translate(0,0)";
     var gClass = "axis";
     var title = {
@@ -54,13 +56,15 @@ define(function (require) {
           .attr("transform", transform)
           .call(axis);
 
-        g.selectAll(".tick text")
-          .attr("transform", tickText.transform || "translate(0,0)rotate(" + tickText.rotate + ")")
-          .attr("x", tickText.x)
-          .attr("y", tickText.y)
-          .attr("dx", tickText.dx)
-          .attr("dy", tickText.dy)
-          .style("text-anchor", tickText.anchor);
+        if (rotateLabels.allow) {
+          var axisLength = Math.abs(scale.range()[1] - scale.range()[0]);
+          var rotation = rotate().axisLength(axisLength);
+          var func = functor()
+            .function(rotation)
+            .options(rotateLabels);
+
+          g.call(func);
+        }
 
         g.append("text")
           .attr("class", title.class)
@@ -119,7 +123,12 @@ define(function (require) {
       tickText.y = typeof _.y !== "undefined" ? _.y : tickText.y;
       tickText.dx = typeof _.dx !== "undefined" ? _.dx : tickText.dx;
       tickText.dy = typeof _.dy !== "undefined" ? _.dy : tickText.dy;
-      tickText.rotate = typeof _.rotate !== "undefined" ? _.rotate : tickText.rotate;
+      return component;
+    };
+
+    component.rotateLabels = function (_) {
+      if (!arguments.length) { return rotateLabels; }
+      rotateLabels = typeof _ !== "object" ? rotateLabels : _;
       return component;
     };
 

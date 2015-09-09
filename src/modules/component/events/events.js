@@ -3,7 +3,6 @@
  */
 define(function (require) {
   var d3 = require("d3");
-  var valuator = require("src/modules/valuator");
   var targetIndex = require("src/modules/helpers/target_index");
 
   return function events() {
