@@ -13,6 +13,11 @@ define(function () {
     if (typeof str !== "string") { return; }
 
     var abbr = str.split(parseFloat(str))[1];
+
+    if (Object.keys(timeNotation).indexOf(abbr) === -1) {
+      throw new Error("Invalid time string " + str);
+    }
+
     return timeNotation[abbr];
   };
 });
