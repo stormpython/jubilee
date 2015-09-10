@@ -8,6 +8,6 @@ define(function (require) {
       if (_ === "time.utc") { return d3.time.scale.utc(); }
       return typeof d3.scale[_] === "function" ? d3.scale[_]() : d3.scale.linear();
     }
-    return _;
+    return !_ || typeof _ !== "function" ? d3.scale.linear() : _;
   };
 });
