@@ -25,7 +25,6 @@ define(function (require) {
         var isRotated;
 
         ticks.each(function () {
-          //var labelLength = this.getComputedTextLength();
           var labelLength = this.getBBox()[measure];
           if (labelLength >= maxTickLabelLength) { isRotated = true; }
         });
