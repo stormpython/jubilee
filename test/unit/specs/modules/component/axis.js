@@ -2,18 +2,10 @@ define(function (require) {
   describe("Component: Axis tests", function () {
     var d3 = require("d3");
     var axisFunction = require("src/modules/component/axis/axis");
-    var d3fixture = require("fixtures/fixture");
-    var remove = require("fixtures/remove");
-    var fixture;
     var axis;
 
     beforeEach(function () {
-      fixture = d3fixture;
       axis = axisFunction();
-    });
-
-    afterEach(function () {
-      remove(fixture);
     });
 
     it("should return a function", function () {
