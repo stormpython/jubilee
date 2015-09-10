@@ -9,6 +9,11 @@ define(function () {
     y: "year"
   };
 
+  /**
+   * Function that returns the proper time string
+   * from its abbreviated form.
+   * Valid str === [0-9][time abbr], e.g. "20s"
+   */
   return function (str) {
     if (typeof str !== "string") { return; }
 

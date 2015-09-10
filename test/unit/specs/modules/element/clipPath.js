@@ -47,7 +47,6 @@ define(function (require) {
 
         fixture.selectAll("clippath")
           .each(function () {
-            console.log(this);
             chai.assert.equal(this.getAttribute("id"), element.id());
           });
       });

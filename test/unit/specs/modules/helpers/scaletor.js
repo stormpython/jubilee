@@ -39,5 +39,15 @@ define(function (require) {
         chai.assert.deepEqual(scale.domain(), d3LinearScaleDomain);
       });
     });
+
+    it("should return d3 time scales", function () {
+      var times = ["time", "time.utc"];
+      var timeDomain = d3.time.scale().domain();
+
+      times.forEach(function (str) {
+        var domain = scaletor(str).domain();
+        chai.assert.deepEqual(domain, timeDomain);
+      });
+    });
   });
 });
