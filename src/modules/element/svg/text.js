@@ -33,8 +33,8 @@ define(function (require) {
           .attr("y", y)
           .attr("dx", dx)
           .attr("dy", dy)
+          .attr("fill", fill)
           .style("text-anchor", anchor)
-          .style("fill", fill)
           .text(texts);
       });
     }
