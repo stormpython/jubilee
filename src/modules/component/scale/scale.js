@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var valuator = require("src/modules/valuator");
+  var builder = require("src/modules/builder");
   var scalator = require("src/modules/helpers/scaletor");
 
   return function scale() {
@@ -15,11 +15,7 @@ define(function (require) {
     var attr = {};
 
     function component(data) {
-      if (domain && typeof domain === "function") {
-        type.domain(domain.call(null, data));
-      }
-
-      if (domain && Array.isArray(domain)) { type.domain(domain); }
+      if (domain) { type.domain(domain.call(null, data)); }
 
       if (typeof type[rangeType] === "function" && rangeValue) {
         if (rangeType === "rangePoints" || rangeType === "rangeRoundPoints") {
@@ -31,25 +27,13 @@ define(function (require) {
         }
       }
 
-      d3.entries(attr).forEach(function (d) {
-        if (typeof type[d.key] === "function") {
-          type[d.key](d.value);
-        }
-      });
-
-      return type;
+      return builder().function(type).options(attr)();
     }
 
     // Public API
     component.type = function (_) {
       if (!arguments.length) { return type; }
       type = scalator(_);
-      return component;
-    };
-
-    component.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = valuator(_);
       return component;
     };
 

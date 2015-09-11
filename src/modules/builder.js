@@ -23,7 +23,7 @@ define(function (require) {
       return component;
     };
 
-    component.attr = function (_) {
+    component.options = function (_) {
       if (!arguments.length) { return attrs; }
       if (arguments.length === 1 && typeof _ === "string") {
         return attrs[_];
