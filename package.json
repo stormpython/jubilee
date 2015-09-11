@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "D3 Reusable Components Library",
   "main": "index.js",
-  "directories": {
-    "example": "examples"
-  },
   "scripts": {
     "test": "grunt test"
   },
