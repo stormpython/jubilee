@@ -6,10 +6,7 @@ define(function (require) {
   return function scale() {
     // Private variables
     var type = d3.scale.linear();
-    var accessor = function (d) { return d; };
-    var domain = function (data) {
-      return d3.extent(data, accessor);
-    };
+    var domain = null;
     var rangeType = "range";
     var rangeValue = null;
     var padding = 0;
@@ -18,7 +15,11 @@ define(function (require) {
     var attr = {};
 
     function component(data) {
-      type.domain(domain.call(null, data));
+      if (domain && typeof domain === "function") {
+        type.domain(domain.call(null, data));
+      }
+
+      if (domain && Array.isArray(domain)) { type.domain(domain); }
 
       if (typeof type[rangeType] === "function" && rangeValue) {
         if (rangeType === "rangePoints" || rangeType === "rangeRoundPoints") {
