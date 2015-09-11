@@ -1,5 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
+  var builder = require("src/modules/builder");
 
   /**
    * Builds and return a function based on key value pairs
@@ -11,15 +12,7 @@ define(function (require) {
 
     function constructor(selection) {
       selection.each(function () {
-        if (typeof func === "function") {
-          d3.entries(opts).forEach(function (d) {
-            if (typeof func[d.key] === "function") {
-              func[d.key](d.value);
-            }
-          });
-
-          d3.select(this).call(func);
-        }
+        d3.select(this).call(builder(opts, func));
       });
     }
 
