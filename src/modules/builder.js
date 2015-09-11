@@ -1,37 +1,21 @@
 define(function (require) {
   var d3 = require("d3");
 
-  return function builder() {
-    // Private variables
-    var func = function () {};
-    var attrs = {};
-
-    function component() {
-      d3.entries(attrs).forEach(function (d) {
-        if (typeof func[d.key] === "function") {
-          func[d.key](d.value);
-        }
-      });
-
-      return func;
+  return function builder(attrs, func) {
+    if (typeof attrs !== "object") {
+      throw new Error("builder expects an object as its first argument");
     }
 
-    // Public API
-    component.function = function (_) {
-      if (!arguments.length) { return func; }
-      func = typeof _ === "function" ? _ : func;
-      return component;
-    };
+    if (typeof func !== "function") {
+      throw new Error("builder expects a function as its second argument");
+    }
 
-    component.options = function (_) {
-      if (!arguments.length) { return attrs; }
-      if (arguments.length === 1 && typeof _ === "string") {
-        return attrs[_];
+    d3.entries(attrs).forEach(function (d) {
+      if (typeof func[d.key] === "function") {
+        func[d.key](d.value);
       }
-      attrs = typeof _ === "object" ? _ : attrs;
-      return component;
-    };
+    });
 
-    return component;
+    return func;
   };
 });

@@ -27,7 +27,7 @@ define(function (require) {
         }
       }
 
-      return builder().function(type).options(attr)();
+      return builder(attr, type);
     }
 
     // Public API
