@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var valuator = require("src/modules/valuator");
+  var valuator = require("valuator");
   var scaletor = require("src/modules/helpers/scaletor");
   var clip = require("src/modules/element/svg/clipPath");
   var axis = require("src/modules/component/axis/axis");

@@ -1,8 +1,8 @@
 define(function (require) {
   var d3 = require("d3");
   var circle = require("src/modules/element/svg/circle");
-  var functor = require("src/modules/functor");
-  var valuator = require("src/modules/valuator");
+  var functor = require("functor");
+  var valuator = require("valuator");
 
   return function points() {
     // Private variables

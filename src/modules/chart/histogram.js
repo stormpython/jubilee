@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var valuator = require("src/modules/valuator");
+  var valuator = require("valuator");
 
   return function histogram() {
     // Private variables

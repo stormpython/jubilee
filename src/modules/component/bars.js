@@ -1,8 +1,8 @@
 define(function (require) {
   var d3 = require("d3");
   var rect = require("src/modules/element/svg/rect");
-  var functor = require("src/modules/functor");
-  var valuator = require("src/modules/valuator");
+  var functor = require("functor");
+  var valuator = require("valuator");
   var parseTime = require("src/modules/helpers/timeparser");
 
   return function points() {

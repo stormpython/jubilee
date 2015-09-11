@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var truncate = require("src/modules/component/axis/truncate");
+  var truncate = require("./truncate");
 
   return function rotate() {
     // Private variables

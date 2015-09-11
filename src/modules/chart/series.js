@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
-  var functor = require("src/modules/functor");
-  var valuator = require("src/modules/valuator");
+  var functor = require("functor");
+  var valuator = require("valuator");
   var scaletor = require("src/modules/helpers/scaletor");
   var parseTime = require("src/modules/helpers/timeparser");
   var clip = require("src/modules/element/svg/clipPath");

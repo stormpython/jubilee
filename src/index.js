@@ -42,8 +42,8 @@ define(function (require) {
     canvas: {
       rect: require("src/modules/element/canvas/rect")
     },
-    builder: require("src/modules/builder"),
-    functor: require("src/modules/functor"),
-    valuator: require("src/modules/valuator")
+    builder: require("builder"),
+    functor: require("functor"),
+    valuator: require("valuator")
   };
 });

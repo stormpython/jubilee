@@ -1,6 +1,6 @@
 define(function (require) {
   describe("Functor tests", function () {
-    var functor = require("src/modules/functor");
+    var functor = require("functor");
     var func = function (selection) {
       selection.each(function (data) {
         return data;

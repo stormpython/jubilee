@@ -12,17 +12,17 @@
     <script src="../../node_modules/chai/chai.js"></script>
     <script src="../../node_modules/requirejs/require.js"></script>
     <script>
-      mocha.setup({
-        ui: "bdd",
-        reporter: "html"
-      });
+      mocha.setup({ ui: "bdd" });
 
       require.config({
         baseUrl: '/',
         paths: {
           specs: "test/unit/specs",
           fixtures: "test/unit/fixtures",
-          d3: "node_modules/d3/d3"
+          d3: "node_modules/d3/d3",
+          builder: "src/modules/builder",
+          functor: "src/modules/functor",
+          valuator: "src/modules/valuator"
         }
       });
 

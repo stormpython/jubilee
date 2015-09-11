@@ -1,6 +1,6 @@
 define(function (require) {
   describe("valuator tests", function () {
-    var valuator = require("src/modules/valuator");
+    var valuator = require("valuator");
 
     it("should return a function", function () {
       var func = valuator("x");

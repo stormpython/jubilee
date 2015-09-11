@@ -4,7 +4,7 @@ define(function (require) {
   var canvasRect = require("src/modules/element/canvas/rect");
   var axis = require("src/modules/component/axis/axis");
   var events = require("src/modules/component/events/events");
-  var valuator = require("src/modules/valuator");
+  var valuator = require("valuator");
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
 
