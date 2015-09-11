@@ -1,21 +1,22 @@
 {
   "name": "jubilee",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "D3 Reusable Components Library",
   "main": "index.js",
   "directories": {
     "example": "examples"
   },
   "scripts": {
-    "test": "test"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/stormpython/jubilee.git"
   },
   "keywords": [
-    "data",
-    "visualization"
+    "d3",
+    "reusable components",
+    "data visualization"
   ],
   "authors": [
     "Shelby Sturgis"
@@ -43,5 +44,7 @@
     "chai": "^2.1.1",
     "grunt-mocha": "^0.4.12"
   },
-  "dependencies": {}
+  "dependencies": {
+    "d3": "3.5.6"
+  }
 }

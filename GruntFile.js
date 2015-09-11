@@ -22,15 +22,6 @@ module.exports = function(grunt) {
         }
       }
     },
-    concat: {
-      options: {
-        separator: ";"
-      },
-      dist: {
-        src: ["lib/d3/d3.js", "lib/d3-plugins/geo/tile/tile.js"],
-        dest: "build/d3.js"
-      }
-    },
     requirejs: {
       compile: {
         options: {
@@ -98,8 +89,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-connect");
   grunt.loadNpmTasks("grunt-mocha");
 
-  grunt.registerTask("default", ["copy", "connect", "concat", "watch"]);
-  grunt.registerTask("d3build", ["concat"]);
+  grunt.registerTask("default", ["requirejs", "copy", "connect", "watch"]);
   grunt.registerTask("production", ["requirejs", "uglify", "copy", "cssmin"]);
   grunt.registerTask("release", ["production"]);
   grunt.registerTask("lint", ["jshint"]);
