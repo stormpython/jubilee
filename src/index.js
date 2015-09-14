@@ -1,6 +1,5 @@
 define(function (require) {
   return {
-    version: "1.0.0",
     chart: {
       boxplot: require("src/modules/chart/boxplot"),
       dendrogram: require("src/modules/chart/dendrogram"),
