@@ -17,6 +17,7 @@ define(function (require) {
     });
 
     afterEach(function () {
+      element = circle();
       remove(fixture);
     });
 
@@ -30,8 +31,8 @@ define(function (require) {
 
       beforeEach(function () {
         removeChildren(fixture);
-        defaultAccessor = function (d) { return d.data; };
-        element.cx(defaultAccessor);
+        defaultAccessor = function (d) { return d; };
+        element.accessor(defaultAccessor);
       });
 
       it("should get the property", function () {
