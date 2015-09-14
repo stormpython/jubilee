@@ -450,7 +450,6 @@ define(function (require) {
       zeroLine.stroke = typeof _.stroke !== "undefined" ? _.stroke : zeroLine.stroke;
       zeroLine.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : zeroLine.strokeWidth;
       zeroLine.opacity = typeof _.opacity !== "undefined" ? _.opacity : zeroLine.opacity;
-      zeroLine = typeof _ !== "object" ? zeroLine : _;
       return chart;
     };
 

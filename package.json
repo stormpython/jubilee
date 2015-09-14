@@ -1,6 +1,6 @@
 {
   "name": "jubilee",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "D3 Reusable Components Library",
   "main": "index.js",
   "scripts": {
