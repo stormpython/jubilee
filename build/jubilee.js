@@ -13164,7 +13164,10 @@ define('src/modules/chart/series',['require','d3','functor','valuator','src/modu
             .x2(function () { return x.range()[1]; })
             .y1(function () { return y(0); })
             .y2(function () { return y(0); });
-          var zLineFunc = functor().function(zLine).options(zeroLine);
+
+          var zLineFunc = functor()
+            .function(zLine)
+            .options(zeroLine);
 
           g.append("g").datum([{}]).call(zLineFunc);
         }
@@ -13425,6 +13428,11 @@ define('src/modules/chart/series',['require','d3','functor','valuator','src/modu
 
     chart.zeroLine = function (_) {
       if (!arguments.length) { return zeroLine; }
+      zeroLine.show = typeof _.show !== "undefined" ? _.show : zeroLine.show;
+      zeroLine.class = typeof _.class !== "undefined" ? _.class : zeroLine.class;
+      zeroLine.stroke = typeof _.stroke !== "undefined" ? _.stroke : zeroLine.stroke;
+      zeroLine.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : zeroLine.strokeWidth;
+      zeroLine.opacity = typeof _.opacity !== "undefined" ? _.opacity : zeroLine.opacity;
       zeroLine = typeof _ !== "object" ? zeroLine : _;
       return chart;
     };
