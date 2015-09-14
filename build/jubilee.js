@@ -13433,7 +13433,6 @@ define('src/modules/chart/series',['require','d3','functor','valuator','src/modu
       zeroLine.stroke = typeof _.stroke !== "undefined" ? _.stroke : zeroLine.stroke;
       zeroLine.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : zeroLine.strokeWidth;
       zeroLine.opacity = typeof _.opacity !== "undefined" ? _.opacity : zeroLine.opacity;
-      zeroLine = typeof _ !== "object" ? zeroLine : _;
       return chart;
     };
 
@@ -14065,7 +14064,6 @@ define('src/modules/element/svg/image',['require','d3'],function (require) {
 
 define('jubilee',['require','src/modules/chart/boxplot','src/modules/chart/dendrogram','src/modules/chart/heatmap','src/modules/chart/pie','src/modules/chart/series','src/modules/chart/sunburst','src/modules/chart/treemap','src/modules/layout/base','src/modules/layout/box','src/modules/layout/grid','src/modules/component/axis/rotate','src/modules/component/axis/truncate','src/modules/component/area','src/modules/component/axis/axis','src/modules/component/bars','src/modules/component/boxplot','src/modules/component/events/brush','src/modules/component/events/events','src/modules/component/line','src/modules/component/points','src/modules/element/svg/circle','src/modules/element/svg/clipPath','src/modules/element/svg/ellipse','src/modules/element/svg/image','src/modules/element/svg/line','src/modules/element/svg/path','src/modules/element/svg/rect','src/modules/element/svg/text','src/modules/element/canvas/rect','builder','functor','valuator'],function (require) {
   return {
-    version: "1.0.0",
     chart: {
       boxplot: require("src/modules/chart/boxplot"),
       dendrogram: require("src/modules/chart/dendrogram"),
