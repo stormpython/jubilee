@@ -12407,10 +12407,10 @@ define('src/modules/element/svg/line',['require','d3'],function (require) {
     return element;
   };
 });
-define('src/modules/component/area',['require','d3','src/modules/element/svg/path','functor','valuator'],function (require) {
+define('src/modules/component/area',['require','d3','src/modules/element/svg/path','builder','valuator'],function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
-  var functor = require("functor");
+  var builder = require("builder");
   var valuator = require("valuator");
 
   return function area() {
@@ -12438,13 +12438,11 @@ define('src/modules/component/area',['require','d3','src/modules/element/svg/pat
           .tension(tension)
           .defined(defined);
 
-        var areaPath = path().pathGenerator(areas);
+        var areaPath = path().pathGenerator(areas(data));
 
-        var element = functor()
-          .function(areaPath)
-          .options(properties);
-
-        d3.select(this).append("g").call(element);
+        d3.select(this)
+          .append("g")
+          .call(builder(properties, areaPath));
       });
     }
 
@@ -13000,7 +12998,7 @@ define('src/modules/chart/series',['require','d3','functor','valuator','src/modu
   var lines = require("src/modules/component/line");
 
   return function series() {
-    var margin = {top: 20, right: 50, bottom: 20, left: 50};
+    var margin = {top: 20, right: 50, bottom: 50, left: 50};
     var width = 960;
     var height = 500;
     var accessor = function (d) { return d; };

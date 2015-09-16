@@ -258,7 +258,7 @@ define(function (require) {
           if (d3.keys(d.opts).length) {
             var element = functor().function(d.func);
 
-            if (d.type === "area") { d.opts.offset = stacks.offset; }
+            //if (d.type === "area") { d.opts.offset = stacks.offset; }
             d.opts = !Array.isArray(d.opts) ? [d.opts] : d.opts;
 
             d.opts.forEach(function (props) {

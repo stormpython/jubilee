@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
-  var functor = require("functor");
+  var builder = require("builder");
   var valuator = require("valuator");
 
   return function line() {
@@ -22,19 +22,20 @@ define(function (require) {
     };
 
     function component(selection) {
-      selection.each(function (data, index) {
-        var lines = d3.svg.line().x(X).y(Y)
+      selection.each(function () {
+        var d3line = d3.svg.line()
+          .x(X)
+          .y(Y)
           .interpolate(interpolate)
           .tension(tension)
           .defined(defined);
 
-        var linePath = path().pathGenerator(lines);
+        var line = path()
+          .pathGenerator(d3line);
 
-        var element = functor()
-          .function(linePath)
-          .options(properties);
-
-        d3.select(this).append("g").call(element);
+        d3.select(this)
+          .append("g")
+          .call(builder(properties, line));
       });
     }
 
