@@ -102,6 +102,8 @@ define(function (require) {
     var points = {};
     var listeners = {};
 
+    var svg;
+
     function chart(selection)  {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
@@ -143,16 +145,22 @@ define(function (require) {
         /* ******************************** */
 
         /* Canvas ******************************** */
-        var svg = d3.select(this).selectAll("svg")
-          .data([data])
-          .enter().append("svg")
-          .attr("width", width)
-          .attr("height", height)
-          .call(svgEvents);
+        if (!svg) {
+          svg = d3.select(this).append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .call(svgEvents);
 
-        var g = svg.append("g")
-          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+          var container = svg.append("g").classed("container", true);
+          container.append("g").classed("x axis", true);
+          container.append("g").classed("y axis", true);
+          container.append("g").classed("z axis", true);
+        }
         /* ******************************** */
+
+        svg.call(svgEvents);
+        var g = svg.select(".container")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         /* Brush ******************************** */
         if (listeners.brushstart && listeners.brushstart.length ||
@@ -208,7 +216,7 @@ define(function (require) {
             .rotateLabels(xAxis.rotateLabels)
             .title(xAxis.title);
 
-          g.call(axisX);
+          g.select(xAxis.class).call(axisX);
         }
 
         if (yAxis.show) {
@@ -221,7 +229,7 @@ define(function (require) {
             .tickText(yAxis.tickText)
             .title(yAxis.title);
 
-          g.call(axisY);
+          g.select(yAxis.class).call(axisY);
         }
 
         if (zAxis.show) {
@@ -234,7 +242,7 @@ define(function (require) {
             .tickText(zAxis.tickText)
             .title(zAxis.title);
 
-          g.call(axisZ);
+          g.select(zAxis.class).call(axisZ);
         }
         /* ******************************** */
 
@@ -268,7 +276,7 @@ define(function (require) {
               props.xScale = x;
               props.yScale = isZ ? z : y;
 
-              clippedG.call(element.options(props));
+              clippedG.datum(data).call(element.options(props));
             });
           }
         });
