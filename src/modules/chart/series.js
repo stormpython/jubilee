@@ -148,13 +148,16 @@ define(function (require) {
         if (!svg) {
           svg = d3.select(this).append("svg")
             .attr("width", width)
-            .attr("height", height)
-            .call(svgEvents);
+            .attr("height", height);
 
-          var container = svg.append("g").classed("container", true);
-          container.append("g").classed("x axis", true);
-          container.append("g").classed("y axis", true);
-          container.append("g").classed("z axis", true);
+          var c = svg.append("g").classed("container", true);
+          c.append("g").classed(xAxis.class, true);
+          c.append("g").classed(yAxis.class, true);
+          c.append("g").classed(zAxis.class, true);
+
+          if (zeroLine.show) {
+            c.append("g").classed(zeroLine.class, true);
+          }
         }
         /* ******************************** */
 
@@ -194,7 +197,7 @@ define(function (require) {
             .function(zLine)
             .options(zeroLine);
 
-          g.append("g").datum([{}]).call(zLineFunc);
+          g.select(zeroLine.class).call(zLineFunc);
         }
         /* ******************************** */
 
@@ -216,7 +219,8 @@ define(function (require) {
             .rotateLabels(xAxis.rotateLabels)
             .title(xAxis.title);
 
-          g.select(xAxis.class).call(axisX);
+          g.select("." + xAxis.class)
+            .call(axisX);
         }
 
         if (yAxis.show) {
@@ -229,7 +233,8 @@ define(function (require) {
             .tickText(yAxis.tickText)
             .title(yAxis.title);
 
-          g.select(yAxis.class).call(axisY);
+          g.select("." + yAxis.class)
+            .call(axisY);
         }
 
         if (zAxis.show) {
@@ -242,14 +247,16 @@ define(function (require) {
             .tickText(zAxis.tickText)
             .title(zAxis.title);
 
-          g.select(zAxis.class).call(axisZ);
+          g.select("." + zAxis.class)
+            .call(axisZ);
         }
         /* ******************************** */
 
         /* ClipPath ******************************** */
         var clippath = clip().width(adjustedWidth).height(adjustedHeight);
         var clippedG = g.call(clippath).append("g")
-          .attr("clip-path", "url(#" + clippath.id() + ")");
+          .attr("clip-path", "url(#" + clippath.id() + ")")
+          .datum(data);
         /* ******************************** */
 
         /* SVG Elements ******************************** */
@@ -276,7 +283,7 @@ define(function (require) {
               props.xScale = x;
               props.yScale = isZ ? z : y;
 
-              clippedG.datum(data).call(element.options(props));
+              clippedG.call(element.options(props));
             });
           }
         });
