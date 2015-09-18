@@ -38,7 +38,10 @@ define(function (require) {
           .on("brushend", function () {
             brushEndCallback.forEach(function (listener) {
               listener.call(this, brush, data, index);
-              d3.selectAll("g." + cssClass).call(brush.clear()); // Clear brush
+
+              // Clear brush
+              d3.selectAll("g." + cssClass)
+                .call(brush.clear());
             });
           });
 
@@ -47,7 +50,13 @@ define(function (require) {
         if (extent) { brush.extent(extent); }
         if (clamp) { brush.clamp(clamp); }
 
-        var brushG = d3.select(this).append("g")
+        var brushG = d3.select(this);
+
+        // Remove previous brush
+        brushG.select("g." + cssClass).remove();
+
+        // Attach new brush
+        brushG.append("g")
           .attr("class", cssClass)
           .attr("opacity", opacity)
           .call(brush)

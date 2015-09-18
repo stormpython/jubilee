@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
-  var functor = require("functor");
+  var builder = require("builder");
   var valuator = require("valuator");
 
   return function area() {
@@ -23,7 +23,7 @@ define(function (require) {
     };
 
     function component(selection) {
-      selection.each(function (data, index) {
+      selection.each(function () {
         var areas = d3.svg.area().x(X).y0(Y0).y1(Y1)
           .interpolate(interpolate)
           .tension(tension)
@@ -31,11 +31,9 @@ define(function (require) {
 
         var areaPath = path().pathGenerator(areas);
 
-        var element = functor()
-          .function(areaPath)
-          .options(properties);
-
-        d3.select(this).append("g").call(element);
+        d3.select(this)
+          .append("g")
+          .call(builder(properties, areaPath));
       });
     }
 
@@ -43,7 +41,7 @@ define(function (require) {
       return xScale(x.call(this, d, i));
     }
 
-    function Y0(d, i) {
+    function Y0(d) {
       var min = Math.max(0, yScale.domain()[0]);
       if (offset === "overlap") {
         return yScale(min);

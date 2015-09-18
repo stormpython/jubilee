@@ -1,37 +1,38 @@
 define(function (require) {
   var d3 = require("d3");
-  var circle = require("src/modules/element/svg/circle");
-  var functor = require("functor");
+  var path = require("src/modules/element/svg/path");
+  var builder = require("builder");
   var valuator = require("valuator");
 
-  return function points() {
+  return function line() {
     // Private variables
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var xScale = d3.time.scale.utc();
     var yScale = d3.scale.linear();
-    var radius = 5;
+    var interpolate = "linear";
+    var tension = 0.7;
+    var defined = function (d) { return d.y !== null; };
     var properties = {
-      class: "point",
-      fill: function (d, i) { return d3.scale.category10()(i); },
+      class: "line",
+      fill: "none",
       stroke: function (d, i) { return d3.scale.category10()(i); },
-      strokeWidth: 0,
+      strokeWidth: 3,
       opacity: 1
     };
 
     function component(selection) {
-      selection.each(function (data, index) {
-        var circles = circle().cx(X).cy(Y).radius(radius);
+      selection.each(function () {
+        var lines = d3.svg.line().x(X).y(Y)
+          .interpolate(interpolate)
+          .tension(tension)
+          .defined(defined);
 
-        var element = functor()
-          .function(circles)
-          .options(properties);
+        var linePath = path().pathGenerator(lines);
 
-        d3.select(this).append("g")
-          .datum(data.reduce(function (a, b) {
-            return a.concat(b);
-          },[]).filter(y))
-          .call(element);
+        d3.select(this)
+          .append("g")
+          .call(builder(properties, linePath));
       });
     }
 
@@ -56,12 +57,6 @@ define(function (require) {
       return component;
     };
 
-    component.radius = function (_) {
-      if (!arguments.length) { return radius; }
-      radius = _;
-      return component;
-    };
-
     component.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale = _;
@@ -71,6 +66,24 @@ define(function (require) {
     component.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale = _;
+      return component;
+    };
+
+    component.interpolate = function (_) {
+      if (!arguments.length) { return interpolate; }
+      interpolate = _;
+      return component;
+    };
+
+    component.tension = function (_) {
+      if (!arguments.length) { return tension; }
+      tension = _;
+      return component;
+    };
+
+    component.defined = function (_) {
+      if (!arguments.length) { return defined; }
+      defined = _;
       return component;
     };
 

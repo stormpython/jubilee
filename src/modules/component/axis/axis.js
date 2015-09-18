@@ -1,6 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
-  var functor = require("functor");
+  var builder = require("builder");
   var rotate = require("./rotate");
 
   return function axes() {
@@ -51,19 +51,23 @@ define(function (require) {
           .tickPadding(tick.padding)
           .tickFormat(tick.format);
 
-        var g = d3.select(this).append("g")
+        var g = d3.select(this);
+
+        // Remove previous axis
+        g.select("g." + gClass).remove();
+
+        // Attach axis
+        g.append("g")
           .attr("class", gClass)
           .attr("transform", transform)
           .call(axis);
 
         if (rotateLabels.allow) {
           var axisLength = Math.abs(scale.range()[1] - scale.range()[0]);
-          var rotation = rotate().axisLength(axisLength);
-          var func = functor()
-            .function(rotation)
-            .options(rotateLabels);
+          var rotation = rotate()
+            .axisLength(axisLength);
 
-          g.call(func);
+          g.call(builder(rotateLabels, rotation));
         }
 
         g.append("text")

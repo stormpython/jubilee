@@ -10209,40 +10209,6 @@ define('builder',['require','d3'],function (require) {
     return func;
   };
 });
-define('functor',['require','d3','builder'],function (require) {
-  var d3 = require("d3");
-  var builder = require("builder");
-
-  /**
-   * Builds and return a function based on key value pairs
-   * and calls it on a d3 selection.
-   */
-  return function functor() {
-    var func = function () {};
-    var opts = {};
-
-    function constructor(selection) {
-      selection.each(function () {
-        d3.select(this).call(builder(opts, func));
-      });
-    }
-
-    constructor.function = function (_) {
-      if (!arguments.length) { return func; }
-      func = typeof _ !== "function" ? func : _;
-      return constructor;
-    };
-
-    constructor.options = function (_) {
-      if (!arguments.length) { return opts; }
-      opts = typeof _ !== "object" ? opts : _;
-      return constructor;
-    };
-
-    return constructor;
-  };
-});
-
 define('src/modules/component/axis/truncate',['require','d3'],function (require) {
   var d3 = require("d3");
 
@@ -10317,7 +10283,8 @@ define('src/modules/component/axis/rotate',['require','d3','./truncate'],functio
 
           // Truncation logic goes here
           ticks.each(function () {
-            d3.select(this).call(truncate().maxCharLength(truncateLength));
+            d3.select(this)
+              .call(truncate().maxCharLength(truncateLength));
           });
         }
       });
@@ -10363,9 +10330,9 @@ define('src/modules/component/axis/rotate',['require','d3','./truncate'],functio
   };
 });
 
-define('src/modules/component/axis/axis',['require','d3','functor','./rotate'],function (require) {
+define('src/modules/component/axis/axis',['require','d3','builder','./rotate'],function (require) {
   var d3 = require("d3");
-  var functor = require("functor");
+  var builder = require("builder");
   var rotate = require("./rotate");
 
   return function axes() {
@@ -10423,12 +10390,10 @@ define('src/modules/component/axis/axis',['require','d3','functor','./rotate'],f
 
         if (rotateLabels.allow) {
           var axisLength = Math.abs(scale.range()[1] - scale.range()[0]);
-          var rotation = rotate().axisLength(axisLength);
-          var func = functor()
-            .function(rotation)
-            .options(rotateLabels);
+          var rotation = rotate()
+            .axisLength(axisLength);
 
-          g.call(func);
+          g.call(builder(rotateLabels, rotation));
         }
 
         g.append("text")
@@ -10939,7 +10904,8 @@ define('src/modules/element/svg/rect',['require','d3'],function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var bars = d3.select(this).selectAll("rects")
+        var bars = d3.select(this)
+          .selectAll("." + cssClass)
           .data(data);
 
         bars.exit().remove();
@@ -11265,7 +11231,7 @@ define('src/modules/component/events/events',['require','d3','src/modules/helper
     // Public API
     component.listeners = function (_) {
       if (!arguments.length) { return listeners; }
-      listeners = _;
+      listeners = typeof _ === "object" ? _ : listeners;
       return component;
     };
 
@@ -11681,7 +11647,8 @@ define('src/modules/element/svg/path',['require','d3'],function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var path = d3.select(this).selectAll("paths")
+        var path = d3.select(this)
+          .selectAll("." + cssClass)
           .data(data);
 
         path.exit().remove();
@@ -11773,7 +11740,8 @@ define('src/modules/element/svg/text',['require','d3'],function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var text = d3.select(this).selectAll("texts")
+        var text = d3.select(this)
+          .selectAll("." + cssClass)
           .data(data);
 
         text.exit().remove();
@@ -12034,6 +12002,40 @@ define('src/modules/chart/pie',['require','d3','src/modules/element/svg/path','s
     return chart;
   };
 });
+define('functor',['require','d3','builder'],function (require) {
+  var d3 = require("d3");
+  var builder = require("builder");
+
+  /**
+   * Builds and return a function based on key value pairs
+   * and calls it on a d3 selection.
+   */
+  return function functor() {
+    var func = function () {};
+    var opts = {};
+
+    function constructor(selection) {
+      selection.each(function () {
+        d3.select(this).call(builder(opts, func));
+      });
+    }
+
+    constructor.function = function (_) {
+      if (!arguments.length) { return func; }
+      func = typeof _ !== "function" ? func : _;
+      return constructor;
+    };
+
+    constructor.options = function (_) {
+      if (!arguments.length) { return opts; }
+      opts = typeof _ !== "object" ? opts : _;
+      return constructor;
+    };
+
+    return constructor;
+  };
+});
+
 define('src/modules/helpers/scaletor',['require','d3'],function (require) {
   var d3 = require("d3");
 
@@ -12075,7 +12077,7 @@ define('src/modules/helpers/timeparser',[],function () {
     return timeNotation[abbr];
   };
 });
-define('src/modules/element/svg/clipPath',['require','d3'],function (require) {
+define('src/modules/component/clippath',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function clipPath() {
@@ -12087,29 +12089,12 @@ define('src/modules/element/svg/clipPath',['require','d3'],function (require) {
     var height = 0;
 
     function element(selection) {
-      selection.each(function (data, index) {
-        var clipPath = d3.select(this).selectAll("clipPath")
-          .data([data]);
-
-        // Exit
-        clipPath.exit().remove();
-
-        // Enter
-        clipPath.enter().append("clipPath");
-
-        // Update
-        clipPath
+      selection.each(function () {
+        d3.select(this)
+          .append("clipPath")
           .attr("id", id)
-          .attr("transform", transform);
-
-        var rect = clipPath.selectAll("rect")
-          .data([{}]);
-
-        rect.exit().remove();
-
-        rect.enter().append("rect");
-
-        rect
+          .attr("transform", transform)
+          .append("rect")
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)
@@ -12202,7 +12187,10 @@ define('src/modules/component/events/brush',['require','d3'],function (require) 
           .on("brushend", function () {
             brushEndCallback.forEach(function (listener) {
               listener.call(this, brush, data, index);
-              d3.selectAll("g." + cssClass).call(brush.clear()); // Clear brush
+
+              // Clear brush
+              d3.selectAll("g." + cssClass)
+                .call(brush.clear());
             });
           });
 
@@ -12323,7 +12311,8 @@ define('src/modules/element/svg/line',['require','d3'],function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var lines = d3.select(this).selectAll("lines")
+        var lines = d3.select(this)
+          .selectAll("." + cssClass)
           .data(data);
 
         // Exit
@@ -12407,10 +12396,10 @@ define('src/modules/element/svg/line',['require','d3'],function (require) {
     return element;
   };
 });
-define('src/modules/component/area',['require','d3','src/modules/element/svg/path','functor','valuator'],function (require) {
+define('src/modules/component/series/area',['require','d3','src/modules/element/svg/path','builder','valuator'],function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
-  var functor = require("functor");
+  var builder = require("builder");
   var valuator = require("valuator");
 
   return function area() {
@@ -12432,7 +12421,7 @@ define('src/modules/component/area',['require','d3','src/modules/element/svg/pat
     };
 
     function component(selection) {
-      selection.each(function (data, index) {
+      selection.each(function () {
         var areas = d3.svg.area().x(X).y0(Y0).y1(Y1)
           .interpolate(interpolate)
           .tension(tension)
@@ -12440,11 +12429,9 @@ define('src/modules/component/area',['require','d3','src/modules/element/svg/pat
 
         var areaPath = path().pathGenerator(areas);
 
-        var element = functor()
-          .function(areaPath)
-          .options(properties);
-
-        d3.select(this).append("g").call(element);
+        d3.select(this)
+          .append("g")
+          .call(builder(properties, areaPath));
       });
     }
 
@@ -12452,7 +12439,7 @@ define('src/modules/component/area',['require','d3','src/modules/element/svg/pat
       return xScale(x.call(this, d, i));
     }
 
-    function Y0(d, i) {
+    function Y0(d) {
       var min = Math.max(0, yScale.domain()[0]);
       if (offset === "overlap") {
         return yScale(min);
@@ -12529,10 +12516,10 @@ define('src/modules/component/area',['require','d3','src/modules/element/svg/pat
     return component;
   };
 });
-define('src/modules/component/bars',['require','d3','src/modules/element/svg/rect','functor','valuator','src/modules/helpers/timeparser'],function (require) {
+define('src/modules/component/series/bars',['require','d3','src/modules/element/svg/rect','builder','valuator','src/modules/helpers/timeparser'],function (require) {
   var d3 = require("d3");
   var rect = require("src/modules/element/svg/rect");
-  var functor = require("functor");
+  var builder = require("builder");
   var valuator = require("valuator");
   var parseTime = require("src/modules/helpers/timeparser");
 
@@ -12557,10 +12544,10 @@ define('src/modules/component/bars',['require','d3','src/modules/element/svg/rec
     };
 
     function component(selection) {
-      selection.each(function (data, index) {
+      selection.each(function (data) {
         var timeNotation = parseTime(interval);
-        var step = parseFloat(interval);
         var extent = d3.extent(d3.merge(data), x);
+        var step = parseFloat(interval);
         var start = extent[0];
         var stop = d3.time[timeNotation].offset(extent[1], step);
 
@@ -12577,16 +12564,22 @@ define('src/modules/component/bars',['require','d3','src/modules/element/svg/rec
 
         var rects = rect()
           .x(function (d, i) {
-            if (i === 0) { j++; }
-            if (group) { return xScale(x.call(this, d, i)) + groupScale(j); }
+            if (group) {
+              if (i === 0) { j++; }
+              return xScale(x.call(this, d, i)) + groupScale(j);
+            }
             return xScale(x.call(this, d, i));
           })
           .y(function (d, i) {
-            if (group) { return yScale(y.call(this, d, i)); }
+            if (group) {
+              return yScale(y.call(this, d, i));
+            }
             return yScale(d.y0 + Math.abs(y.call(this, d, i)));
           })
           .width(function () {
-            if (group) { return groupScale.rangeBand(); }
+            if (group) {
+              return groupScale.rangeBand();
+            }
             return timeScale.rangeBand();
           })
           .height(function (d, i) {
@@ -12595,14 +12588,11 @@ define('src/modules/component/bars',['require','d3','src/modules/element/svg/rec
           .rx(rx)
           .ry(ry);
 
-        var element = functor()
-          .function(rects)
-          .options(properties);
-
-        d3.select(this).append("g").selectAll("g")
+        d3.select(this).append("g")
+          .selectAll("g")
           .data(data)
           .enter().append("g")
-          .call(element);
+          .call(builder(properties, rects));
       });
     }
 
@@ -12700,7 +12690,8 @@ define('src/modules/element/svg/circle',['require','d3'],function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var circles = d3.select(this).selectAll("circles")
+        var circles = d3.select(this)
+          .selectAll("." + cssClass)
           .data(data);
 
         // Exit
@@ -12786,10 +12777,10 @@ define('src/modules/element/svg/circle',['require','d3'],function (require) {
   };
 });
 
-define('src/modules/component/points',['require','d3','src/modules/element/svg/circle','functor','valuator'],function (require) {
+define('src/modules/component/series/points',['require','d3','src/modules/element/svg/circle','builder','valuator'],function (require) {
   var d3 = require("d3");
   var circle = require("src/modules/element/svg/circle");
-  var functor = require("functor");
+  var builder = require("builder");
   var valuator = require("valuator");
 
   return function points() {
@@ -12808,18 +12799,17 @@ define('src/modules/component/points',['require','d3','src/modules/element/svg/c
     };
 
     function component(selection) {
-      selection.each(function (data, index) {
-        var circles = circle().cx(X).cy(Y).radius(radius);
-
-        var element = functor()
-          .function(circles)
-          .options(properties);
+      selection.each(function (data) {
+        var circles = circle()
+          .cx(X)
+          .cy(Y)
+          .radius(radius);
 
         d3.select(this).append("g")
           .datum(data.reduce(function (a, b) {
             return a.concat(b);
           },[]).filter(y))
-          .call(element);
+          .call(builder(properties, circles));
       });
     }
 
@@ -12876,10 +12866,10 @@ define('src/modules/component/points',['require','d3','src/modules/element/svg/c
   };
 });
 
-define('src/modules/component/line',['require','d3','src/modules/element/svg/path','functor','valuator'],function (require) {
+define('src/modules/component/series/line',['require','d3','src/modules/element/svg/path','builder','valuator'],function (require) {
   var d3 = require("d3");
   var path = require("src/modules/element/svg/path");
-  var functor = require("functor");
+  var builder = require("builder");
   var valuator = require("valuator");
 
   return function line() {
@@ -12900,7 +12890,7 @@ define('src/modules/component/line',['require','d3','src/modules/element/svg/pat
     };
 
     function component(selection) {
-      selection.each(function (data, index) {
+      selection.each(function () {
         var lines = d3.svg.line().x(X).y(Y)
           .interpolate(interpolate)
           .tension(tension)
@@ -12908,11 +12898,9 @@ define('src/modules/component/line',['require','d3','src/modules/element/svg/pat
 
         var linePath = path().pathGenerator(lines);
 
-        var element = functor()
-          .function(linePath)
-          .options(properties);
-
-        d3.select(this).append("g").call(element);
+        d3.select(this)
+          .append("g")
+          .call(builder(properties, linePath));
       });
     }
 
@@ -12981,23 +12969,24 @@ define('src/modules/component/line',['require','d3','src/modules/element/svg/pat
   };
 });
 
-define('src/modules/chart/series',['require','d3','functor','valuator','src/modules/helpers/scaletor','src/modules/helpers/timeparser','src/modules/element/svg/clipPath','src/modules/component/axis/axis','src/modules/component/events/brush','src/modules/component/events/events','src/modules/helpers/add_event_listener','src/modules/helpers/remove_event_listener','src/modules/element/svg/line','src/modules/component/area','src/modules/component/bars','src/modules/component/points','src/modules/component/line'],function (require) {
+define('src/modules/chart/series',['require','d3','builder','functor','valuator','src/modules/helpers/scaletor','src/modules/helpers/timeparser','src/modules/component/clippath','src/modules/component/axis/axis','src/modules/component/events/brush','src/modules/component/events/events','src/modules/helpers/add_event_listener','src/modules/helpers/remove_event_listener','src/modules/element/svg/line','src/modules/component/series/area','src/modules/component/series/bars','src/modules/component/series/points','src/modules/component/series/line'],function (require) {
   var d3 = require("d3");
+  var builder = require("builder");
   var functor = require("functor");
   var valuator = require("valuator");
   var scaletor = require("src/modules/helpers/scaletor");
   var parseTime = require("src/modules/helpers/timeparser");
-  var clip = require("src/modules/element/svg/clipPath");
+  var clip = require("src/modules/component/clippath");
   var axis = require("src/modules/component/axis/axis");
   var brushComponent = require("src/modules/component/events/brush");
   var events = require("src/modules/component/events/events");
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var zeroAxisLine = require("src/modules/element/svg/line");
-  var areas = require("src/modules/component/area");
-  var bars = require("src/modules/component/bars");
-  var circles = require("src/modules/component/points");
-  var lines = require("src/modules/component/line");
+  var areas = require("src/modules/component/series/area");
+  var bars = require("src/modules/component/series/bars");
+  var circles = require("src/modules/component/series/points");
+  var lines = require("src/modules/component/series/line");
 
   return function series() {
     var margin = {top: 20, right: 50, bottom: 50, left: 50};
@@ -13165,11 +13154,9 @@ define('src/modules/chart/series',['require','d3','functor','valuator','src/modu
             .y1(function () { return y(0); })
             .y2(function () { return y(0); });
 
-          var zLineFunc = functor()
-            .function(zLine)
-            .options(zeroLine);
-
-          g.append("g").datum([{}]).call(zLineFunc);
+          g.append("g")
+            .datum([{}])
+            .call(builder(zeroLine, zLine));
         }
         /* ******************************** */
 
@@ -13877,7 +13864,8 @@ define('src/modules/element/svg/ellipse',['require','d3'],function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var ellipses = d3.select(this).selectAll("ellipses")
+        var ellipses = d3.select(this)
+          .selectAll("." + cssClass)
           .data(data);
 
         // Exit
@@ -13988,7 +13976,8 @@ define('src/modules/element/svg/image',['require','d3'],function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var images = d3.select(this).selectAll("images")
+        var images = d3.select(this)
+          .selectAll("." + cssClass)
           .data(data);
 
         // Exit
@@ -14062,7 +14051,7 @@ define('src/modules/element/svg/image',['require','d3'],function (require) {
   };
 });
 
-define('jubilee',['require','src/modules/chart/boxplot','src/modules/chart/dendrogram','src/modules/chart/heatmap','src/modules/chart/pie','src/modules/chart/series','src/modules/chart/sunburst','src/modules/chart/treemap','src/modules/layout/base','src/modules/layout/box','src/modules/layout/grid','src/modules/component/axis/rotate','src/modules/component/axis/truncate','src/modules/component/area','src/modules/component/axis/axis','src/modules/component/bars','src/modules/component/boxplot','src/modules/component/events/brush','src/modules/component/events/events','src/modules/component/line','src/modules/component/points','src/modules/element/svg/circle','src/modules/element/svg/clipPath','src/modules/element/svg/ellipse','src/modules/element/svg/image','src/modules/element/svg/line','src/modules/element/svg/path','src/modules/element/svg/rect','src/modules/element/svg/text','src/modules/element/canvas/rect','builder','functor','valuator'],function (require) {
+define('jubilee',['require','src/modules/chart/boxplot','src/modules/chart/dendrogram','src/modules/chart/heatmap','src/modules/chart/pie','src/modules/chart/series','src/modules/chart/sunburst','src/modules/chart/treemap','src/modules/layout/base','src/modules/layout/box','src/modules/layout/grid','src/modules/component/axis/rotate','src/modules/component/axis/truncate','src/modules/component/series/area','src/modules/component/axis/axis','src/modules/component/series/bars','src/modules/component/boxplot','src/modules/component/events/brush','src/modules/component/clippath','src/modules/component/events/events','src/modules/component/series/line','src/modules/component/series/points','src/modules/element/svg/circle','src/modules/element/svg/ellipse','src/modules/element/svg/image','src/modules/element/svg/line','src/modules/element/svg/path','src/modules/element/svg/rect','src/modules/element/svg/text','src/modules/element/canvas/rect','builder','functor','valuator'],function (require) {
   return {
     chart: {
       boxplot: require("src/modules/chart/boxplot"),
@@ -14083,18 +14072,18 @@ define('jubilee',['require','src/modules/chart/boxplot','src/modules/chart/dendr
       truncate: require("src/modules/component/axis/truncate")
     },
     component: {
-      area: require("src/modules/component/area"),
+      area: require("src/modules/component/series/area"),
       axis: require("src/modules/component/axis/axis"),
-      bars: require("src/modules/component/bars"),
+      bars: require("src/modules/component/series/bars"),
       boxplot: require("src/modules/component/boxplot"),
       brush: require("src/modules/component/events/brush"),
+      clipPath: require("src/modules/component/clippath"),
       events: require("src/modules/component/events/events"),
-      line: require("src/modules/component/line"),
-      points: require("src/modules/component/points")
+      line: require("src/modules/component/series/line"),
+      points: require("src/modules/component/series/points")
     },
     svg: {
       circle: require("src/modules/element/svg/circle"),
-      clipPath: require("src/modules/element/svg/clipPath"),
       ellipse: require("src/modules/element/svg/ellipse"),
       image: require("src/modules/element/svg/image"),
       line: require("src/modules/element/svg/line"),
