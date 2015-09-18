@@ -19,18 +19,18 @@ define(function (require) {
       truncate: require("src/modules/component/axis/truncate")
     },
     component: {
-      area: require("src/modules/component/area"),
+      area: require("src/modules/component/series/area"),
       axis: require("src/modules/component/axis/axis"),
-      bars: require("src/modules/component/bars"),
+      bars: require("src/modules/component/series/bars"),
       boxplot: require("src/modules/component/boxplot"),
       brush: require("src/modules/component/events/brush"),
+      clipPath: require("src/modules/component/clippath"),
       events: require("src/modules/component/events/events"),
-      line: require("src/modules/component/line"),
-      points: require("src/modules/component/points")
+      line: require("src/modules/component/series/line"),
+      points: require("src/modules/component/series/points")
     },
     svg: {
       circle: require("src/modules/element/svg/circle"),
-      clipPath: require("src/modules/element/svg/clipPath"),
       ellipse: require("src/modules/element/svg/ellipse"),
       image: require("src/modules/element/svg/image"),
       line: require("src/modules/element/svg/line"),

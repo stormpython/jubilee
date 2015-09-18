@@ -5,7 +5,7 @@ define(function (require) {
   var valuator = require("valuator");
   var scaletor = require("src/modules/helpers/scaletor");
   var parseTime = require("src/modules/helpers/timeparser");
-  var clip = require("src/modules/element/svg/clipPath");
+  var clip = require("src/modules/component/clippath");
   var axis = require("src/modules/component/axis/axis");
   var brushComponent = require("src/modules/component/events/brush");
   var events = require("src/modules/component/events/events");

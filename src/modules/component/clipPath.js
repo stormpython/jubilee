@@ -11,8 +11,12 @@ define(function (require) {
 
     function element(selection) {
       selection.each(function () {
-        d3.select(this)
-          .append("clipPath")
+        var g = d3.select(this);
+
+        // Remove previous clip-path
+        g.select("clipPath").remove();
+
+        g.append("clipPath")
           .attr("id", id)
           .attr("transform", transform)
           .append("rect")
