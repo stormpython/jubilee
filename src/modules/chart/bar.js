@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
   var valuator = require("valuator");
   var scaletor = require("src/modules/helpers/scaletor");
-  var clip = require("src/modules/element/svg/clipPath");
+  var clip = require("src/modules/component/clippath");
   var axis = require("src/modules/component/axis/axis");
   var brushComponent = require("src/modules/component/events/brush");
   var events = require("src/modules/component/events/events");

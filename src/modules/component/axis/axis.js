@@ -51,7 +51,13 @@ define(function (require) {
           .tickPadding(tick.padding)
           .tickFormat(tick.format);
 
-        var g = d3.select(this).append("g")
+        var g = d3.select(this);
+
+        // Remove previous axis
+        g.select("g." + gClass).remove();
+
+        // Attach axis
+        g.append("g")
           .attr("class", gClass)
           .attr("transform", transform)
           .call(axis);

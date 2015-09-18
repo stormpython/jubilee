@@ -50,7 +50,13 @@ define(function (require) {
         if (extent) { brush.extent(extent); }
         if (clamp) { brush.clamp(clamp); }
 
-        var brushG = d3.select(this).append("g")
+        var brushG = d3.select(this);
+
+        // Remove previous brush
+        brushG.select("g." + cssClass).remove();
+
+        // Attach new brush
+        brushG.append("g")
           .attr("class", cssClass)
           .attr("opacity", opacity)
           .call(brush)
