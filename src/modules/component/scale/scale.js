@@ -12,7 +12,7 @@ define(function (require) {
     var padding = 0;
     var innerPadding = 0;
     var outerPadding = 0;
-    var attr = {};
+    var opts = {};
 
     function component(data) {
       if (domain) { type.domain(domain.call(null, data)); }
@@ -27,7 +27,7 @@ define(function (require) {
         }
       }
 
-      return builder(attr, type);
+      return builder(opts, type);
     }
 
     // Public API
@@ -73,10 +73,10 @@ define(function (require) {
       return component;
     };
 
-    component.attr = function (_) {
-      if (!arguments.length) { return attr; }
-      if (arguments.length === 1 && typeof _ === "string") { return attr[_]; }
-      attr = typeof _ === "object" ? _ : attr;
+    component.options = function (_) {
+      if (!arguments.length) { return opts; }
+      if (arguments.length === 1 && typeof _ === "string") { return opts[_]; }
+      opts = typeof _ === "object" ? _ : opts;
       return component;
     };
 

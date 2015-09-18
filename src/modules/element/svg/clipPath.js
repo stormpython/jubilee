@@ -10,29 +10,12 @@ define(function (require) {
     var height = 0;
 
     function element(selection) {
-      selection.each(function (data, index) {
-        var clipPath = d3.select(this).selectAll("clipPath")
-          .data([data]);
-
-        // Exit
-        clipPath.exit().remove();
-
-        // Enter
-        clipPath.enter().append("clipPath");
-
-        // Update
-        clipPath
+      selection.each(function () {
+        d3.select(this)
+          .append("clipPath")
           .attr("id", id)
-          .attr("transform", transform);
-
-        var rect = clipPath.selectAll("rect")
-          .data([{}]);
-
-        rect.exit().remove();
-
-        rect.enter().append("rect");
-
-        rect
+          .attr("transform", transform)
+          .append("rect")
           .attr("x", x)
           .attr("y", y)
           .attr("width", width)

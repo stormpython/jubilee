@@ -1,7 +1,7 @@
 define(function (require) {
   var d3 = require("d3");
   var rect = require("src/modules/element/svg/rect");
-  var functor = require("functor");
+  var builder = require("builder");
   var valuator = require("valuator");
   var parseTime = require("src/modules/helpers/timeparser");
 
@@ -26,10 +26,10 @@ define(function (require) {
     };
 
     function component(selection) {
-      selection.each(function (data, index) {
+      selection.each(function (data) {
         var timeNotation = parseTime(interval);
-        var step = parseFloat(interval);
         var extent = d3.extent(d3.merge(data), x);
+        var step = parseFloat(interval);
         var start = extent[0];
         var stop = d3.time[timeNotation].offset(extent[1], step);
 
@@ -46,16 +46,22 @@ define(function (require) {
 
         var rects = rect()
           .x(function (d, i) {
-            if (i === 0) { j++; }
-            if (group) { return xScale(x.call(this, d, i)) + groupScale(j); }
+            if (group) {
+              if (i === 0) { j++; }
+              return xScale(x.call(this, d, i)) + groupScale(j);
+            }
             return xScale(x.call(this, d, i));
           })
           .y(function (d, i) {
-            if (group) { return yScale(y.call(this, d, i)); }
+            if (group) {
+              return yScale(y.call(this, d, i));
+            }
             return yScale(d.y0 + Math.abs(y.call(this, d, i)));
           })
           .width(function () {
-            if (group) { return groupScale.rangeBand(); }
+            if (group) {
+              return groupScale.rangeBand();
+            }
             return timeScale.rangeBand();
           })
           .height(function (d, i) {
@@ -64,14 +70,11 @@ define(function (require) {
           .rx(rx)
           .ry(ry);
 
-        var element = functor()
-          .function(rects)
-          .options(properties);
-
-        d3.select(this).append("g").selectAll("g")
+        d3.select(this).append("g")
+          .selectAll("g")
           .data(data)
           .enter().append("g")
-          .call(element);
+          .call(builder(properties, rects));
       });
     }
 

@@ -41,7 +41,8 @@ define(function (require) {
 
           // Truncation logic goes here
           ticks.each(function () {
-            d3.select(this).call(truncate().maxCharLength(truncateLength));
+            d3.select(this)
+              .call(truncate().maxCharLength(truncateLength));
           });
         }
       });

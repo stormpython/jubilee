@@ -1,40 +1,36 @@
 define(function (require) {
   var d3 = require("d3");
-  var path = require("src/modules/element/svg/path");
-  var functor = require("functor");
+  var circle = require("src/modules/element/svg/circle");
+  var builder = require("builder");
   var valuator = require("valuator");
 
-  return function line() {
+  return function points() {
     // Private variables
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var xScale = d3.time.scale.utc();
     var yScale = d3.scale.linear();
-    var interpolate = "linear";
-    var tension = 0.7;
-    var defined = function (d) { return d.y !== null; };
+    var radius = 5;
     var properties = {
-      class: "line",
-      fill: "none",
+      class: "point",
+      fill: function (d, i) { return d3.scale.category10()(i); },
       stroke: function (d, i) { return d3.scale.category10()(i); },
-      strokeWidth: 3,
+      strokeWidth: 0,
       opacity: 1
     };
 
     function component(selection) {
-      selection.each(function (data, index) {
-        var lines = d3.svg.line().x(X).y(Y)
-          .interpolate(interpolate)
-          .tension(tension)
-          .defined(defined);
+      selection.each(function (data) {
+        var circles = circle()
+          .cx(X)
+          .cy(Y)
+          .radius(radius);
 
-        var linePath = path().pathGenerator(lines);
-
-        var element = functor()
-          .function(linePath)
-          .options(properties);
-
-        d3.select(this).append("g").call(element);
+        d3.select(this).append("g")
+          .datum(data.reduce(function (a, b) {
+            return a.concat(b);
+          },[]).filter(y))
+          .call(builder(properties, circles));
       });
     }
 
@@ -59,6 +55,12 @@ define(function (require) {
       return component;
     };
 
+    component.radius = function (_) {
+      if (!arguments.length) { return radius; }
+      radius = _;
+      return component;
+    };
+
     component.xScale = function (_) {
       if (!arguments.length) { return xScale; }
       xScale = _;
@@ -68,24 +70,6 @@ define(function (require) {
     component.yScale = function (_) {
       if (!arguments.length) { return yScale; }
       yScale = _;
-      return component;
-    };
-
-    component.interpolate = function (_) {
-      if (!arguments.length) { return interpolate; }
-      interpolate = _;
-      return component;
-    };
-
-    component.tension = function (_) {
-      if (!arguments.length) { return tension; }
-      tension = _;
-      return component;
-    };
-
-    component.defined = function (_) {
-      if (!arguments.length) { return defined; }
-      defined = _;
       return component;
     };
 

@@ -19,7 +19,8 @@ define(function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var ellipses = d3.select(this).selectAll("ellipses")
+        var ellipses = d3.select(this)
+          .selectAll("." + cssClass)
           .data(data);
 
         // Exit

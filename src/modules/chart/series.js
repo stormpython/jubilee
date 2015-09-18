@@ -1,5 +1,6 @@
 define(function (require) {
   var d3 = require("d3");
+  var builder = require("builder");
   var functor = require("functor");
   var valuator = require("valuator");
   var scaletor = require("src/modules/helpers/scaletor");
@@ -11,10 +12,10 @@ define(function (require) {
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
   var zeroAxisLine = require("src/modules/element/svg/line");
-  var areas = require("src/modules/component/area");
-  var bars = require("src/modules/component/bars");
-  var circles = require("src/modules/component/points");
-  var lines = require("src/modules/component/line");
+  var areas = require("src/modules/component/series/area");
+  var bars = require("src/modules/component/series/bars");
+  var circles = require("src/modules/component/series/points");
+  var lines = require("src/modules/component/series/line");
 
   return function series() {
     var margin = {top: 20, right: 50, bottom: 50, left: 50};
@@ -182,11 +183,9 @@ define(function (require) {
             .y1(function () { return y(0); })
             .y2(function () { return y(0); });
 
-          var zLineFunc = functor()
-            .function(zLine)
-            .options(zeroLine);
-
-          g.append("g").datum([{}]).call(zLineFunc);
+          g.append("g")
+            .datum([{}])
+            .call(builder(zeroLine, zLine));
         }
         /* ******************************** */
 
