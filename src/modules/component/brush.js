@@ -21,49 +21,54 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function (data, index) {
+        var isBrush = brushStartCallback.length ||
+          brushCallback.length || brushEndCallback.length;
+
         width = width - margin.left - margin.right;
         height = height - margin.top - margin.bottom;
 
-        var brush = d3.svg.brush()
-          .on("brushstart", function () {
-            brushStartCallback.forEach(function (listener) {
-              listener.call(this, brush, data, index);
+        if (isBrush) {
+          var brush = d3.svg.brush()
+            .on("brushstart", function () {
+              brushStartCallback.forEach(function (listener) {
+                listener.call(this, brush, data, index);
+              });
+            })
+            .on("brush", function () {
+              brushCallback.forEach(function (listener) {
+                listener.call(this, brush, data, index);
+              });
+            })
+            .on("brushend", function () {
+              brushEndCallback.forEach(function (listener) {
+                listener.call(this, brush, data, index);
+
+                // Clear brush
+                d3.selectAll("g." + cssClass)
+                  .call(brush.clear());
+              });
             });
-          })
-          .on("brush", function () {
-            brushCallback.forEach(function (listener) {
-              listener.call(this, brush, data, index);
-            });
-          })
-          .on("brushend", function () {
-            brushEndCallback.forEach(function (listener) {
-              listener.call(this, brush, data, index);
 
-              // Clear brush
-              d3.selectAll("g." + cssClass)
-                .call(brush.clear());
-            });
-          });
+          if (xScale) { brush.x(xScale); }
+          if (yScale) { brush.y(yScale); }
+          if (extent) { brush.extent(extent); }
+          if (clamp) { brush.clamp(clamp); }
 
-        if (xScale) { brush.x(xScale); }
-        if (yScale) { brush.y(yScale); }
-        if (extent) { brush.extent(extent); }
-        if (clamp) { brush.clamp(clamp); }
+          var brushG = d3.select(this);
 
-        var brushG = d3.select(this);
+          // Remove previous brush
+          brushG.select("g." + cssClass).remove();
 
-        // Remove previous brush
-        brushG.select("g." + cssClass).remove();
+          // Attach new brush
+          brushG.append("g")
+            .attr("class", cssClass)
+            .attr("opacity", opacity)
+            .call(brush)
+            .selectAll("rect");
 
-        // Attach new brush
-        brushG.append("g")
-          .attr("class", cssClass)
-          .attr("opacity", opacity)
-          .call(brush)
-          .selectAll("rect");
-
-        if (width) { brushG.attr("width", width); }
-        if (height) { brushG.attr("height", height); }
+          if (width) { brushG.attr("width", width); }
+          if (height) { brushG.attr("height", height); }
+        }
       });
     }
 

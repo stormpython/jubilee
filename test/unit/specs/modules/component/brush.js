@@ -1,7 +1,7 @@
 define(function (require) {
   describe("Component: Brush tests", function () {
     var d3 = require("d3");
-    var brushFunction = require("src/modules/component/events/brush");
+    var brushFunction = require("src/modules/component/brush");
     var d3fixture = require("fixtures/fixture");
     var remove = require("fixtures/remove");
     var fixture;

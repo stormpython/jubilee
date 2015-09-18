@@ -23,7 +23,7 @@ define(function (require) {
       axis: require("src/modules/component/axis/axis"),
       bars: require("src/modules/component/series/bars"),
       boxplot: require("src/modules/component/boxplot"),
-      brush: require("src/modules/component/events/brush"),
+      brush: require("src/modules/component/brush"),
       clipPath: require("src/modules/component/clippath"),
       events: require("src/modules/component/events/events"),
       line: require("src/modules/component/series/line"),

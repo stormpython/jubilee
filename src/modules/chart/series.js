@@ -1,17 +1,17 @@
 define(function (require) {
   var d3 = require("d3");
-  var builder = require("builder");
   var functor = require("functor");
   var valuator = require("valuator");
+  var getClass = require("src/modules/helpers/get_class");
   var scaletor = require("src/modules/helpers/scaletor");
   var parseTime = require("src/modules/helpers/timeparser");
   var clip = require("src/modules/component/clippath");
   var axis = require("src/modules/component/axis/axis");
-  var brushComponent = require("src/modules/component/events/brush");
+  var brushComponent = require("src/modules/component/brush");
   var events = require("src/modules/component/events/events");
   var addEventListener = require("src/modules/helpers/add_event_listener");
   var removeEventListener = require("src/modules/helpers/remove_event_listener");
-  var zeroAxisLine = require("src/modules/element/svg/line");
+  var zeroAxisLine = require("src/modules/component/zeroline");
   var areas = require("src/modules/component/series/area");
   var bars = require("src/modules/component/series/bars");
   var circles = require("src/modules/component/series/points");
@@ -75,18 +75,10 @@ define(function (require) {
     };
     var brushOpts = {
       class: "brush",
-      x: true,
       y: false,
       opacity: 0.2,
       extent: null,
       clamp: false
-    };
-    var zeroLine = {
-      show: false,
-      class: "zero-line",
-      stroke: "#000000",
-      strokeWidth: 1,
-      opacity: 0.5
     };
     var stacks = {
       scale: "y",
@@ -145,115 +137,87 @@ define(function (require) {
         if (zScale.nice) { z.nice(); }
         /* ******************************** */
 
+        var brush = brushComponent()
+          .class(brushOpts.class)
+          .xScale(x)
+          .yScale(brushOpts.y ? y : null)
+          .opacity(brushOpts.opacity)
+          .clamp(brushOpts.clamp)
+          .extent(brushOpts.extent)
+          .height(adjustedHeight)
+          .brushstart(listeners.brushstart)
+          .brush(listeners.brush)
+          .brushend(listeners.brushend);
+
+        var zeroLine = zeroAxisLine().xScale(x).yScale(y);
+
+        var axisX = axis()
+          .draw(xAxis.show)
+          .scale(x)
+          .class(xAxis.class)
+          .transform(xAxis.transform || "translate(0," + (y.range()[0]) + ")")
+          .tick(xAxis.tick)
+          .tickText(xAxis.tickText)
+          .rotateLabels(xAxis.rotateLabels)
+          .title(xAxis.title)
+          .gridLineLength(xAxis.gridlines ? -adjustedHeight : null);
+
+        var axisY = axis()
+          .draw(yAxis.show)
+          .scale(y)
+          .orient("left")
+          .class(yAxis.class)
+          .transform(yAxis.transform || "translate(0,0)")
+          .tick(yAxis.tick)
+          .tickText(yAxis.tickText)
+          .title(yAxis.title)
+          .gridLineLength(yAxis.gridlines ? -adjustedWidth : null);
+
+        var axisZ = axis()
+          .draw(zAxis.show)
+          .scale(z)
+          .orient("right")
+          .class(zAxis.class)
+          .transform(zAxis.transform || "translate(" + x.range()[1] + "," + "0)")
+          .tick(zAxis.tick)
+          .tickText(zAxis.tickText)
+          .title(zAxis.title);
+
+        var clippath = clip().width(adjustedWidth).height(adjustedHeight);
+
         /* Canvas ******************************** */
         if (!svg) {
-          svg = d3.select(this).append("svg")
-            .attr("width", width)
-            .attr("height", height);
+          svg = d3.select(this).append("svg");
 
           var c = svg.append("g").classed("container", true);
           c.append("g").classed(xAxis.class, true);
           c.append("g").classed(yAxis.class, true);
           c.append("g").classed(zAxis.class, true);
-
-          if (zeroLine.show) {
-            c.append("g").classed(zeroLine.class, true);
-          }
         }
         /* ******************************** */
 
-        svg.call(svgEvents);
+        svg
+          .attr("width", width)
+          .attr("height", height)
+          .call(svgEvents);
+
         var g = svg.select(".container")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        /* Brush ******************************** */
-        if (listeners.brushstart && listeners.brushstart.length ||
-            listeners.brush && listeners.brush.length ||
-            listeners.brushend && listeners.brushend.length) {
-          var brush = brushComponent()
-            .class(brushOpts.class)
-            .xScale(brushOpts.x ? x : null)
-            .yScale(brushOpts.y ? y : null)
-            .opacity(brushOpts.opacity)
-            .clamp(brushOpts.clamp)
-            .extent(brushOpts.extent)
-            .height(adjustedHeight)
-            .brushstart(listeners.brushstart)
-            .brush(listeners.brush)
-            .brushend(listeners.brushend);
-
-          g.call(brush);
-        }
-        /* ******************************** */
-
-        /* Zero-line ******************************** */
-        if (zeroLine.show) {
-          var zLine = zeroAxisLine()
-            .x1(function () { return x.range()[0]; })
-            .x2(function () { return x.range()[1]; })
-            .y1(function () { return y(0); })
-            .y2(function () { return y(0); });
-
-          g.append("g")
-            .datum([{}])
-            .call(builder(zeroLine, zLine));
-        }
-        /* ******************************** */
+        g.call(brush);
+        g.call(zeroLine);
 
         /* Axes ******************************** */
-        if (xAxis.gridlines) {
-          xAxis.tick.innerTickSize = -adjustedHeight;
-        }
-        if (yAxis.gridlines) {
-          yAxis.tick.innerTickSize = -adjustedWidth;
-        }
-
-        if (xAxis.show) {
-          var axisX = axis()
-            .scale(x)
-            .class(xAxis.class)
-            .transform(xAxis.transform || "translate(0," + (y.range()[0]) + ")")
-            .tick(xAxis.tick)
-            .tickText(xAxis.tickText)
-            .rotateLabels(xAxis.rotateLabels)
-            .title(xAxis.title);
-
-          g.select("." + xAxis.class)
-            .call(axisX);
-        }
-
-        if (yAxis.show) {
-          var axisY = axis()
-            .scale(y)
-            .orient("left")
-            .class(yAxis.class)
-            .transform(yAxis.transform || "translate(0,0)")
-            .tick(yAxis.tick)
-            .tickText(yAxis.tickText)
-            .title(yAxis.title);
-
-          g.select("." + yAxis.class)
-            .call(axisY);
-        }
-
-        if (zAxis.show) {
-          var axisZ = axis()
-            .scale(z)
-            .orient("right")
-            .class(zAxis.class)
-            .transform(zAxis.transform || "translate(" + x.range()[1] + "," + "0)")
-            .tick(zAxis.tick)
-            .tickText(zAxis.tickText)
-            .title(zAxis.title);
-
-          g.select("." + zAxis.class)
-            .call(axisZ);
-        }
+        g.select("g." + getClass(xAxis.class))
+          .call(axisX);
+        g.select("g." + getClass(yAxis.class))
+          .call(axisY);
+        g.select("g." + getClass(zAxis.class))
+          .call(axisZ);
         /* ******************************** */
 
         /* ClipPath ******************************** */
-        var clippath = clip().width(adjustedWidth).height(adjustedHeight);
-        var clippedG = g.call(clippath).append("g")
+        var clippedG = g.call(clippath).insert("g", ".zero-line-group")
           .attr("clip-path", "url(#" + clippath.id() + ")")
           .datum(data);
         /* ******************************** */
@@ -352,7 +316,6 @@ define(function (require) {
     chart.brush = function (_) {
       if (!arguments.length) { return brushOpts; }
       brushOpts.class = typeof _.clamp !== "undefined" ? _.clamp : brushOpts.clamp;
-      brushOpts.x = typeof _.x !== "undefined" ? _.x : brushOpts.x;
       brushOpts.y = typeof _.y !== "undefined" ? _.y : brushOpts.y;
       brushOpts.opacity = typeof _.opacity !== "undefined" ? _.opacity : brushOpts.opacity;
       brushOpts.clamp = typeof _.clamp !== "undefined" ? _.clamp : brushOpts.clamp;
@@ -454,16 +417,6 @@ define(function (require) {
       zAxis.tick = typeof _.tick !== "undefined" ? _.tick : zAxis.tick;
       zAxis.tickText = typeof _.tickText!== "undefined" ? _.tickText: zAxis.tickText;
       zAxis.title = typeof _.title !== "undefined" ? _.title : zAxis.title;
-      return chart;
-    };
-
-    chart.zeroLine = function (_) {
-      if (!arguments.length) { return zeroLine; }
-      zeroLine.show = typeof _.show !== "undefined" ? _.show : zeroLine.show;
-      zeroLine.class = typeof _.class !== "undefined" ? _.class : zeroLine.class;
-      zeroLine.stroke = typeof _.stroke !== "undefined" ? _.stroke : zeroLine.stroke;
-      zeroLine.strokeWidth = typeof _.strokeWidth !== "undefined" ? _.strokeWidth : zeroLine.strokeWidth;
-      zeroLine.opacity = typeof _.opacity !== "undefined" ? _.opacity : zeroLine.opacity;
       return chart;
     };
 

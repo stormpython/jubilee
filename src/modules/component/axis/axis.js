@@ -7,6 +7,7 @@ define(function (require) {
     // Private variables
     var scale = d3.scale.linear();
     var orient = "bottom";
+    var draw = true;
     var tick = {
       number: 10,
       values: null,
@@ -37,48 +38,51 @@ define(function (require) {
       transform: "translate(0,0)",
       text: ""
     };
+    var gridLineLength = null;
 
     function component(selection) {
       selection.each(function () {
-        var axis = d3.svg.axis()
-          .scale(scale)
-          .orient(orient)
-          .ticks(tick.number)
-          .tickValues(tick.values)
-          .tickSize(tick.size)
-          .innerTickSize(tick.innerTickSize)
-          .outerTickSize(tick.outerTickSize)
-          .tickPadding(tick.padding)
-          .tickFormat(tick.format);
+        if (draw) {
+          var axis = d3.svg.axis()
+            .scale(scale)
+            .orient(orient)
+            .ticks(tick.number)
+            .tickValues(tick.values)
+            .tickSize(tick.size)
+            .innerTickSize(gridLineLength ? gridLineLength : tick.innerTickSize)
+            .outerTickSize(gridLineLength ? 0 : tick.outerTickSize)
+            .tickPadding(tick.padding)
+            .tickFormat(tick.format);
 
-        var g = d3.select(this);
+          var g = d3.select(this);
 
-        // Remove previous axis
-        g.select("g." + gClass).remove();
+          // Remove previous axis
+          g.select("g." + gClass).remove();
 
-        // Attach axis
-        g.append("g")
-          .attr("class", gClass)
-          .attr("transform", transform)
-          .call(axis);
+          // Attach axis
+          g.append("g")
+            .attr("class", gClass)
+            .attr("transform", transform)
+            .call(axis);
 
-        if (rotateLabels.allow) {
-          var axisLength = Math.abs(scale.range()[1] - scale.range()[0]);
-          var rotation = rotate()
-            .axisLength(axisLength);
+          if (rotateLabels.allow) {
+            var axisLength = Math.abs(scale.range()[1] - scale.range()[0]);
+            var rotation = rotate()
+              .axisLength(axisLength);
 
-          g.call(builder(rotateLabels, rotation));
+            g.call(builder(rotateLabels, rotation));
+          }
+
+          g.append("text")
+            .attr("class", title.class)
+            .attr("x", title.x)
+            .attr("y", title.y)
+            .attr("dx", title.dx)
+            .attr("dy", title.dy)
+            .attr("transform", title.transform)
+            .style("title-anchor", title.anchor)
+            .text(title.text);
         }
-
-        g.append("text")
-          .attr("class", title.class)
-          .attr("x", title.x)
-          .attr("y", title.y)
-          .attr("dx", title.dx)
-          .attr("dy", title.dy)
-          .attr("transform", title.transform)
-          .style("title-anchor", title.anchor)
-          .text(title.text);
       });
     }
 
@@ -86,6 +90,12 @@ define(function (require) {
     component.class = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
+      return component;
+    };
+
+    component.draw = function (_) {
+      if (!arguments.length) { return draw; }
+      draw = typeof _ === "boolean" ? _ : draw;
       return component;
     };
 
@@ -104,6 +114,12 @@ define(function (require) {
     component.orient = function (_) {
       if (!arguments.length) { return orient; }
       orient = _;
+      return component;
+    };
+
+    component.gridLineLength = function (_) {
+      if (!arguments.length) { return gridLineLength; }
+      gridLineLength = typeof _ === "number" ? _ : gridLineLength;
       return component;
     };
 
