@@ -41,7 +41,7 @@ define(function (require) {
     // Public API
     component.listeners = function (_) {
       if (!arguments.length) { return listeners; }
-      listeners = _;
+      listeners = typeof _ === "object" ? _ : listeners;
       return component;
     };
 

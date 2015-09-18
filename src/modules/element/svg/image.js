@@ -17,7 +17,8 @@ define(function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var images = d3.select(this).selectAll("images")
+        var images = d3.select(this)
+          .selectAll("." + cssClass)
           .data(data);
 
         // Exit

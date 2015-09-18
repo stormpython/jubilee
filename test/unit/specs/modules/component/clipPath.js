@@ -1,6 +1,6 @@
 define(function (require) {
   describe("Element: ClipPath SVG Tests", function () {
-    var clipPath = require("src/modules/element/svg/clipPath");
+    var clipPath = require("src/modules/component/clippath");
     var d3fixture = require("fixtures/fixture");
     var remove = require("fixtures/remove");
     var element = clipPath();
@@ -45,7 +45,7 @@ define(function (require) {
         element.id(defaultID);
         fixture.call(element); // Redraw
 
-        fixture.selectAll("clippath")
+        fixture.select("clippath")
           .each(function () {
             chai.assert.equal(this.getAttribute("id"), element.id());
           });

@@ -21,7 +21,8 @@ define(function (require) {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
 
-        var bars = d3.select(this).selectAll("rects")
+        var bars = d3.select(this)
+          .selectAll("." + cssClass)
           .data(data);
 
         bars.exit().remove();
