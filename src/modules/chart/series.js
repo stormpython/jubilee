@@ -89,10 +89,12 @@ define(function (require) {
         d.y = y;
       }
     };
-    var bar = {};
-    var line = {};
-    var area = {};
-    var points = {};
+    var elements = {
+      area: { func: areas(), opts: {} },
+      bar: { func: bars(), opts: {} },
+      line: { func: lines(), opts: {} },
+      points: { func: circles(), opts: {} }
+    };
     var listeners = {};
 
     var svg;
@@ -155,7 +157,7 @@ define(function (require) {
           .draw(xAxis.show)
           .scale(x)
           .class(xAxis.class)
-          .transform(xAxis.transform || "translate(0," + (y.range()[0]) + ")")
+          .transform("translate(0," + (y.range()[0]) + ")")
           .tick(xAxis.tick)
           .tickText(xAxis.tickText)
           .rotateLabels(xAxis.rotateLabels)
@@ -223,38 +225,33 @@ define(function (require) {
         /* ******************************** */
 
         /* SVG Elements ******************************** */
-        var elements = [
-          {type: "area", func: areas(), opts: area},
-          {type: "bar", func: bars(), opts: bar},
-          {type: "line", func: lines(), opts: line},
-          {type: "points", func: circles(), opts: points}
-        ];
+        Object.keys(elements).sort()
+          .forEach(function (d) {
+            var obj = elements[d];
 
-        elements.forEach(function (d) {
+            // Only render elements when api called
+            if (d3.keys(obj.opts).length) {
+              var element = functor().function(obj.func);
 
-          // Only render elements when api called
-          if (d3.keys(d.opts).length) {
-            var element = functor().function(d.func);
+              obj.opts = !Array.isArray(obj.opts) ? [obj.opts] : obj.opts;
+              obj.opts.forEach(function (props) {
+                var isZ = props.scale && props.scale.toLowerCase() === "z";
+                props.x = xValue;
+                props.y = isZ ? zValue : yValue;
+                props.xScale = x;
+                props.yScale = isZ ? z : y;
+                props.offset = stacks.offset;
 
-            if (d.type === "area") { d.opts.offset = stacks.offset; }
-            d.opts = !Array.isArray(d.opts) ? [d.opts] : d.opts;
-
-            d.opts.forEach(function (props) {
-              var isZ = props.scale && props.scale.toLowerCase() === "z";
-              props.x = xValue;
-              props.y = isZ ? zValue : yValue;
-              props.xScale = x;
-              props.yScale = isZ ? z : y;
-
-              clippedG.call(element.options(props));
-            });
-          }
-        });
+                clippedG.call(element.options(props));
+              });
+            }
+          });
         /* ******************************** */
       });
     }
 
     function xDomain(data, accessor) {
+      var bar = elements.bar.opts;
       if (d3.keys(bar).length) {
         var interval = bar.interval ? bar.interval : "30s";
         var offset = parseFloat(interval);
@@ -280,6 +277,8 @@ define(function (require) {
       var val = accessor.call(this, obj) ? "y" : "z";
 
       return function (d, i) {
+        var area = elements.area.opts;
+        var bar = elements.bar.opts;
         var isStacked = !!d3.keys(area).length || !!d3.keys(bar).length;
         var properlyOffset = stacks.offset !== "overlap" && !bar.group;
         var scalesEqual = val === stacks.scale;
@@ -421,26 +420,26 @@ define(function (require) {
     };
 
     chart.bar = function (_) {
-      if (!arguments.length) { return bar; }
-      bar = typeof _ !== "object" ? bar : _;
+      if (!arguments.length) { return elements.bar.opts; }
+      elements.bar.opts = typeof _ === "object" ? _ : {};
       return chart;
     };
 
     chart.line = function (_) {
-      if (!arguments.length) { return line; }
-      line = typeof _ !== "object" ? line : _;
+      if (!arguments.length) { return elements.line.opts; }
+      elements.line.opts = typeof _ === "object" ? _ : {};
       return chart;
     };
 
     chart.area = function (_) {
-      if (!arguments.length) { return area; }
-      area = typeof _ !== "object" ? area : _;
+      if (!arguments.length) { return elements.area.opts; }
+      elements.area.opts = typeof _ === "object" ? _ : {};
       return chart;
     };
 
     chart.points = function (_) {
-      if (!arguments.length) { return points; }
-      points = typeof _ !== "object" ? points : _;
+      if (!arguments.length) { return elements.points.opts; }
+      elements.points.opts = typeof _ === "object" ? _ : {};
       return chart;
     };
 

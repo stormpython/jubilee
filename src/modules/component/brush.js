@@ -24,10 +24,10 @@ define(function (require) {
         var isBrush = brushStartCallback.length ||
           brushCallback.length || brushEndCallback.length;
 
-        width = width - margin.left - margin.right;
-        height = height - margin.top - margin.bottom;
-
         if (isBrush) {
+          width = width - margin.left - margin.right;
+          height = height - margin.top - margin.bottom;
+
           var brush = d3.svg.brush()
             .on("brushstart", function () {
               brushStartCallback.forEach(function (listener) {
@@ -44,8 +44,7 @@ define(function (require) {
                 listener.call(this, brush, data, index);
 
                 // Clear brush
-                d3.selectAll("g." + cssClass)
-                  .call(brush.clear());
+                d3.selectAll("g." + cssClass).call(brush.clear());
               });
             });
 
