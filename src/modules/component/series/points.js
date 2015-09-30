@@ -6,6 +6,7 @@ define(function (require) {
 
   return function points() {
     // Private variables
+    var color = d3.scale.category10();
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var xScale = d3.time.scale.utc();
@@ -14,8 +15,8 @@ define(function (require) {
     var radius = 5;
     var properties = {
       class: "point",
-      fill: function (d, i) { return d3.scale.category10()(i); },
-      stroke: function (d, i) { return d3.scale.category10()(i); },
+      fill: function (d, i) { return color(i); },
+      stroke: function (d, i) { return color(i); },
       strokeWidth: 0,
       opacity: 1
     };

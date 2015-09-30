@@ -6,6 +6,7 @@ define(function (require) {
 
   return function line() {
     // Private variables
+    var color = d3.scale.category10();
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var xScale = d3.time.scale.utc();
@@ -17,7 +18,7 @@ define(function (require) {
     var properties = {
       class: "line",
       fill: "none",
-      stroke: function (d, i) { return d3.scale.category10()(i); },
+      stroke: function (d, i) { return color(i); },
       strokeWidth: 3,
       opacity: 1
     };
