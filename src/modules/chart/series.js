@@ -4,7 +4,6 @@ define(function (require) {
   var functor = require("functor");
   var valuator = require("valuator");
   var scaletor = require("src/modules/helpers/scaletor");
-  var parseTime = require("src/modules/helpers/timeparser");
   var clip = require("src/modules/component/clippath");
   var axis = require("src/modules/component/axis/axis");
   var brushComponent = require("src/modules/component/events/brush");
@@ -88,15 +87,6 @@ define(function (require) {
       strokeWidth: 1,
       opacity: 0.5
     };
-    var stacks = {
-      scale: "y",
-      offset: "zero",
-      order: "default",
-      out: function stackOut(d, y0, y) {
-        d.y0 = y0;
-        d.y = y;
-      }
-    };
     var bar = {};
     var line = {};
     var area = {};
@@ -111,32 +101,10 @@ define(function (require) {
         var adjustedHeight = height - margin.top - margin.bottom;
         var svgEvents = events().listeners(listeners);
 
-        /* Stacking Options ******************************** */
-        var stack = d3.layout.stack()
-          .x(xValue)
-          .y(stacks.scale === "z" ? zValue : yValue)
-          .offset(stacks.offset)
-          .order(stacks.order)
-          .out(stacks.out);
-
-        data = stack(data);
-        /* ******************************** */
-
         /* Scales ******************************** */
-        var x = xScale.scale
-          .domain(xScale.domain ? xScale.domain.call(this, d3.merge(data)) : xDomain(data, xValue))
-          .clamp(xScale.clamp)
-          .range([0, adjustedWidth]);
-
-        var y = yScale.scale
-          .domain(yScale.domain ? yScale.domain.call(this, d3.merge(data)) : domain(data, yValue))
-          .clamp(yScale.clamp)
-          .range([adjustedHeight, 0]);
-
-        var z = zScale.scale
-          .domain(zScale.domain ? zScale.domain.call(this, d3.merge(data)) : domain(data, zValue))
-          .clamp(zScale.clamp)
-          .range([adjustedHeight, 0]);
+        var x = xScale.scale.range([0, adjustedWidth]);
+        var y = yScale.scale.range([adjustedHeight, 0]);
+        var z = zScale.scale.range([adjustedHeight, 0]);
 
         if (xScale.nice) { x.nice(); }
         if (yScale.nice) { y.nice(); }
@@ -145,8 +113,6 @@ define(function (require) {
 
         /* Canvas ******************************** */
         var svg = d3.select(this).selectAll("svg")
-          .data([data])
-          .enter().append("svg")
           .attr("width", width)
           .attr("height", height)
           .call(svgEvents);
@@ -245,10 +211,10 @@ define(function (require) {
 
         /* SVG Elements ******************************** */
         var elements = [
-          {type: "area", func: areas(), opts: area},
-          {type: "bar", func: bars(), opts: bar},
-          {type: "line", func: lines(), opts: line},
-          {type: "points", func: circles(), opts: points}
+          {func: areas(), opts: area},
+          {func: bars(), opts: bar},
+          {func: lines(), opts: line},
+          {func: circles(), opts: points}
         ];
 
         elements.forEach(function (d) {
@@ -257,7 +223,6 @@ define(function (require) {
           if (d3.keys(d.opts).length) {
             var element = functor().function(d.func);
 
-            if (d.type === "area") { d.opts.offset = stacks.offset; }
             d.opts = !Array.isArray(d.opts) ? [d.opts] : d.opts;
 
             d.opts.forEach(function (props) {
@@ -267,49 +232,14 @@ define(function (require) {
               props.xScale = x;
               props.yScale = isZ ? z : y;
 
-              clippedG.call(element.options(props));
+              clippedG
+                .datum(data)
+                .call(element.options(props));
             });
           }
         });
         /* ******************************** */
       });
-    }
-
-    function xDomain(data, accessor) {
-      if (d3.keys(bar).length) {
-        var interval = bar.interval ? bar.interval : "30s";
-        var offset = parseFloat(interval);
-        var timeInterval = parseTime(interval);
-
-        return [
-          d3.min(d3.merge(data), accessor),
-          d3.time[timeInterval].offset(d3.max(d3.merge(data), accessor), offset)
-        ];
-      }
-      return d3.extent(d3.merge(data), accessor);
-    }
-
-    function domain(data, accessor) {
-      return [
-        Math.min(0, d3.min(d3.merge(data), getAccessor(accessor))),
-        Math.max(0, d3.max(d3.merge(data), getAccessor(accessor)))
-      ];
-    }
-
-    function getAccessor(accessor) {
-      var obj = {y: true, z: false};
-      var val = accessor.call(this, obj) ? "y" : "z";
-
-      return function (d, i) {
-        var isStacked = !!d3.keys(area).length || !!d3.keys(bar).length;
-        var properlyOffset = stacks.offset !== "overlap" && !bar.group;
-        var scalesEqual = val === stacks.scale;
-
-        if (isStacked && properlyOffset && scalesEqual) {
-          return d.y0 + accessor.call(this, d, i);
-        }
-        return accessor.call(this, d, i);
-      };
     }
 
     // Public API

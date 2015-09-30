@@ -3,6 +3,7 @@ define(function (require) {
 
   return function circle() {
     var accessor = function (d) { return d; };
+    var color = d3.scale.category10();
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
     var radius = 5;
@@ -43,7 +44,7 @@ define(function (require) {
     }
 
     function colorFill (d, i) {
-      return d3.scale.category10()(i);
+      return color(i);
     }
 
     // Public API

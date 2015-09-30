@@ -10,7 +10,13 @@ define(function (require) {
     var y = function (d) { return d.y; };
     var xScale = d3.time.scale.utc();
     var yScale = d3.scale.linear();
+    var domain = { xMin: null, xMax: null, yMin: null, yMax: null };
     var offset = "zero";
+    var order = "default";
+    var out = function (d, y0, y) {
+      d.y0 = y0;
+      d.y = y;
+    };
     var interpolate = "linear";
     var tension = 0.7;
     var defined = function (d) { return d.y !== null; };
@@ -23,7 +29,26 @@ define(function (require) {
     };
 
     function component(selection) {
-      selection.each(function () {
+      selection.each(function (data) {
+        var stack = d3.layout.stack()
+          .x(x)
+          .y(y)
+          .offset(offset)
+          .order(order)
+          .out(out);
+
+        data = stack(data);
+
+        xScale.domain([
+          domain.xMin || d3.min(d3.merge(data), x),
+          domain.xMax || d3.max(d3.merge(data), x)
+        ]);
+
+        yScale.domain([
+          domain.yMin || Math.min(0, d3.min(d3.merge(data), accessor)),
+          domain.yMax || Math.max(0, d3.max(d3.merge(data), accessor))
+        ]);
+
         var areas = d3.svg.area().x(X).y0(Y0).y1(Y1)
           .interpolate(interpolate)
           .tension(tension)
@@ -37,22 +62,23 @@ define(function (require) {
       });
     }
 
+    function accessor(d, i) {
+      if (offset === "overlap") { return y.call(this, d, i); }
+      return d.y0 + y.call(this, d, i);
+    }
+
     function X(d, i) {
       return xScale(x.call(this, d, i));
     }
 
     function Y0(d) {
       var min = Math.max(0, yScale.domain()[0]);
-      if (offset === "overlap") {
-        return yScale(min);
-      }
+      if (offset === "overlap") { return yScale(min); }
       return yScale(d.y0);
     }
 
     function Y1(d, i) {
-      if (offset === "overlap") {
-        return yScale(y.call(this, d, i));
-      }
+      if (offset === "overlap") { return yScale(y.call(this, d, i)); }
       return yScale(d.y0 + y.call(this, d, i));
     }
 
@@ -81,9 +107,29 @@ define(function (require) {
       return component;
     };
 
+    component.domain = function (_) {
+      if (!arguments.length) { return domain; }
+      domain.xMin = typeof _.xMin !== "undefined" ? _.xMin : domain.xMin;
+      domain.xMax = typeof _.xMax !== "undefined" ? _.xMax : domain.xMax;
+      domain.yMin = typeof _.yMin !== "undefined" ? _.yMin : domain.yMin;
+      domain.yMax = typeof _.yMax !== "undefined" ? _.yMax : domain.yMax;
+    };
+
     component.offset = function (_) {
       if (!arguments.length) { return offset; }
       offset = _;
+      return component;
+    };
+
+    component.order = function (_) {
+      if (!arguments.length) { return order; }
+      order = _;
+      return component;
+    };
+
+    component.out = function (_) {
+      if (!arguments.length) { return out; }
+      out = _;
       return component;
     };
 

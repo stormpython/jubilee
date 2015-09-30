@@ -3,6 +3,7 @@ define(function (require) {
 
   return function ellipse() {
     var accessor = function (d) { return d; };
+    var color = d3.scale.category10();
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
     var rx = 20;
@@ -44,7 +45,7 @@ define(function (require) {
     }
 
     function colorFill(d, i) {
-      return d3.scale.category10()(i);
+      return color(i);
     }
 
     // Public API

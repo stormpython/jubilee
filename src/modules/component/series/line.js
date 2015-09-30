@@ -10,6 +10,7 @@ define(function (require) {
     var y = function (d) { return d.y; };
     var xScale = d3.time.scale.utc();
     var yScale = d3.scale.linear();
+    var domain = { xMin: null, xMax: null, yMin: null, yMax: null };
     var interpolate = "linear";
     var tension = 0.7;
     var defined = function (d) { return d.y !== null; };
@@ -22,7 +23,17 @@ define(function (require) {
     };
 
     function component(selection) {
-      selection.each(function () {
+      selection.each(function (data) {
+        xScale.domain([
+          domain.xMin || d3.min(d3.merge(data), x),
+          domain.xMax || d3.max(d3.merge(data), x)
+        ]);
+
+        yScale.domain([
+          domain.yMin || d3.min(d3.merge(data), y),
+          domain.yMax || d3.max(d3.merge(data), y)
+        ]);
+
         var lines = d3.svg.line().x(X).y(Y)
           .interpolate(interpolate)
           .tension(tension)
@@ -67,6 +78,14 @@ define(function (require) {
       if (!arguments.length) { return yScale; }
       yScale = _;
       return component;
+    };
+
+    component.domain = function (_) {
+      if (!arguments.length) { return domain; }
+      domain.xMin = typeof _.xMin !== "undefined" ? _.xMin : domain.xMin;
+      domain.xMax = typeof _.xMax !== "undefined" ? _.xMax : domain.xMax;
+      domain.yMin = typeof _.yMin !== "undefined" ? _.yMin : domain.yMin;
+      domain.yMax = typeof _.yMax !== "undefined" ? _.yMax : domain.yMax;
     };
 
     component.interpolate = function (_) {

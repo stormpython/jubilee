@@ -3,6 +3,7 @@ define(function (require) {
 
   return function rect() {
     var accessor = function (d) { return d; };
+    var color = d3.scale.category10();
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var rx = 0;
@@ -45,7 +46,7 @@ define(function (require) {
     }
 
     function colorFill(d, i) {
-      return d3.scale.category10()(i);
+      return color(i);
     }
 
     // Public API

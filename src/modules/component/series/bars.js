@@ -13,6 +13,13 @@ define(function (require) {
     var yScale = d3.scale.linear();
     var rx = 0;
     var ry = 0;
+    var offset = "zero";
+    var order = "default";
+    var out = function (d, y0, y) {
+      d.y0 = y0;
+      d.y = y;
+    };
+    var domain = { xMin: null, xMax: null, yMin: null, yMax: null };
     var group = false;
     var interval = "30s";
     var padding = 0.1;
@@ -27,11 +34,31 @@ define(function (require) {
 
     function component(selection) {
       selection.each(function (data) {
+        var stack = d3.layout.stack()
+          .x(x)
+          .y(y)
+          .offset(offset)
+          .order(order)
+          .out(out);
+
+        data = stack(data);
+
         var timeNotation = parseTime(interval);
         var extent = d3.extent(d3.merge(data), x);
         var step = parseFloat(interval);
         var start = extent[0];
         var stop = d3.time[timeNotation].offset(extent[1], step);
+
+        xScale.domain([
+          domain.xMin || d3.min(d3.merge(data), x),
+          domain.xMax || d3.time[timeNotation]
+            .offset(d3.max(d3.merge(data), x), offset)
+        ]);
+
+        yScale.domain([
+          domain.yMin || Math.min(0, d3.min(d3.merge(data), accessor)),
+          domain.yMax || Math.max(0, d3.max(d3.merge(data), accessor))
+        ]);
 
         // Used only to determine the width of bars for time scales
         var timeScale = d3.scale.ordinal()
@@ -78,6 +105,11 @@ define(function (require) {
       });
     }
 
+    function accessor(d, i) {
+      if (group) { return y.call(this, d, i); }
+      return d.y0 + y.call(this, d, i);
+    }
+
     // Public API
     component.x = function (_) {
       if (!arguments.length) { return x; }
@@ -109,6 +141,24 @@ define(function (require) {
       return component;
     };
 
+    component.offset = function (_) {
+      if (!arguments.length) { return offset; }
+      offset = _;
+      return component;
+    };
+
+    component.order = function (_) {
+      if (!arguments.length) { return order; }
+      order = _;
+      return component;
+    };
+
+    component.out = function (_) {
+      if (!arguments.length) { return out; }
+      out = _;
+      return component;
+    };
+
     component.group = function (_) {
       if (!arguments.length) { return group; }
       group = _;
@@ -137,6 +187,14 @@ define(function (require) {
       if (!arguments.length) { return yScale; }
       yScale = _;
       return component;
+    };
+
+    component.domain = function (_) {
+      if (!arguments.length) { return domain; }
+      domain.xMin = typeof _.xMin !== "undefined" ? _.xMin : domain.xMin;
+      domain.xMax = typeof _.xMax !== "undefined" ? _.xMax : domain.xMax;
+      domain.yMin = typeof _.yMin !== "undefined" ? _.yMin : domain.yMin;
+      domain.yMax = typeof _.yMax !== "undefined" ? _.yMax : domain.yMax;
     };
 
     component.properties = function (_) {

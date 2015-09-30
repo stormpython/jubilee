@@ -10383,7 +10383,13 @@ define('src/modules/component/axis/axis',['require','d3','builder','./rotate'],f
           .tickPadding(tick.padding)
           .tickFormat(tick.format);
 
-        var g = d3.select(this).append("g")
+        var g = d3.select(this);
+
+        // Remove previous axis
+        g.select("g." + gClass).remove();
+
+        // Attach axis
+        g.append("g")
           .attr("class", gClass)
           .attr("transform", transform)
           .call(axis);
@@ -12090,8 +12096,12 @@ define('src/modules/component/clippath',['require','d3'],function (require) {
 
     function element(selection) {
       selection.each(function () {
-        d3.select(this)
-          .append("clipPath")
+        var g = d3.select(this);
+
+        // Remove previous clip-path
+        g.select("clipPath").remove();
+
+        g.append("clipPath")
           .attr("id", id)
           .attr("transform", transform)
           .append("rect")
@@ -12199,7 +12209,13 @@ define('src/modules/component/events/brush',['require','d3'],function (require) 
         if (extent) { brush.extent(extent); }
         if (clamp) { brush.clamp(clamp); }
 
-        var brushG = d3.select(this).append("g")
+        var brushG = d3.select(this);
+
+        // Remove previous brush
+        brushG.select("g." + cssClass).remove();
+
+        // Attach new brush
+        brushG.append("g")
           .attr("class", cssClass)
           .attr("opacity", opacity)
           .call(brush)

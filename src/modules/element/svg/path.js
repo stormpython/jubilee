@@ -3,13 +3,14 @@ define(function (require) {
 
   return function path() {
     var accessor = function (d) { return d; };
+    var color = d3.scale.category10();
     var pathGenerator = null;
 
     // Options
     var cssClass = "path";
     var transform = "translate(0,0)";
     var fill = "none";
-    var stroke = function (d, i) { return d3.scale.category10()(i); };
+    var stroke = function (d, i) { return color(i); };
     var strokeWidth = 1;
     var opacity = 1;
 
