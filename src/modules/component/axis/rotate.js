@@ -55,6 +55,7 @@ define(function (require) {
       return component;
     };
 
+    /* Options are width or height */
     component.measure = function (_) {
       if (!arguments.length) { return measure; }
       measure = typeof _ !== "string" ? measure : _;
@@ -69,7 +70,7 @@ define(function (require) {
 
     component.truncateLength = function (_) {
       if (!arguments.length) { return truncateLength; }
-      truncateLength = typeof _ !== "number" ? truncateLength : _;
+      truncateLength = _;
       return component;
     };
 

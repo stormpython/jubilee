@@ -37,6 +37,7 @@ define(function (require) {
       transform: "translate(0,0)",
       text: ""
     };
+    var g;
 
     function component(selection) {
       selection.each(function () {
@@ -51,14 +52,13 @@ define(function (require) {
           .tickPadding(tick.padding)
           .tickFormat(tick.format);
 
-        var g = d3.select(this);
-
-        // Remove previous axis
-        g.select("g." + gClass).remove();
+        if (!g) {
+          g = d3.select(this).append("g")
+            .attr("class", gClass);
+        }
 
         // Attach axis
-        g.append("g")
-          .attr("class", gClass)
+        g.attr("class", gClass)
           .attr("transform", transform)
           .call(axis);
 
@@ -132,7 +132,8 @@ define(function (require) {
 
     component.rotateLabels = function (_) {
       if (!arguments.length) { return rotateLabels; }
-      rotateLabels = typeof _ !== "object" ? rotateLabels : _;
+      rotateLabels = typeof _ === "object" ? _ : rotateLabels;
+      rotateLabels.allow = typeof _.allow !== "undefined" ? _.allow : rotateLabels.allow;
       return component;
     };
 

@@ -27,8 +27,7 @@ define(function (require) {
         circles.exit().remove();
 
         // Enter
-        circles
-          .enter().append("circle");
+        circles.enter().append("circle");
 
         // Update
         circles
