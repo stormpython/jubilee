@@ -20,7 +20,7 @@ define(function (require) {
       strokeWidth: 3,
       opacity: 1
     };
-    var lines;
+    var g;
 
     function component(selection) {
       selection.each(function () {
@@ -31,11 +31,11 @@ define(function (require) {
 
         var linePath = path().pathGenerator(line);
 
-        if (!lines) {
-          lines = d3.select(this).append("g");
+        if (!g) {
+          g = d3.select(this).append("g");
         }
 
-        lines.call(builder(properties, linePath));
+        g.call(builder(properties, linePath));
       });
     }
 

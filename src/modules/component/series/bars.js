@@ -24,7 +24,6 @@ define(function (require) {
       strokeWidth: 0,
       opacity: 1
     };
-
     var g;
 
     function component(selection) {
