@@ -8,16 +8,15 @@ define(function (require) {
     var y = 0;
     var width = 0;
     var height = 0;
+    var g;
 
     function element(selection) {
       selection.each(function () {
-        var g = d3.select(this);
+        if (!g) {
+          g = d3.select(this).append("clipPath");
+        }
 
-        // Remove previous clip-path
-        g.select("clipPath").remove();
-
-        g.append("clipPath")
-          .attr("id", id)
+        g.attr("id", id)
           .attr("transform", transform)
           .append("rect")
           .attr("x", x)

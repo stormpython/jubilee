@@ -103,6 +103,23 @@ define(function (require) {
     var points = {};
     var listeners = {};
 
+    var elements = [
+      { type: "area", func: areas() },
+      { type: "bar", func: bars() },
+      { type: "line", func: lines() },
+      { type: "points", func: circles() }
+    ];
+
+    var svg;
+    var g;
+    var brush;
+    var zLine;
+    var axisX;
+    var axisY;
+    var axisZ;
+    var clippath;
+    var clippedG;
+
     function chart(selection)  {
       selection.each(function (data, index) {
         data = accessor.call(this, data, index);
@@ -144,23 +161,28 @@ define(function (require) {
         /* ******************************** */
 
         /* Canvas ******************************** */
-        var svg = d3.select(this).selectAll("svg")
-          .data([data])
-          .enter().append("svg")
-          .attr("width", width)
-          .attr("height", height)
-          .call(svgEvents);
+        if (!svg && !g) {
+          svg = d3.select(this).append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .call(svgEvents);
 
-        var g = svg.append("g")
-          .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+          g = svg.append("g");
+        }
+
+        g.attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
         /* ******************************** */
 
         /* Brush ******************************** */
         if (listeners.brushstart && listeners.brushstart.length ||
             listeners.brush && listeners.brush.length ||
             listeners.brushend && listeners.brushend.length) {
-          var brush = brushComponent()
-            .class(brushOpts.class)
+
+          if (!brush) {
+            brush = brushComponent();
+          }
+
+          brush.class(brushOpts.class)
             .xScale(brushOpts.x ? x : null)
             .yScale(brushOpts.y ? y : null)
             .opacity(brushOpts.opacity)
@@ -177,8 +199,11 @@ define(function (require) {
 
         /* Zero-line ******************************** */
         if (zeroLine.show) {
-          var zLine = zeroAxisLine()
-            .x1(function () { return x.range()[0]; })
+          if (!zLine) {
+            zLine = zeroAxisLine();
+          }
+
+          zLine.x1(function () { return x.range()[0]; })
             .x2(function () { return x.range()[1]; })
             .y1(function () { return y(0); })
             .y2(function () { return y(0); });
@@ -198,8 +223,11 @@ define(function (require) {
         }
 
         if (xAxis.show) {
-          var axisX = axis()
-            .scale(x)
+          if (!axisX) {
+            axisX = axis();
+          }
+
+          axisX.scale(x)
             .class(xAxis.class)
             .transform(xAxis.transform || "translate(0," + (y.range()[0]) + ")")
             .tick(xAxis.tick)
@@ -211,8 +239,11 @@ define(function (require) {
         }
 
         if (yAxis.show) {
-          var axisY = axis()
-            .scale(y)
+          if (!axisY) {
+            axisY = axis();
+          }
+
+          axisY.scale(y)
             .orient("left")
             .class(yAxis.class)
             .transform(yAxis.transform || "translate(0,0)")
@@ -224,8 +255,11 @@ define(function (require) {
         }
 
         if (zAxis.show) {
-          var axisZ = axis()
-            .scale(z)
+          if (!axisZ) {
+            axisZ = axis();
+          }
+
+          axisZ.scale(z)
             .orient("right")
             .class(zAxis.class)
             .transform(zAxis.transform || "translate(" + x.range()[1] + "," + "0)")
@@ -238,24 +272,31 @@ define(function (require) {
         /* ******************************** */
 
         /* ClipPath ******************************** */
-        var clippath = clip().width(adjustedWidth).height(adjustedHeight);
-        var clippedG = g.call(clippath).append("g")
-          .attr("clip-path", "url(#" + clippath.id() + ")");
+        if (!clippath) {
+          clippath = clip();
+        }
+
+        clippath = clip().width(adjustedWidth).height(adjustedHeight);
+
+        if (!clippedG) {
+          clippedG = g.call(clippath).append("g");
+        }
+
+        clippedG.attr("clip-path", "url(#" + clippath.id() + ")");
         /* ******************************** */
 
         /* SVG Elements ******************************** */
-        var elements = [
-          {type: "area", func: areas(), opts: area},
-          {type: "bar", func: bars(), opts: bar},
-          {type: "line", func: lines(), opts: line},
-          {type: "points", func: circles(), opts: points}
-        ];
-
         elements.forEach(function (d) {
+          if (d.type === "area") { d.opts = area; }
+          if (d.type === "bar") { d.opts = bar; }
+          if (d.type === "line") { d.opts = line; }
+          if (d.type === "points") { d.opts = points; }
 
           // Only render elements when api called
           if (d3.keys(d.opts).length) {
-            var element = functor().function(d.func);
+            if (!d.element) {
+              d.element = functor().function(d.func);
+            }
 
             if (d.type === "area") { d.opts.offset = stacks.offset; }
             d.opts = !Array.isArray(d.opts) ? [d.opts] : d.opts;
@@ -267,7 +308,7 @@ define(function (require) {
               props.xScale = x;
               props.yScale = isZ ? z : y;
 
-              clippedG.call(element.options(props));
+              clippedG.datum(data).call(d.element.options(props));
             });
           }
         });

@@ -2,13 +2,14 @@ define(function (require) {
   var d3 = require("d3");
 
   return function rect() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d.x; };
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var rx = 0;
     var ry = 0;
     var width = null;
     var height = null;
+    var color = d3.scale.category10();
 
     // Options
     var cssClass = "bar";
@@ -18,11 +19,8 @@ define(function (require) {
     var opacity = 1;
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var bars = d3.select(this)
-          .selectAll("." + cssClass)
+      selection.each(function (data) {
+        var bars = d3.select(this).selectAll("rect")
           .data(data);
 
         bars.exit().remove();
@@ -45,13 +43,13 @@ define(function (require) {
     }
 
     function colorFill(d, i) {
-      return d3.scale.category10()(i);
+      return color(i);
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
 

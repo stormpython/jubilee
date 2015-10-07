@@ -25,6 +25,8 @@ define(function (require) {
       opacity: 1
     };
 
+    var g;
+
     function component(selection) {
       selection.each(function (data) {
         var timeNotation = parseTime(interval);
@@ -70,11 +72,21 @@ define(function (require) {
           .rx(rx)
           .ry(ry);
 
-        d3.select(this).append("g")
-          .selectAll("g")
-          .data(data)
-          .enter().append("g")
-          .call(builder(properties, rects));
+        if (!g) {
+          g = d3.select(this).append("g");
+        }
+
+        var bars = g.selectAll("g")
+          .data(data);
+
+        // Exit
+        bars.exit().remove();
+
+        // Enter
+        bars.enter().append("g");
+
+        // Update
+        bars.call(builder(properties, rects));
       });
     }
 

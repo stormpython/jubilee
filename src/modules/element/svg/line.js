@@ -2,11 +2,12 @@ define(function (require) {
   var d3 = require("d3");
 
   return function line() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d.x; };
     var x1 = 0;
     var x2 = 0;
     var y1 = 0;
     var y2 = 0;
+    var color = d3.scale.category10();
 
     var cssClass = "line";
     var stroke = colorFill;
@@ -14,11 +15,8 @@ define(function (require) {
     var opacity = 1;
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var lines = d3.select(this)
-          .selectAll("." + cssClass)
+      selection.each(function (data) {
+        var lines = d3.select(this).selectAll("line")
           .data(data);
 
         // Exit
@@ -41,13 +39,13 @@ define(function (require) {
     }
 
     function colorFill(d, i) {
-      return d3.scale.category10()(i);
+      return color(i);
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
     

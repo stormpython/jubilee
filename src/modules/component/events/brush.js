@@ -18,6 +18,7 @@ define(function (require) {
     var brushStartCallback = [];
     var brushCallback = [];
     var brushEndCallback = [];
+    var brushG;
 
     function component(selection) {
       selection.each(function (data, index) {
@@ -50,14 +51,12 @@ define(function (require) {
         if (extent) { brush.extent(extent); }
         if (clamp) { brush.clamp(clamp); }
 
-        var brushG = d3.select(this);
-
-        // Remove previous brush
-        brushG.select("g." + cssClass).remove();
+        if (!brushG) {
+          brushG = d3.select(this).append("g");
+        }
 
         // Attach new brush
-        brushG.append("g")
-          .attr("class", cssClass)
+        brushG.attr("class", cssClass)
           .attr("opacity", opacity)
           .call(brush)
           .selectAll("rect");

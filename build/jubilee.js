@@ -10119,7 +10119,7 @@ define('src/modules/component/boxplot',['require','d3'],function (require) {
       });
     }
 
-    component.gClass = function (_) {
+    component.class = function (_) {
       if (!arguments.length) { return gClass; }
       gClass = _;
       return component;
@@ -10369,6 +10369,8 @@ define('src/modules/component/axis/axis',['require','d3','builder','./rotate'],f
       transform: "translate(0,0)",
       text: ""
     };
+    var g;
+    var titleText;
 
     function component(selection) {
       selection.each(function () {
@@ -10383,8 +10385,12 @@ define('src/modules/component/axis/axis',['require','d3','builder','./rotate'],f
           .tickPadding(tick.padding)
           .tickFormat(tick.format);
 
-        var g = d3.select(this).append("g")
-          .attr("class", gClass)
+        if (!g) {
+          g = d3.select(this).append("g");
+        }
+
+        // Attach axis
+        g.attr("class", gClass)
           .attr("transform", transform)
           .call(axis);
 
@@ -10396,7 +10402,11 @@ define('src/modules/component/axis/axis',['require','d3','builder','./rotate'],f
           g.call(builder(rotateLabels, rotation));
         }
 
-        g.append("text")
+        if (!titleText) {
+          titleText = g.append("text");
+        }
+
+        titleText.append("text")
           .attr("class", title.class)
           .attr("x", title.x)
           .attr("y", title.y)
@@ -10885,13 +10895,14 @@ define('src/modules/element/svg/rect',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function rect() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d; };
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var rx = 0;
     var ry = 0;
     var width = null;
     var height = null;
+    var color = d3.scale.category10();
 
     // Options
     var cssClass = "bar";
@@ -10901,12 +10912,9 @@ define('src/modules/element/svg/rect',['require','d3'],function (require) {
     var opacity = 1;
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var bars = d3.select(this)
-          .selectAll("." + cssClass)
-          .data(data);
+      selection.each(function (data) {
+        var bars = d3.select(this).selectAll("rect")
+          .data(data, key);
 
         bars.exit().remove();
 
@@ -10928,13 +10936,13 @@ define('src/modules/element/svg/rect',['require','d3'],function (require) {
     }
 
     function colorFill(d, i) {
-      return d3.scale.category10()(i);
+      return color(i);
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
 
@@ -11632,7 +11640,7 @@ define('src/modules/element/svg/path',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function path() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d; };
     var pathGenerator = null;
 
     // Options
@@ -11644,12 +11652,9 @@ define('src/modules/element/svg/path',['require','d3'],function (require) {
     var opacity = 1;
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var path = d3.select(this)
-          .selectAll("." + cssClass)
-          .data(data);
+      selection.each(function (data) {
+        var path = d3.select(this).selectAll("path")
+          .data(data, key);
 
         path.exit().remove();
 
@@ -11667,9 +11672,9 @@ define('src/modules/element/svg/path',['require','d3'],function (require) {
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
 
@@ -11723,7 +11728,7 @@ define('src/modules/element/svg/text',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function text() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d; };
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var dx = 0;
@@ -11737,12 +11742,9 @@ define('src/modules/element/svg/text',['require','d3'],function (require) {
     var texts = "";
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var text = d3.select(this)
-          .selectAll("." + cssClass)
-          .data(data);
+      selection.each(function (data) {
+        var text = d3.select(this).selectAll("text")
+          .data(data, key);
 
         text.exit().remove();
 
@@ -11762,9 +11764,9 @@ define('src/modules/element/svg/text',['require','d3'],function (require) {
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
 
@@ -12087,12 +12089,15 @@ define('src/modules/component/clippath',['require','d3'],function (require) {
     var y = 0;
     var width = 0;
     var height = 0;
+    var g;
 
     function element(selection) {
       selection.each(function () {
-        d3.select(this)
-          .append("clipPath")
-          .attr("id", id)
+        if (!g) {
+          g = d3.select(this).append("clipPath");
+        }
+
+        g.attr("id", id)
           .attr("transform", transform)
           .append("rect")
           .attr("x", x)
@@ -12167,6 +12172,7 @@ define('src/modules/component/events/brush',['require','d3'],function (require) 
     var brushStartCallback = [];
     var brushCallback = [];
     var brushEndCallback = [];
+    var brushG;
 
     function component(selection) {
       selection.each(function (data, index) {
@@ -12199,8 +12205,12 @@ define('src/modules/component/events/brush',['require','d3'],function (require) 
         if (extent) { brush.extent(extent); }
         if (clamp) { brush.clamp(clamp); }
 
-        var brushG = d3.select(this).append("g")
-          .attr("class", cssClass)
+        if (!brushG) {
+          brushG = d3.select(this).append("g");
+        }
+
+        // Attach new brush
+        brushG.attr("class", cssClass)
           .attr("opacity", opacity)
           .call(brush)
           .selectAll("rect");
@@ -12296,11 +12306,12 @@ define('src/modules/element/svg/line',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function line() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d; };
     var x1 = 0;
     var x2 = 0;
     var y1 = 0;
     var y2 = 0;
+    var color = d3.scale.category10();
 
     var cssClass = "line";
     var stroke = colorFill;
@@ -12308,12 +12319,9 @@ define('src/modules/element/svg/line',['require','d3'],function (require) {
     var opacity = 1;
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var lines = d3.select(this)
-          .selectAll("." + cssClass)
-          .data(data);
+      selection.each(function (data) {
+        var lines = d3.select(this).selectAll("line")
+          .data(data, key);
 
         // Exit
         lines.exit().remove();
@@ -12335,13 +12343,13 @@ define('src/modules/element/svg/line',['require','d3'],function (require) {
     }
 
     function colorFill(d, i) {
-      return d3.scale.category10()(i);
+      return color(i);
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
     
@@ -12419,6 +12427,7 @@ define('src/modules/component/series/area',['require','d3','src/modules/element/
       strokeWidth: 0,
       opacity: 1
     };
+    var area;
 
     function component(selection) {
       selection.each(function () {
@@ -12429,9 +12438,11 @@ define('src/modules/component/series/area',['require','d3','src/modules/element/
 
         var areaPath = path().pathGenerator(areas);
 
-        d3.select(this)
-          .append("g")
-          .call(builder(properties, areaPath));
+        if (!area) {
+          area = d3.select(this).append("g");
+        }
+
+        area.call(builder(properties, areaPath));
       });
     }
 
@@ -12542,6 +12553,7 @@ define('src/modules/component/series/bars',['require','d3','src/modules/element/
       strokeWidth: 0,
       opacity: 1
     };
+    var bars;
 
     function component(selection) {
       selection.each(function (data) {
@@ -12588,11 +12600,21 @@ define('src/modules/component/series/bars',['require','d3','src/modules/element/
           .rx(rx)
           .ry(ry);
 
-        d3.select(this).append("g")
-          .selectAll("g")
-          .data(data)
-          .enter().append("g")
-          .call(builder(properties, rects));
+        if (!bars) {
+          bars = d3.select(this).append("g");
+        }
+
+        bars.selectAll("g")
+          .data(data);
+
+        // Exit
+        bars.exit().remove();
+
+        // Enter
+        bars.enter().append("g");
+
+        // Update
+        bars.call(builder(properties, rects));
       });
     }
 
@@ -12674,10 +12696,11 @@ define('src/modules/element/svg/circle',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function circle() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d; };
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
     var radius = 5;
+    var color = d3.scale.category10();
 
     // Options
     var cssClass = "circles";
@@ -12687,12 +12710,9 @@ define('src/modules/element/svg/circle',['require','d3'],function (require) {
     var opacity = null;
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var circles = d3.select(this)
-          .selectAll("." + cssClass)
-          .data(data);
+      selection.each(function (data) {
+        var circles = d3.select(this).selectAll("circle")
+          .data(data, key);
 
         // Exit
         circles.exit().remove();
@@ -12715,13 +12735,13 @@ define('src/modules/element/svg/circle',['require','d3'],function (require) {
     }
 
     function colorFill (d, i) {
-      return d3.scale.category10()(i);
+      return color(i);
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
 
@@ -12797,6 +12817,7 @@ define('src/modules/component/series/points',['require','d3','src/modules/elemen
       strokeWidth: 0,
       opacity: 1
     };
+    var point;
 
     function component(selection) {
       selection.each(function (data) {
@@ -12805,8 +12826,11 @@ define('src/modules/component/series/points',['require','d3','src/modules/elemen
           .cy(Y)
           .radius(radius);
 
-        d3.select(this).append("g")
-          .datum(data.reduce(function (a, b) {
+        if (!point) {
+          point = d3.select(this).append("g");
+        }
+
+        point.datum(data.reduce(function (a, b) {
             return a.concat(b);
           },[]).filter(y))
           .call(builder(properties, circles));
@@ -12888,19 +12912,22 @@ define('src/modules/component/series/line',['require','d3','src/modules/element/
       strokeWidth: 3,
       opacity: 1
     };
+    var lines;
 
     function component(selection) {
       selection.each(function () {
-        var lines = d3.svg.line().x(X).y(Y)
+        var line = d3.svg.line().x(X).y(Y)
           .interpolate(interpolate)
           .tension(tension)
           .defined(defined);
 
-        var linePath = path().pathGenerator(lines);
+        var linePath = path().pathGenerator(line);
 
-        d3.select(this)
-          .append("g")
-          .call(builder(properties, linePath));
+        if (!lines) {
+          lines = d3.select(this).append("g");
+        }
+
+        lines.call(builder(properties, linePath));
       });
     }
 
@@ -13847,11 +13874,12 @@ define('src/modules/element/svg/ellipse',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function ellipse() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d; };
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
     var rx = 20;
     var ry = 20;
+    var color = d3.scale.catgory10();
 
     // Options
     var cssClass = "ellipses";
@@ -13862,11 +13890,8 @@ define('src/modules/element/svg/ellipse',['require','d3'],function (require) {
 
     function element(selection) {
       selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var ellipses = d3.select(this)
-          .selectAll("." + cssClass)
-          .data(data);
+        var ellipses = d3.select(this).selectAll("ellipse")
+          .data(data, key);
 
         // Exit
         ellipses.exit().remove();
@@ -13889,13 +13914,13 @@ define('src/modules/element/svg/ellipse',['require','d3'],function (require) {
     }
 
     function colorFill(d, i) {
-      return d3.scale.category10()(i);
+      return color(i);
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
 
@@ -13961,7 +13986,7 @@ define('src/modules/element/svg/image',['require','d3'],function (require) {
   var d3 = require("d3");
 
   return function image() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d; };
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var width = 10;
@@ -13973,12 +13998,9 @@ define('src/modules/element/svg/image',['require','d3'],function (require) {
     var cssClass = "image";
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var images = d3.select(this)
-          .selectAll("." + cssClass)
-          .data(data);
+      selection.each(function (data) {
+        var images = d3.select(this).selectAll("image")
+          .data(data, key);
 
         // Exit
         images.exit().remove();
@@ -13999,9 +14021,9 @@ define('src/modules/element/svg/image',['require','d3'],function (require) {
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
     

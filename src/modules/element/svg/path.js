@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function path() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d.x; };
     var pathGenerator = null;
 
     // Options
@@ -14,11 +14,8 @@ define(function (require) {
     var opacity = 1;
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var path = d3.select(this)
-          .selectAll("." + cssClass)
+      selection.each(function (data) {
+        var path = d3.select(this).selectAll("path")
           .data(data);
 
         path.exit().remove();
@@ -37,9 +34,9 @@ define(function (require) {
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
 

@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function image() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d.x; };
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var width = 10;
@@ -14,11 +14,8 @@ define(function (require) {
     var cssClass = "image";
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var images = d3.select(this)
-          .selectAll("." + cssClass)
+      selection.each(function (data) {
+        var images = d3.select(this).selectAll("image")
           .data(data);
 
         // Exit
@@ -40,9 +37,9 @@ define(function (require) {
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
     

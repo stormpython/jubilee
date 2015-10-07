@@ -18,6 +18,7 @@ define(function (require) {
       strokeWidth: 0,
       opacity: 1
     };
+    var point;
 
     function component(selection) {
       selection.each(function (data) {
@@ -26,8 +27,11 @@ define(function (require) {
           .cy(Y)
           .radius(radius);
 
-        d3.select(this).append("g")
-          .datum(data.reduce(function (a, b) {
+        if (!point) {
+          point = d3.select(this).append("g");
+        }
+
+        point.datum(data.reduce(function (a, b) {
             return a.concat(b);
           },[]).filter(y))
           .call(builder(properties, circles));

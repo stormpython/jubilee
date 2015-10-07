@@ -20,19 +20,22 @@ define(function (require) {
       strokeWidth: 3,
       opacity: 1
     };
+    var lines;
 
     function component(selection) {
       selection.each(function () {
-        var lines = d3.svg.line().x(X).y(Y)
+        var line = d3.svg.line().x(X).y(Y)
           .interpolate(interpolate)
           .tension(tension)
           .defined(defined);
 
-        var linePath = path().pathGenerator(lines);
+        var linePath = path().pathGenerator(line);
 
-        d3.select(this)
-          .append("g")
-          .call(builder(properties, linePath));
+        if (!lines) {
+          lines = d3.select(this).append("g");
+        }
+
+        lines.call(builder(properties, linePath));
       });
     }
 

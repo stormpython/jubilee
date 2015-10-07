@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function text() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d.x; };
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var dx = 0;
@@ -16,11 +16,8 @@ define(function (require) {
     var texts = "";
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var text = d3.select(this)
-          .selectAll("." + cssClass)
+      selection.each(function (data) {
+        var text = d3.select(this).selectAll("text")
           .data(data);
 
         text.exit().remove();
@@ -41,9 +38,9 @@ define(function (require) {
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
 

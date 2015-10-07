@@ -2,10 +2,11 @@ define(function (require) {
   var d3 = require("d3");
 
   return function circle() {
-    var accessor = function (d) { return d; };
+    var key = function (d) { return d.x; };
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
     var radius = 5;
+    var color = d3.scale.category10();
 
     // Options
     var cssClass = "circles";
@@ -15,11 +16,8 @@ define(function (require) {
     var opacity = null;
 
     function element(selection) {
-      selection.each(function (data, index) {
-        data = accessor.call(this, data, index);
-
-        var circles = d3.select(this)
-          .selectAll("." + cssClass)
+      selection.each(function (data) {
+        var circles = d3.select(this).selectAll("circle")
           .data(data);
 
         // Exit
@@ -43,13 +41,13 @@ define(function (require) {
     }
 
     function colorFill (d, i) {
-      return d3.scale.category10()(i);
+      return color(i);
     }
 
     // Public API
-    element.accessor = function (_) {
-      if (!arguments.length) { return accessor; }
-      accessor = _;
+    element.key = function (_) {
+      if (!arguments.length) { return key; }
+      key = _;
       return element;
     };
 
