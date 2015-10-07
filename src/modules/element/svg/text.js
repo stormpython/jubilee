@@ -18,7 +18,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data) {
         var text = d3.select(this).selectAll("text")
-          .data(data, null);
+          .data(data, key);
 
         text.exit().remove();
 

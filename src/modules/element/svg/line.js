@@ -17,7 +17,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data) {
         var lines = d3.select(this).selectAll("line")
-          .data(data, null);
+          .data(data, key);
 
         // Exit
         lines.exit().remove();
