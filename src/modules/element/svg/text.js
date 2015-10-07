@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function text() {
-    var key = function (d) { return d.x; };
+    var key = null;
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var dx = 0;
@@ -18,7 +18,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data) {
         var text = d3.select(this).selectAll("text")
-          .data(data);
+          .data(data, null);
 
         text.exit().remove();
 

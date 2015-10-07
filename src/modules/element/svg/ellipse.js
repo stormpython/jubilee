@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function ellipse() {
-    var key = function (d) { return d.x; };
+    var key = null;
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
     var rx = 20;
@@ -19,7 +19,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data) {
         var ellipses = d3.select(this).selectAll("ellipse")
-          .data(data);
+          .data(data, key);
 
         // Exit
         ellipses.exit().remove();

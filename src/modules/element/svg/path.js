@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function path() {
-    var key = function (d) { return d.x; };
+    var key = null;
     var pathGenerator = null;
 
     // Options
@@ -16,7 +16,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data) {
         var path = d3.select(this).selectAll("path")
-          .data(data);
+          .data(data, key);
 
         path.exit().remove();
 

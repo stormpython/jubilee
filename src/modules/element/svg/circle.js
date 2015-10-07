@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function circle() {
-    var key = function (d) { return d.x; };
+    var key = null;
     var cx = function (d) { return d.x; };
     var cy = function (d) { return d.y; };
     var radius = 5;
@@ -18,7 +18,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data) {
         var circles = d3.select(this).selectAll("circle")
-          .data(data);
+          .data(data, key);
 
         // Exit
         circles.exit().remove();

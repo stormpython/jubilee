@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function line() {
-    var key = function (d) { return d.x; };
+    var key = null;
     var x1 = 0;
     var x2 = 0;
     var y1 = 0;
@@ -17,7 +17,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data) {
         var lines = d3.select(this).selectAll("line")
-          .data(data);
+          .data(data, null);
 
         // Exit
         lines.exit().remove();

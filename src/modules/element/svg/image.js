@@ -2,7 +2,7 @@ define(function (require) {
   var d3 = require("d3");
 
   return function image() {
-    var key = function (d) { return d.x; };
+    var key = null;
     var x = function (d) { return d.x; };
     var y = function (d) { return d.y; };
     var width = 10;
@@ -16,7 +16,7 @@ define(function (require) {
     function element(selection) {
       selection.each(function (data) {
         var images = d3.select(this).selectAll("image")
-          .data(data);
+          .data(data, key);
 
         // Exit
         images.exit().remove();
