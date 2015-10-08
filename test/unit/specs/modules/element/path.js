@@ -59,25 +59,6 @@ define(function (require) {
       });
     });
 
-    describe("accessor API", function () {
-      var defaultAccessor;
-
-      beforeEach(function () {
-        defaultAccessor = function (d) { return d; };
-        element.accessor(defaultAccessor);
-      });
-
-      it("should get the property", function () {
-        chai.assert.equal(element.accessor(), defaultAccessor);
-      });
-
-      it("should set the property", function () {
-        var newAccessor = function (d) { return d.values; };
-        element.accessor(newAccessor);
-        chai.assert.equal(element.accessor(), newAccessor);
-      });
-    });
-
     describe("transform API", function () {
       var defaultTransform;
       var newTransform;

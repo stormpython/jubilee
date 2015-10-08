@@ -7,7 +7,7 @@ define(function (require) {
     var cy = function (d) { return d.y; };
     var rx = 20;
     var ry = 20;
-    var color = d3.scale.catgory10();
+    var color = d3.scale.category10();
 
     // Options
     var cssClass = "ellipses";

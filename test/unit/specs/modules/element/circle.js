@@ -26,26 +26,6 @@ define(function (require) {
       chai.assert.equal(isFunction, true);
     });
 
-    describe("accessor API", function () {
-      var defaultAccessor;
-
-      beforeEach(function () {
-        removeChildren(fixture);
-        defaultAccessor = function (d) { return d; };
-        element.accessor(defaultAccessor);
-      });
-
-      it("should get the property", function () {
-        chai.assert.equal(element.accessor(), defaultAccessor);
-      });
-
-      it("should set the property", function () {
-        var newAccessor = function (d) { return d.series; };
-        element.accessor(newAccessor);
-        chai.assert.equal(element.accessor(), newAccessor);
-      });
-    });
-
     describe("cx API", function () {
       var defaultCX;
 
